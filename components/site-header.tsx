@@ -12,19 +12,25 @@ export function SiteHeader() {
         </a>
         <nav aria-label="Main navigation" className="flex items-center gap-1 text-sm">
           <a
-            href="#listen"
+            href="/#listen"
             className="rounded-md px-3 py-2 font-medium text-foreground transition-colors hover:bg-muted"
           >
             Listen
           </a>
           <a
-            href="#features"
+            href="/iqra"
             className="rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            Iqra Mode
+          </a>
+          <a
+            href="/#features"
+            className="hidden rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:block"
           >
             Features
           </a>
           <a
-            href="#listen"
+            href="/#listen"
             className="ms-2 hidden rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground transition-opacity hover:opacity-90 sm:block"
           >
             Start Listening
