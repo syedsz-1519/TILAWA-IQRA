@@ -6,6 +6,7 @@ import {
   Swords,
   HeartHandshake,
   ScrollText,
+  Landmark,
   Settings,
   type LucideIcon,
 } from 'lucide-react'
@@ -27,8 +28,14 @@ export const navItems: NavItem[] = [
   {
     title: 'Iqra Mode',
     href: '/iqra',
-    description: 'History of the Quran and Nuzool-e-Quran',
+    description: 'Structured Quran reading and learning',
     icon: BookOpen,
+  },
+  {
+    title: 'History of Quran',
+    href: '/history',
+    description: 'Tarikh-e-Quran: from the first revelation to the Mushaf-e-Uthmani',
+    icon: Landmark,
   },
   {
     title: 'Hifz',
