@@ -1,10 +1,21 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { Geist, Amiri } from 'next/font/google'
+import { PlayerProvider } from '@/components/player/player-provider'
+import { PlayerBar } from '@/components/player/player-bar'
 import './globals.css'
 
+const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
+const amiri = Amiri({
+  subsets: ['arabic'],
+  weight: ['400', '700'],
+  variable: '--font-amiri',
+})
+
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'TILAWA — Learn, Listen, and Recite the Quran',
+  description:
+    'AI-powered Quranic recitation learning. Listen to beautiful recitation by Yasser Al-Dosari, track your khatm, and perfect your tajweed.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -28,8 +39,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: 'light dark',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: '(prefers-color-scheme: light)', color: '#faf9f6' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0f0d' },
   ],
 }
 
@@ -39,9 +50,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
-        {children}
+    <html lang="en" className={`bg-background ${geist.variable} ${amiri.variable}`}>
+      <body className="antialiased font-sans">
+        <PlayerProvider>
+          {children}
+          <PlayerBar />
+        </PlayerProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
