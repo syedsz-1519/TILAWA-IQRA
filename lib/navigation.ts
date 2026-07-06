@@ -1,0 +1,70 @@
+import {
+  Headphones,
+  BookOpen,
+  Brain,
+  Mic2,
+  Swords,
+  HeartHandshake,
+  ScrollText,
+  Settings,
+  type LucideIcon,
+} from 'lucide-react'
+
+export type NavItem = {
+  title: string
+  href: string
+  description: string
+  icon: LucideIcon
+}
+
+export const navItems: NavItem[] = [
+  {
+    title: 'Listen',
+    href: '/#listen',
+    description: 'Stream all 114 surahs recited by Yasser Al-Dosari',
+    icon: Headphones,
+  },
+  {
+    title: 'Iqra Mode',
+    href: '/iqra',
+    description: 'History of the Quran and Nuzool-e-Quran',
+    icon: BookOpen,
+  },
+  {
+    title: 'Hifz',
+    href: '/hifz',
+    description: 'Structured memorization plans and revision tracking',
+    icon: Brain,
+  },
+  {
+    title: 'Tajweed',
+    href: '/tajweed',
+    description: 'Learn the rules of beautiful recitation',
+    icon: Mic2,
+  },
+  {
+    title: 'Battles',
+    href: '/battles',
+    description: 'Friendly recitation challenges and leaderboards',
+    icon: Swords,
+  },
+  {
+    title: 'Mood Verses',
+    href: '/mood',
+    description: 'Quranic guidance for how you feel right now',
+    icon: HeartHandshake,
+  },
+  {
+    title: 'Stories',
+    href: '/stories',
+    description: 'Stories of the Prophets from the Quran',
+    icon: ScrollText,
+  },
+]
+
+export const settingsItem: NavItem = {
+  title: 'Settings',
+  href: '/settings',
+  description: 'Theme, playback, and app preferences',
+  icon: Settings,
+}

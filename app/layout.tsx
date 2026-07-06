@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Amiri } from 'next/font/google'
 import { PlayerProvider } from '@/components/player/player-provider'
 import { PlayerBar } from '@/components/player/player-bar'
+import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
@@ -50,12 +51,18 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`bg-background ${geist.variable} ${amiri.variable}`}>
+    <html
+      lang="en"
+      className={`bg-background ${geist.variable} ${amiri.variable}`}
+      suppressHydrationWarning
+    >
       <body className="antialiased font-sans">
-        <PlayerProvider>
-          {children}
-          <PlayerBar />
-        </PlayerProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <PlayerProvider>
+            {children}
+            <PlayerBar />
+          </PlayerProvider>
+        </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
