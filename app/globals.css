@@ -162,4 +162,10 @@
   body {
     @apply bg-background text-foreground;
   }
+  :root {
+    --font-serif: var(--font-amiri), 'Amiri', serif;
+  }
+  [lang='ar'] {
+    font-family: var(--font-amiri), 'Amiri', serif;
+  }
 }

@@ -50,7 +50,7 @@ export function PlayerBar() {
         aria-label="Seek within recitation"
         className="absolute -top-[7px] left-0 h-3 w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-muted [&::-webkit-slider-thumb]:-mt-1 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
         style={{
-          background: `linear-gradient(to right, var(--primary) ${duration ? (currentTime / duration) * 100 : 0}%, transparent 0%)`,
+          backgroundImage: `linear-gradient(to right, var(--primary) ${duration ? (currentTime / duration) * 100 : 0}%, transparent 0%)`,
           backgroundSize: '100% 4px',
           backgroundPosition: 'center top',
           backgroundRepeat: 'no-repeat',
