@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Languages, Pause, Play } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Languages, Pause, Play, Volume2 } from 'lucide-react'
 import { SURAHS } from '@/lib/quran'
 import {
   QURAN_LANGUAGES,
@@ -12,6 +12,8 @@ import {
   arabicUrl,
   translationUrl,
   ayahAudioUrl,
+  urduTranslationAudioUrl,
+  hasTranslationAudio,
   type ChapterResponse,
 } from '@/lib/quran-languages'
 
@@ -41,11 +43,16 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
     fetcher,
   )
 
-  // Per-ayah read-along audio
+  // Per-ayah read-along audio (Arabic recitation, then optional Urdu translation - Islam360 style)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [activeAyah, setActiveAyah] = useState<number | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [translationAudio, setTranslationAudio] = useState(true)
   const continueRef = useRef(false)
+  const translationAudioRef = useRef(true)
+  const langRef = useRef(langCode)
+  langRef.current = langCode
+  translationAudioRef.current = translationAudio
 
   const stop = useCallback(() => {
     audioRef.current?.pause()
@@ -62,8 +69,8 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
       }
       const audio = audioRef.current
       continueRef.current = continueToEnd
-      audio.src = ayahAudioUrl(surah.number, ayah)
-      audio.onended = () => {
+
+      const advance = () => {
         if (continueRef.current && ayah < surah.ayahCount) {
           playAyah(ayah + 1, true)
         } else {
@@ -71,6 +78,20 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
           setActiveAyah(null)
         }
       }
+
+      const playTranslationThenAdvance = () => {
+        // After the Arabic recitation, play the Urdu translation audio for this ayah
+        if (translationAudioRef.current && hasTranslationAudio(langRef.current)) {
+          audio.src = urduTranslationAudioUrl(surah.number, ayah)
+          audio.onended = advance
+          audio.play().catch(advance)
+        } else {
+          advance()
+        }
+      }
+
+      audio.src = ayahAudioUrl(surah.number, ayah)
+      audio.onended = playTranslationThenAdvance
       audio
         .play()
         .then(() => {
@@ -110,6 +131,21 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
             {isPlaying ? 'Stop' : 'Play & follow'}
           </button>
         </div>
+        {hasTranslationAudio(langCode) && (
+          <button
+            type="button"
+            onClick={() => setTranslationAudio((v) => !v)}
+            aria-pressed={translationAudio}
+            className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
+              translationAudio
+                ? 'border-primary/40 bg-primary/10 text-primary'
+                : 'border-border text-muted-foreground hover:bg-muted'
+            }`}
+          >
+            <Volume2 className="h-4 w-4" aria-hidden="true" />
+            Urdu audio {translationAudio ? 'on' : 'off'}
+          </button>
+        )}
         <label className="flex items-center gap-2 text-sm">
           <Languages className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           <span className="sr-only">Translation language</span>
@@ -193,6 +229,7 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
       {/* Translator credit */}
       <p className="mt-8 text-center text-xs text-muted-foreground">
         Translation: {language.translator} &middot; Recitation: Sheikh Yasser Ad-Dussary
+        {hasTranslationAudio(langCode) && ' \u00b7 Urdu audio: Shamshad Ali Khan'}
       </p>
 
       {/* Prev / Next surah */}

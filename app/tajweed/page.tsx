@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import { Mic2 } from 'lucide-react'
+import Link from 'next/link'
+import { Mic2, AlertTriangle, Award, LayoutDashboard } from 'lucide-react'
 import { PageHero } from '@/components/page-hero'
 
 export const metadata: Metadata = {
@@ -121,6 +122,78 @@ export default function TajweedPage() {
           arabic="وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا"
           description='"And recite the Quran with measured recitation" (Al-Muzzammil 73:4). Tajweed gives every letter its right — its articulation point and its attributes. Learn the core rules, then hear them applied in Yasser Al-Dosari&apos;s recitation.'
         />
+
+        <section className="mx-auto max-w-6xl px-4 pt-12">
+          {/* Common struggles callout */}
+          <div className="flex flex-col gap-4 rounded-xl border border-destructive/30 bg-card p-6 md:flex-row md:items-start">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="size-5 text-destructive" aria-hidden="true" />
+            </span>
+            <div>
+              <h2 className="font-semibold">Common Modern Struggles (You&apos;re Not Alone!)</h2>
+              <ul className="mt-3 flex flex-col gap-2 text-sm leading-relaxed text-muted-foreground">
+                <li>
+                  <strong className="text-foreground">Qalb vs Kalb:</strong> Pronouncing ق (Qaf) as
+                  ك (Kaf) changes &ldquo;Heart&rdquo; to &ldquo;Dog&rdquo;.
+                </li>
+                <li>
+                  <strong className="text-foreground">Ha vs Haa:</strong> Mixing ح (sharp Ha) with
+                  هـ (soft Haa) is the #1 mistake for non-Arabs.
+                </li>
+                <li>
+                  <strong className="text-foreground">The Heavy &lsquo;Dhad&rsquo;:</strong>{' '}
+                  Struggling with ض? It takes time! Keep practicing the side-of-tongue position.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Action cards */}
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <Link
+              href="/tajweed-quiz"
+              className="flex items-center gap-4 rounded-xl border border-border bg-card p-6 transition-colors hover:bg-muted"
+            >
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <Award className="size-5 text-primary" aria-hidden="true" />
+              </span>
+              <div>
+                <h3 className="font-semibold">Take Quiz</h3>
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Test knowledge
+                </p>
+              </div>
+            </Link>
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-4 rounded-xl border border-border bg-card p-6 transition-colors hover:bg-muted"
+            >
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <LayoutDashboard className="size-5 text-primary" aria-hidden="true" />
+              </span>
+              <div>
+                <h3 className="font-semibold">Dashboard</h3>
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Track progress
+                </p>
+              </div>
+            </Link>
+            <Link
+              href="/read"
+              className="flex items-center gap-4 rounded-xl border border-border bg-card p-6 transition-colors hover:bg-muted"
+            >
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <Mic2 className="size-5 text-primary" aria-hidden="true" />
+              </span>
+              <div>
+                <h3 className="font-semibold">Practice</h3>
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Recite a verse
+                </p>
+              </div>
+            </Link>
+          </div>
+        </section>
 
         <section aria-labelledby="rules-heading" className="mx-auto max-w-6xl px-4 py-12">
           <h2 id="rules-heading" className="text-2xl font-semibold tracking-tight">
