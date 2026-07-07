@@ -69,6 +69,19 @@ export function ayahAudioUrl(surah: number, ayah: number) {
   return `https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/${s}${a}.mp3`
 }
 
+/** Per-ayah Urdu translation audio by Shamshad Ali Khan (everyayah.com).
+ * Spoken Urdu serves both the Urdu and Roman Urdu (same spoken language) modes. */
+export function urduTranslationAudioUrl(surah: number, ayah: number) {
+  const s = String(surah).padStart(3, '0')
+  const a = String(ayah).padStart(3, '0')
+  return `https://everyayah.com/data/translations/urdu_shamshad_ali_khan_46kbps/${s}${a}.mp3`
+}
+
+/** Languages that have interleaved translation audio available */
+export function hasTranslationAudio(code: string) {
+  return code === 'ur' || code === 'ur-roman'
+}
+
 export interface ApiVerse {
   chapter: number
   verse: number
