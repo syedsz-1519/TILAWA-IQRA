@@ -26,6 +26,12 @@ export const navItems: NavItem[] = [
     icon: Headphones,
   },
   {
+    title: 'Dashboard',
+    href: '/dashboard',
+    description: 'Track streaks, XP, and progress (requires sign-in)',
+    icon: Brain,
+  },
+  {
     title: 'Iqra Mode',
     href: '/iqra',
     description: 'Structured Quran reading and learning',
