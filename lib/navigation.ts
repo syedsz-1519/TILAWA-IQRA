@@ -7,6 +7,8 @@ import {
   HeartHandshake,
   ScrollText,
   Landmark,
+  Heart,
+  Lightbulb,
   Settings,
   type LucideIcon,
 } from 'lucide-react'
@@ -72,6 +74,30 @@ export const navItems: NavItem[] = [
     href: '/stories',
     description: 'Stories of the Prophets from the Quran',
     icon: ScrollText,
+  },
+  {
+    title: 'Mushaf Reader',
+    href: '/mushaf',
+    description: 'Read all 114 surahs with translations',
+    icon: BookOpen,
+  },
+  {
+    title: 'Tajweed Quiz',
+    href: '/tajweed-quiz',
+    description: 'Test your tajweed knowledge',
+    icon: Brain,
+  },
+  {
+    title: 'Nafs Tracker',
+    href: '/nafs-tracker',
+    description: 'Track spiritual practices (requires sign-in)',
+    icon: Heart,
+  },
+  {
+    title: 'Hadith & Dua',
+    href: '/hadith-dua',
+    description: 'Authentic hadith and Quranic duas',
+    icon: Lightbulb,
   },
 ]
 
