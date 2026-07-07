@@ -1,4 +1,3 @@
-import { SiteHeader } from '@/components/site-header'
 import { PageHero } from '@/components/page-hero'
 import { Zap } from 'lucide-react'
 import { auth } from '@/lib/auth'
@@ -16,7 +15,6 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <SiteHeader />
       <main className="min-h-screen bg-background">
         <PageHero
           icon={Zap}

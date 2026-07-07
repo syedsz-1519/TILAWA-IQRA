@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Brain, CalendarCheck, Repeat2, Target } from 'lucide-react'
-import { SiteHeader } from '@/components/site-header'
 import { PageHero } from '@/components/page-hero'
 
 export const metadata: Metadata = {
@@ -66,7 +65,6 @@ const tips = [
 export default function HifzPage() {
   return (
     <>
-      <SiteHeader />
       <main className="pb-32">
         <PageHero
           icon={Brain}

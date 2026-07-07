@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Mic2 } from 'lucide-react'
-import { SiteHeader } from '@/components/site-header'
 import { PageHero } from '@/components/page-hero'
 
 export const metadata: Metadata = {
@@ -114,7 +113,6 @@ const makharij = [
 export default function TajweedPage() {
   return (
     <>
-      <SiteHeader />
       <main className="pb-32">
         <PageHero
           icon={Mic2}

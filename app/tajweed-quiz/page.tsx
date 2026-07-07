@@ -1,4 +1,3 @@
-import { SiteHeader } from '@/components/site-header'
 import { PageHero } from '@/components/page-hero'
 import { BookOpen } from 'lucide-react'
 
@@ -17,7 +16,6 @@ export default function TajweedQuizPage() {
 
   return (
     <>
-      <SiteHeader />
       <main className="min-h-screen bg-background">
         <PageHero
           icon={BookOpen}

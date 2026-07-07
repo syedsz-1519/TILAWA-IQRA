@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Settings } from 'lucide-react'
-import { SiteHeader } from '@/components/site-header'
 import { PageHero } from '@/components/page-hero'
 import { SettingsPanel } from '@/components/settings-panel'
 
@@ -12,7 +11,6 @@ export const metadata: Metadata = {
 export default function SettingsPage() {
   return (
     <>
-      <SiteHeader />
       <main className="pb-32">
         <PageHero
           icon={Settings}

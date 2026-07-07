@@ -1,4 +1,3 @@
-import { SiteHeader } from '@/components/site-header'
 import { PageHero } from '@/components/page-hero'
 import { Lightbulb } from 'lucide-react'
 
@@ -55,7 +54,6 @@ export default function HadithDuaPage() {
 
   return (
     <>
-      <SiteHeader />
       <main className="min-h-screen bg-background">
         <PageHero
           icon={Lightbulb}

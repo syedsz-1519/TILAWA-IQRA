@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { ScrollText } from 'lucide-react'
-import { SiteHeader } from '@/components/site-header'
 import { PageHero } from '@/components/page-hero'
 import { StoryList } from '@/components/story-list'
 
@@ -13,7 +12,6 @@ export const metadata: Metadata = {
 export default function StoriesPage() {
   return (
     <>
-      <SiteHeader />
       <main className="pb-32">
         <PageHero
           icon={ScrollText}

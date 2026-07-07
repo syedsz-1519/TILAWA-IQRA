@@ -1,4 +1,3 @@
-import { SiteHeader } from '@/components/site-header'
 import { Hero } from '@/components/hero'
 import { SurahBrowser } from '@/components/surah-browser'
 import { Features } from '@/components/features'
@@ -7,7 +6,6 @@ import { DEFAULT_RECITER } from '@/lib/quran'
 export default function Page() {
   return (
     <>
-      <SiteHeader />
       <main className="pb-28">
         <Hero />
         <SurahBrowser />

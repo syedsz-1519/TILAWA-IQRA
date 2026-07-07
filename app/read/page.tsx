@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BookOpenText } from 'lucide-react'
-import { SiteHeader } from '@/components/site-header'
 import { PageHero } from '@/components/page-hero'
 import { SURAHS } from '@/lib/quran'
 
@@ -14,7 +13,6 @@ export const metadata: Metadata = {
 export default function ReadQuranPage() {
   return (
     <>
-      <SiteHeader />
       <main className="pb-32">
         <PageHero
           icon={BookOpenText}

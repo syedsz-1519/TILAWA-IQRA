@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { SiteHeader } from '@/components/site-header'
 import { QuranReader } from '@/components/quran-reader'
 import { SURAHS } from '@/lib/quran'
 
@@ -27,7 +26,6 @@ export default async function SurahReaderPage({ params }: Props) {
 
   return (
     <>
-      <SiteHeader />
       <main className="pb-16 pt-8">
         <header className="mx-auto mb-6 w-full max-w-3xl px-4 text-center">
           <p className="text-sm font-medium text-primary">

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Swords, Trophy, Users, Zap } from 'lucide-react'
-import { SiteHeader } from '@/components/site-header'
 import { PageHero } from '@/components/page-hero'
 
 export const metadata: Metadata = {
@@ -51,7 +50,6 @@ const etiquette = [
 export default function BattlesPage() {
   return (
     <>
-      <SiteHeader />
       <main className="pb-32">
         <PageHero
           icon={Swords}
