@@ -20,21 +20,8 @@ export const metadata: Metadata = {
     'AI-powered Quranic recitation learning. Listen to beautiful recitation by Yasser Al-Dosari, track your khatm, and perfect your tajweed.',
   generator: 'v0.app',
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/images/tilawa-logo.jpeg',
+    apple: '/images/tilawa-logo.jpeg',
   },
 }
 

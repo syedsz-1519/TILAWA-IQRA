@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { navGroups, settingsItem } from '@/lib/navigation'
@@ -14,12 +15,21 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex h-full flex-col">
       {/* Brand */}
       <div className="border-b border-border px-5 py-5">
-        <Link href="/" onClick={onNavigate} className="block">
-          <span className="font-serif text-2xl font-bold tracking-[0.2em] text-primary">
-            TILAWA
-          </span>
-          <span className="mt-1 block text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-            Sacred Quran Companion
+        <Link href="/" onClick={onNavigate} className="flex items-center gap-3">
+          <Image
+            src="/images/tilawa-logo.jpeg"
+            alt="TILAWA logo - a rehal Quran stand"
+            width={44}
+            height={44}
+            className="size-11 shrink-0 rounded-lg object-cover"
+          />
+          <span className="min-w-0">
+            <span className="block font-serif text-xl font-bold tracking-[0.2em] text-primary">
+              TILAWA
+            </span>
+            <span className="mt-0.5 block text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
+              From Iqra to Tilawa
+            </span>
           </span>
         </Link>
       </div>
@@ -99,8 +109,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-border bg-background/95 px-4 py-3 backdrop-blur lg:hidden">
-        <Link href="/" className="font-serif text-lg font-bold tracking-[0.2em] text-primary">
-          TILAWA
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image
+            src="/images/tilawa-logo.jpeg"
+            alt="TILAWA logo"
+            width={32}
+            height={32}
+            className="size-8 rounded-md object-cover"
+          />
+          <span className="font-serif text-lg font-bold tracking-[0.2em] text-primary">TILAWA</span>
         </Link>
         <button
           type="button"
