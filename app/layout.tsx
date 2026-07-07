@@ -4,6 +4,7 @@ import { Geist, Amiri } from 'next/font/google'
 import { PlayerProvider } from '@/components/player/player-provider'
 import { PlayerBar } from '@/components/player/player-bar'
 import { ThemeProvider } from '@/components/theme-provider'
+import { AppShell } from '@/components/app-shell'
 import './globals.css'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
@@ -59,7 +60,7 @@ export default function RootLayout({
       <body className="antialiased font-sans">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <PlayerProvider>
-            {children}
+            <AppShell>{children}</AppShell>
             <PlayerBar />
           </PlayerProvider>
         </ThemeProvider>

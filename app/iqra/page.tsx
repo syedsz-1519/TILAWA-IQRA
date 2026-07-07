@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { BookOpen, Moon, ScrollText, Sparkles } from 'lucide-react'
-import { SiteHeader } from '@/components/site-header'
 import {
   historyFacts,
   historyIntro,
@@ -19,7 +18,6 @@ export const metadata: Metadata = {
 export default function IqraPage() {
   return (
     <>
-      <SiteHeader />
       <main className="pb-40">
         {/* Page hero */}
         <section className="border-b border-border bg-card">

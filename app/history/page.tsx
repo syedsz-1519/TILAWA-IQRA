@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Landmark } from 'lucide-react'
-import { SiteHeader } from '@/components/site-header'
 import { PageHero } from '@/components/page-hero'
 import {
   heroStats,
@@ -18,7 +17,6 @@ export const metadata: Metadata = {
 export default function HistoryOfQuranPage() {
   return (
     <>
-      <SiteHeader />
       <main className="pb-32">
         <PageHero
           icon={Landmark}

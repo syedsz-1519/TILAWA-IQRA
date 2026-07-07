@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { HeartHandshake } from 'lucide-react'
-import { SiteHeader } from '@/components/site-header'
 import { PageHero } from '@/components/page-hero'
 import { MoodExplorer } from '@/components/mood-explorer'
 
@@ -13,7 +12,6 @@ export const metadata: Metadata = {
 export default function MoodPage() {
   return (
     <>
-      <SiteHeader />
       <main className="pb-32">
         <PageHero
           icon={HeartHandshake}
