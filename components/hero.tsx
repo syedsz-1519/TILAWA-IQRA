@@ -1,6 +1,7 @@
 'use client'
 
-import { Headphones, Play } from 'lucide-react'
+import Link from 'next/link'
+import { BookOpenText, Headphones, Play } from 'lucide-react'
 import { usePlayer } from '@/components/player/player-provider'
 import { SURAHS, DEFAULT_RECITER } from '@/lib/quran'
 
@@ -37,6 +38,13 @@ export function Hero() {
             <Play className="size-4" aria-hidden="true" />
             Play Al-Fatihah
           </button>
+          <Link
+            href="/read"
+            className="flex items-center gap-2 rounded-lg border border-border bg-background px-6 py-3 font-medium transition-colors hover:bg-muted"
+          >
+            <BookOpenText className="size-4" aria-hidden="true" />
+            Read Quran
+          </Link>
           <a
             href="#listen"
             className="flex items-center gap-2 rounded-lg border border-border bg-background px-6 py-3 font-medium transition-colors hover:bg-muted"

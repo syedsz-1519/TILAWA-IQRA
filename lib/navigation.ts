@@ -76,9 +76,9 @@ export const navItems: NavItem[] = [
     icon: ScrollText,
   },
   {
-    title: 'Mushaf Reader',
-    href: '/mushaf',
-    description: 'Read all 114 surahs with translations',
+    title: 'Read Quran',
+    href: '/read',
+    description: 'Read with English, Roman Urdu, and Urdu translations plus read-along audio',
     icon: BookOpen,
   },
   {
