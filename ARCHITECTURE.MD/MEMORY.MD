@@ -64,8 +64,8 @@ The relational schema is configured via Drizzle ORM in PostgreSQL:
   `https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quranuthmanihaf/{surah}.json`
 - **Translations**: Sourced by edition from jsDelivr:
   - English: `eng-abdullahyusufal`
-  - Urdu: `urd-abulaalamaududi`
-  - Roman Urdu: `urd-abulaalamaududi-la`
+  - Urdu: `urd-fatehmuhammadja`
+  - Roman Urdu: `urd-fatehmuhammadja-la`
   - Hindi: `hin-suhelfarooqkhan-la`
   - Telugu: `tel-aburida-la`
   - Marathi: `mar-muhammadshafi-la`
