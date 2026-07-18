@@ -161,14 +161,15 @@ This document details the granular 15-phase engineering plan for **TILAWA**.
 
 ### Phase 12 — Tajweed Hub & Spaced-Repetition Hifz
 - **Duration**: 2-3 weeks (Advance early in 1-2 weeks if complete)
-- **Status**: `[ ] Planned`
+- **Status**: `[/] In Progress`
 - **Tasks**:
+  - [x] Create Zaid AI Assistant (`/zaid-ai`) to assist basic learners with interactive Tajweed and spelling questions.
   - [ ] Compile library detailing the 17 core Tajweed rules with audio samples.
   - [ ] Write dynamic interactive quizzes checking rule definitions.
   - [ ] Develop spaced repetition intervals scheduling flagged ayahs for review.
   - [ ] Set up Hifz tracking cards storing memorization statuses.
-- **Deliverable**: Training and review space assisting verse memorization.
-- **Acceptance**: Hifz tracker updates and caches scheduled review times instantly.
+- **Deliverable**: Training and review space assisting verse memorization, integrated with Zaid AI.
+- **Acceptance**: Hifz tracker updates and caches scheduled review times instantly; Zaid AI processes chat answers under 1s.
 
 ---
 

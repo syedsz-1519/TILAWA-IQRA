@@ -87,3 +87,15 @@ The relational schema is configured via Drizzle ORM in PostgreSQL:
 - **Theme Palette**: Deep Emerald (`#0d5c46`), Muted Gold (`#b8860b`), Warm Off-white (`#faf9f6`), Ink (`#1a2420`), AMOLED Near-black (`#0a0f0d`).
 - **Typography Guidelines**: Amiri Serif for Arabic script (minimum 22px, line-height 2.0+). Geist Sans for standard UI text.
 - **RTL Support**: Language fields displaying Arabic text are locked to `dir="rtl"` and `lang="ar"`.
+
+---
+
+## 5. Zaid AI Learning Assistant
+
+The Zaid AI Assistant is a dedicated, interactive client-side tutor designed for basic learners:
+- **Route**: [frontend/app/zaid-ai/page.tsx](file:///c:/Users/ASUS/Downloads/TILAWA-IQRA-main%20%281%29/TILAWA-IQRA/frontend/app/zaid-ai/page.tsx)
+- **Features**: Includes pre-suggested learning questions, a custom conversational message window, typing indicator animations, and instant knowledge mappings for:
+  - **Tajweed Rules**: Explains Qalqalah letters, Ghunnah holdings, and other Quranic pronunciation principles.
+  - **Platform Details**: Illustrates how the AI speech scoring and color-coded heatmap highlights function.
+  - **Surah Overviews**: Gives context on chapters like Surah Al-Fatihah.
+- **Navigation**: Registered inside [frontend/lib/navigation.ts](file:///c:/Users/ASUS/Downloads/TILAWA-IQRA-main%20%281%29/TILAWA-IQRA/frontend/lib/navigation.ts) and displayed globally under the "Learn" sidebar list.

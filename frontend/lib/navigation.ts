@@ -12,6 +12,7 @@ import {
   Lightbulb,
   LayoutDashboard,
   Settings,
+  MessageSquare,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -66,6 +67,12 @@ export const navGroups: NavGroup[] = [
   {
     label: 'Learn',
     items: [
+      {
+        title: 'Zaid AI Bot',
+        href: '/zaid-ai',
+        description: 'AI-powered Quranic learning assistant',
+        icon: MessageSquare,
+      },
       {
         title: 'Tajweed',
         href: '/tajweed',
