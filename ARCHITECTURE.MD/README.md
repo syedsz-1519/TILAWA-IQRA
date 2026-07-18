@@ -131,6 +131,8 @@ The documentation files in this folder describe specific segments of the project
 |---|---|
 | [README.md](file:///c:/Users/ASUS/Downloads/TILAWA-IQRA-main%20%281%29/TILAWA-IQRA/ARCHITECTURE.MD/README.md) | [This File] Master guide and documentation table of contents |
 | [architecture.md](file:///c:/Users/ASUS/Downloads/TILAWA-IQRA-main%20%281%29/TILAWA-IQRA/ARCHITECTURE.MD/architecture.md) | High-level system structure, components flow, and deployment details |
+| [TECH_STACK.MD](file:///c:/Users/ASUS/Downloads/TILAWA-IQRA-main%20%281%29/TILAWA-IQRA/ARCHITECTURE.MD/TECH_STACK.MD) | Technical stacks, libraries, tools, and platforms integrated and scheduled |
+| [MEMORY.MD](file:///c:/Users/ASUS/Downloads/TILAWA-IQRA-main%20%281%29/TILAWA-IQRA/ARCHITECTURE.MD/MEMORY.MD) | Master repository memory bank containing schema, CDN paths, and system specs |
 | [prd.md](file:///c:/Users/ASUS/Downloads/TILAWA-IQRA-main%20%281%29/TILAWA-IQRA/ARCHITECTURE.MD/prd.md) | Core product scope, target personas, prioritized features, and risks |
 | [design.md](file:///c:/Users/ASUS/Downloads/TILAWA-IQRA-main%20%281%29/TILAWA-IQRA/ARCHITECTURE.MD/design.md) | UI theme guidelines, typography, layout structures, and accessibility standards |
 | [roadmap.md](file:///c:/Users/ASUS/Downloads/TILAWA-IQRA-main%20%281%29/TILAWA-IQRA/ARCHITECTURE.MD/roadmap.md) | High-level business and product delivery roadmap across quarters |
