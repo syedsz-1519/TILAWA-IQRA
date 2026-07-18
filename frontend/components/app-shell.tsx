@@ -4,12 +4,34 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Languages } from 'lucide-react'
 import { navGroups, settingsItem } from '@/lib/navigation'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { QURAN_LANGUAGES, DEFAULT_LANGUAGE } from '@/lib/quran-languages'
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
+  const [langCode, setLangCode] = useState(DEFAULT_LANGUAGE)
+
+  useEffect(() => {
+    const loadLang = () => {
+      const saved = window.localStorage.getItem('tilawa-quran-lang')
+      if (saved && QURAN_LANGUAGES.some((l) => l.code === saved)) setLangCode(saved)
+    }
+    loadLang()
+    window.addEventListener('storage', loadLang)
+    window.addEventListener('tilawa-lang-changed', loadLang)
+    return () => {
+      window.removeEventListener('storage', loadLang)
+      window.removeEventListener('tilawa-lang-changed', loadLang)
+    }
+  }, [])
+
+  const changeLanguage = (code: string) => {
+    setLangCode(code)
+    window.localStorage.setItem('tilawa-quran-lang', code)
+    window.dispatchEvent(new CustomEvent('tilawa-lang-changed'))
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -69,6 +91,28 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
+      {/* Language Selector pinned bottom */}
+      <div className="border-t border-border p-3 pb-0">
+        <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground/80">
+          <span className="flex items-center gap-3 text-muted-foreground">
+            <Languages className="size-4 shrink-0" aria-hidden="true" />
+            Language
+          </span>
+          <select
+            value={langCode}
+            onChange={(e) => changeLanguage(e.target.value)}
+            className="bg-transparent text-xs font-semibold focus:outline-none cursor-pointer pr-1 text-foreground"
+            aria-label="Select Quran translation language"
+          >
+            {QURAN_LANGUAGES.map((l) => (
+              <option key={l.code} value={l.code} className="bg-card text-foreground">
+                {l.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       {/* Settings pinned bottom */}
       <div className="border-t border-border p-3">
         <Link
@@ -93,7 +137,28 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
+  const [langCode, setLangCode] = useState(DEFAULT_LANGUAGE)
   const pathname = usePathname()
+
+  useEffect(() => {
+    const loadLang = () => {
+      const saved = window.localStorage.getItem('tilawa-quran-lang')
+      if (saved && QURAN_LANGUAGES.some((l) => l.code === saved)) setLangCode(saved)
+    }
+    loadLang()
+    window.addEventListener('storage', loadLang)
+    window.addEventListener('tilawa-lang-changed', loadLang)
+    return () => {
+      window.removeEventListener('storage', loadLang)
+      window.removeEventListener('tilawa-lang-changed', loadLang)
+    }
+  }, [])
+
+  const changeLanguage = (code: string) => {
+    setLangCode(code)
+    window.localStorage.setItem('tilawa-quran-lang', code)
+    window.dispatchEvent(new CustomEvent('tilawa-lang-changed'))
+  }
 
   // Close the mobile drawer on route change
   useEffect(() => {
@@ -119,15 +184,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           />
           <span className="font-serif text-lg font-bold tracking-[0.2em] text-primary">TILAWA</span>
         </Link>
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-label={open ? 'Close menu' : 'Open menu'}
-          className="rounded-md border border-border p-2 text-foreground hover:bg-muted"
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+        
+        <div className="flex items-center gap-2">
+          {/* Mobile Language Selector */}
+          <div className="flex items-center rounded-md border border-border bg-card px-2 py-1 text-sm text-foreground">
+            <Languages className="mr-1 size-3.5 text-muted-foreground" aria-hidden="true" />
+            <select
+              value={langCode}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="bg-transparent text-xs font-semibold focus:outline-none cursor-pointer text-foreground pr-1"
+              aria-label="Select Quran translation language"
+            >
+              {QURAN_LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code} className="bg-card text-foreground">
+                  {l.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            className="rounded-md border border-border p-2 text-foreground hover:bg-muted"
+          >
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile drawer */}
