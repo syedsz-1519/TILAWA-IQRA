@@ -1,0 +1,151 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+import { Menu, X } from 'lucide-react'
+import { navGroups, settingsItem } from '@/lib/navigation'
+import { ThemeToggle } from '@/components/theme-toggle'
+
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+  const pathname = usePathname()
+
+  return (
+    <div className="flex h-full flex-col">
+      {/* Brand */}
+      <div className="border-b border-border px-5 py-5">
+        <Link href="/" onClick={onNavigate} className="flex items-center gap-3">
+          <Image
+            src="/images/tilawa-logo.jpeg"
+            alt="TILAWA logo - a rehal Quran stand"
+            width={44}
+            height={44}
+            className="size-11 shrink-0 rounded-lg object-cover"
+          />
+          <span className="min-w-0">
+            <span className="block font-serif text-xl font-bold tracking-[0.2em] text-primary">
+              TILAWA
+            </span>
+            <span className="mt-0.5 block text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
+              From Iqra to Tilawa
+            </span>
+          </span>
+        </Link>
+      </div>
+
+      {/* Groups */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Main navigation">
+        {navGroups.map((group) => (
+          <div key={group.label} className="mb-5">
+            <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              {group.label}
+            </p>
+            <ul className="flex flex-col gap-0.5">
+              {group.items.map((item) => {
+                const active =
+                  item.href !== '/#listen' &&
+                  (pathname === item.href || pathname.startsWith(item.href + '/'))
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      onClick={onNavigate}
+                      aria-current={active ? 'page' : undefined}
+                      className={`flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition-colors ${
+                        active
+                          ? 'border border-primary/40 bg-primary/10 font-medium text-primary'
+                          : 'border border-transparent text-foreground/80 hover:bg-muted hover:text-foreground'
+                      }`}
+                    >
+                      <item.icon className="size-4 shrink-0" aria-hidden="true" />
+                      {item.title}
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        ))}
+      </nav>
+
+      {/* Settings pinned bottom */}
+      <div className="border-t border-border p-3">
+        <Link
+          href={settingsItem.href}
+          onClick={onNavigate}
+          className={`flex items-center justify-between rounded-lg border px-3 py-2.5 text-sm transition-colors ${
+            pathname === settingsItem.href
+              ? 'border-primary/40 bg-primary/10 font-medium text-primary'
+              : 'border-border text-foreground/80 hover:bg-muted hover:text-foreground'
+          }`}
+        >
+          <span className="flex items-center gap-3">
+            <settingsItem.icon className="size-4" aria-hidden="true" />
+            Settings
+          </span>
+          <ThemeToggle />
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+
+  // Close the mobile drawer on route change
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
+
+  return (
+    <div className="flex min-h-dvh">
+      {/* Desktop sidebar */}
+      <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 border-r border-border bg-card lg:block">
+        <SidebarContent />
+      </aside>
+
+      {/* Mobile top bar */}
+      <div className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-border bg-background/95 px-4 py-3 backdrop-blur lg:hidden">
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image
+            src="/images/tilawa-logo.jpeg"
+            alt="TILAWA logo"
+            width={32}
+            height={32}
+            className="size-8 rounded-md object-cover"
+          />
+          <span className="font-serif text-lg font-bold tracking-[0.2em] text-primary">TILAWA</span>
+        </Link>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          className="rounded-md border border-border p-2 text-foreground hover:bg-muted"
+        >
+          {open ? <X className="size-5" /> : <Menu className="size-5" />}
+        </button>
+      </div>
+
+      {/* Mobile drawer */}
+      {open && (
+        <div className="fixed inset-0 z-30 lg:hidden">
+          <div
+            className="absolute inset-0 bg-foreground/40"
+            aria-hidden="true"
+            onClick={() => setOpen(false)}
+          />
+          <div className="absolute inset-y-0 left-0 w-72 max-w-[85vw] border-r border-border bg-card pt-14 shadow-xl">
+            <SidebarContent onNavigate={() => setOpen(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* Main content */}
+      <main className="min-w-0 flex-1 pt-14 lg:pt-0">{children}</main>
+    </div>
+  )
+}
