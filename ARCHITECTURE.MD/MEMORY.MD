@@ -62,14 +62,23 @@ The relational schema is configured via Drizzle ORM in PostgreSQL:
 
 - **Uthmani Quran Script**: Sourced via jsDelivr:
   `https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quranuthmanihaf/{surah}.json`
-- **Translations**: Sourced by edition:
-  `https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/{edition}/{surah}.json`
+- **Translations**: Sourced by edition from jsDelivr:
+  - English: `eng-abdullahyusufal`
+  - Urdu: `urd-abulaalamaududi`
+  - Roman Urdu: `urd-abulaalamaududi-la`
+  - Hindi: `hin-suhelfarooqkhan-la`
+  - Telugu: `tel-aburida-la`
+  - Marathi: `mar-muhammadshafi-la`
+  - Tamil: `tam-janturstfoundation-la`
+  - Malayalam: `mal-abdulhameed-la`
+  - Gujarati: `guj-rabilaalomari-la`
+  - Assamese: `asm-shaykhrafeequli-la`
 - **Sheikh Yasser Al-Dosari (Surah Audio)**:
   `https://server11.mp3quran.net/yasser/{surah}.mp3` (e.g. `001.mp3`)
 - **Sheikh Yasser Al-Dosari (Ayah Audio)**:
   `https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/{surah}{ayah}.mp3`
 - **Urdu Translation Audio (Shamshad Ali Khan)**:
-  `https://everyayah.com/data/translations/urdu_shamshad_ali_khan_46kbps/{surah}{ayah}.mp3`
+  `https://everyayah.com/data/translations/urdu_shamshad_ali_khan_46kbps/{surah}{ayah}.mp3` (plays interleaved in Urdu and Roman Urdu modes)
 
 ---
 

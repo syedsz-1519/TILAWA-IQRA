@@ -26,15 +26,26 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
   const [langCode, setLangCode] = useState(DEFAULT_LANGUAGE)
   const language = getLanguage(langCode)
 
-  // Load saved language preference
+  // Load saved language preference & listen to global changes
   useEffect(() => {
-    const saved = window.localStorage.getItem(LANG_STORAGE_KEY)
-    if (saved && QURAN_LANGUAGES.some((l) => l.code === saved)) setLangCode(saved)
+    const loadLang = () => {
+      const saved = window.localStorage.getItem(LANG_STORAGE_KEY)
+      if (saved && QURAN_LANGUAGES.some((l) => l.code === saved)) setLangCode(saved)
+    }
+    loadLang()
+
+    window.addEventListener('storage', loadLang)
+    window.addEventListener('tilawa-lang-changed', loadLang)
+    return () => {
+      window.removeEventListener('storage', loadLang)
+      window.removeEventListener('tilawa-lang-changed', loadLang)
+    }
   }, [])
 
   const changeLanguage = (code: string) => {
     setLangCode(code)
     window.localStorage.setItem(LANG_STORAGE_KEY, code)
+    window.dispatchEvent(new CustomEvent('tilawa-lang-changed'))
   }
 
   const { data: arabic } = useSWR<ChapterResponse>(arabicUrl(surah.number), fetcher)

@@ -48,9 +48,9 @@ This document details the granular 15-phase engineering plan for **TILAWA**.
 - **Tasks**:
   - [x] Configure fawazahmed0/quran-api jsDelivr CDN endpoint fetchers.
   - [x] Integrate Uthmani script loading hooks.
-  - [x] Implement multi-language translations registry (English + Urdu).
+  - [x] Implement multi-language translations registry (English, Urdu, Roman Urdu, Hindi, Telugu, Marathi, Tamil, Malayalam, Gujarati, Assamese).
   - [x] Script verification checksum routines to ensure text data integrity.
-- **Deliverable**: API handlers that dynamically load correct Uthmani script and translations.
+- **Deliverable**: API handlers that dynamically load correct Uthmani script and translations including Indian regional dialects.
 - **Acceptance**: 6,236 ayat verify successfully against Tanzil reference checksums.
 
 ---

@@ -7,6 +7,7 @@
 ### NOW (Quarter 1) — Foundation & Listening
 **Theme: "Read and listen beautifully."**
 - Mushaf reader (Uthmani script, translations, bookmarks)
+- Multilingual Indian language support (Hindi, Telugu, Marathi, Tamil, Malayalam, Gujarati, Assamese, Urdu, Roman Urdu) integrated on home screen and reader.
 - Recitation listening with Yasser Al-Dosari (full-surah streaming, loop, speed, background play)
 - Reciter registry (architecture ready for multiple qaris)
 - Accounts, profiles, daily streaks

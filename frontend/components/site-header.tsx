@@ -1,20 +1,42 @@
 'use client'
 
-import { BookOpen, Menu, X } from 'lucide-react'
+import { BookOpen, Languages, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { navItems, settingsItem } from '@/lib/navigation'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { cn } from '@/lib/utils'
+import { QURAN_LANGUAGES, DEFAULT_LANGUAGE } from '@/lib/quran-languages'
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
+  const [langCode, setLangCode] = useState(DEFAULT_LANGUAGE)
   const pathname = usePathname()
 
   useEffect(() => {
     setOpen(false)
   }, [pathname])
+
+  useEffect(() => {
+    const loadLang = () => {
+      const saved = window.localStorage.getItem('tilawa-quran-lang')
+      if (saved && QURAN_LANGUAGES.some((l) => l.code === saved)) setLangCode(saved)
+    }
+    loadLang()
+    window.addEventListener('storage', loadLang)
+    window.addEventListener('tilawa-lang-changed', loadLang)
+    return () => {
+      window.removeEventListener('storage', loadLang)
+      window.removeEventListener('tilawa-lang-changed', loadLang)
+    }
+  }, [])
+
+  const changeLanguage = (code: string) => {
+    setLangCode(code)
+    window.localStorage.setItem('tilawa-quran-lang', code)
+    window.dispatchEvent(new CustomEvent('tilawa-lang-changed'))
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
@@ -56,7 +78,25 @@ export function SiteHeader() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
+          {/* Global Language Selector */}
+          <div className="relative flex items-center rounded-md border border-border bg-card px-2 py-1 text-sm text-foreground hover:bg-muted transition-colors">
+            <Languages className="mr-1.5 size-4 text-muted-foreground" aria-hidden="true" />
+            <select
+              value={langCode}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="appearance-none bg-transparent pr-4 font-medium focus:outline-none cursor-pointer text-xs"
+              aria-label="Select Quran translation language"
+            >
+              {QURAN_LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code} className="bg-card text-foreground">
+                  {l.label}
+                </option>
+              ))}
+            </select>
+            <span className="absolute right-2 pointer-events-none text-muted-foreground text-[10px]">▼</span>
+          </div>
+
           <ThemeToggle />
           <button
             type="button"
