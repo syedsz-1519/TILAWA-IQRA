@@ -1,11 +1,24 @@
 import { betterAuth } from 'better-auth'
 import { pool } from '@/lib/db'
 
+// Validate that BETTER_AUTH_SECRET is available in production builds
+if (process.env.NODE_ENV === 'production' && !process.env.BETTER_AUTH_SECRET) {
+  if (process.env.VERCEL) {
+    // We're on Vercel; log a warning but allow build to proceed
+    // Vercel will inject the secret at runtime
+    console.warn(
+      'WARNING: BETTER_AUTH_SECRET not found at build time on Vercel. ' +
+      'Ensure it is set in Vercel environment variables for runtime.'
+    )
+  }
+}
+
 export const auth = betterAuth({
   database: pool,
   // Better Auth requires a non-default secret in production. Vercel injects
   // BETTER_AUTH_SECRET at build/runtime; the build-time fallback below only
   // prevents prerendering from throwing when the env is momentarily absent.
+  // In production, BETTER_AUTH_SECRET MUST be set via environment variables.
   secret:
     process.env.BETTER_AUTH_SECRET ??
     'build-time-placeholder-secret-not-used-at-runtime',

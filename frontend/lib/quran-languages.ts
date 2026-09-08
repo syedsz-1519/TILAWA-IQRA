@@ -54,6 +54,26 @@ export const QURAN_LANGUAGES: QuranLanguage[] = [
     api: 'alquran',
     note: 'Kanzul Imaan',
   },
+  {
+    code: 'hi-kanzuliman',
+    label: 'Kanzul Imaan (Hindi)',
+    nativeLabel: 'कनज़ुल ईमान',
+    edition: 'hin-kanzuliman',
+    direction: 'ltr',
+    translator: "A'la Hazrat Imam Ahmad Raza Khan",
+    api: 'alquran',
+    note: 'Kanzul Imaan',
+  },
+  {
+    code: 'bn-kanzuliman',
+    label: 'Kanzul Imaan (Bengali)',
+    nativeLabel: 'কানজুল ঈমান',
+    edition: 'ben-kanzuliman',
+    direction: 'ltr',
+    translator: "A'la Hazrat Imam Ahmad Raza Khan",
+    api: 'alquran',
+    note: 'Kanzul Imaan',
+  },
   // ----- Urdu family -----
   {
     code: 'ur-roman',
