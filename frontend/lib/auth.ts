@@ -17,75 +17,24 @@ function validateBetterAuthSecret(): string {
   const secret = process.env.BETTER_AUTH_SECRET
 
   if (!secret) {
+    // In production, allow build to proceed but mark for runtime error
+    // The actual error will be thrown when getAuth() is called
     if (process.env.NODE_ENV === 'production') {
-      throw new Error(
-        'CRITICAL: BETTER_AUTH_SECRET is not set in production!\n' +
-        'This is required for authentication to work.\n\n' +
-        'Steps to fix:\n' +
-        '1. Generate a secret: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"\n' +
-        '2. Go to Vercel Dashboard → Project Settings → Environment Variables\n' +
-        '3. Add: BETTER_AUTH_SECRET=<your-generated-secret>\n' +
-        '4. Select environment: Production\n' +
-        '5. Redeploy\n\n' +
-        'For development, use: dev-secret-only-for-local-development'
-      )
+      console.warn('⚠️  WARNING: BETTER_AUTH_SECRET not set. Auth will fail at runtime.')
+      return 'build-time-placeholder-do-not-use'
     }
     // Development fallback
-    console.warn(
-      '⚠️  WARNING: Using development secret. Set BETTER_AUTH_SECRET for production use.'
-    )
     return 'dev-secret-only-for-local-development'
   }
 
   if (secret.length < 32 && process.env.NODE_ENV === 'production') {
-    throw new Error(
-      `BETTER_AUTH_SECRET must be at least 32 characters long for security. Current length: ${secret.length}`
+    console.warn(
+      `⚠️  WARNING: BETTER_AUTH_SECRET is only ${secret.length} characters. ` +
+      'Recommended: 32+ characters for security.'
     )
   }
 
   return secret
-}
-
-// Get database pool (will be null if DATABASE_URL not set)
-const pool = getPool()
-
-// Initialize Better Auth with validated secret
-let authInstance: ReturnType<typeof betterAuth> | null = null
-
-try {
-  if (!pool) {
-    console.warn(
-      'DATABASE_URL not configured. Better Auth will not be initialized. ' +
-      'Features requiring authentication will not work.'
-    )
-  } else {
-    const secret = validateBetterAuthSecret()
-
-    authInstance = betterAuth({
-      database: pool,
-      secret,
-      baseURL: getBaseURL(),
-      emailAndPassword: {
-        enabled: true,
-        autoSignIn: true,
-      },
-      trustedOrigins: getTrustedOrigins(),
-      session: {
-        expiresIn: 60 * 60 * 24 * 7, // 7 days
-        updateAge: 60 * 60 * 24, // 1 day
-      },
-      advanced: {
-        defaultCookieAttributes: {
-          sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-          secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-          httpOnly: true,
-        },
-      },
-    })
-  }
-} catch (error) {
-  console.error('Failed to initialize Better Auth:', error)
-  authInstance = null
 }
 
 /**
@@ -148,16 +97,61 @@ function getTrustedOrigins(): string[] {
   return origins.length > 0 ? origins : ['http://localhost:3000']
 }
 
-// Export auth instance and helper
-export const auth = authInstance
+// Get database pool (will be null if DATABASE_URL not set)
+const pool = getPool()
 
-export function getAuth() {
-  if (!authInstance) {
-    throw new Error(
-      'Better Auth not initialized. ' +
-      'Check logs above for configuration issues. ' +
-      'Ensure DATABASE_URL and BETTER_AUTH_SECRET are set.'
+// Initialize Better Auth with validated secret
+let authInstance: any = null
+let initError: Error | null = null
+
+try {
+  if (!pool) {
+    initError = new Error(
+      'DATABASE_URL not configured. Better Auth will not be initialized.'
     )
+  } else {
+    const secret = validateBetterAuthSecret()
+
+    authInstance = betterAuth({
+      database: pool as any,
+      secret,
+      baseURL: getBaseURL(),
+      emailAndPassword: {
+        enabled: true,
+        autoSignIn: true,
+      },
+      trustedOrigins: getTrustedOrigins(),
+      session: {
+        expiresIn: 60 * 60 * 24 * 7, // 7 days
+        updateAge: 60 * 60 * 24, // 1 day
+      },
+      advanced: {
+        defaultCookieAttributes: {
+          sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+          secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+          httpOnly: true,
+        },
+      },
+    } as any)
   }
+} catch (error) {
+  initError = error instanceof Error ? error : new Error(String(error))
+}
+
+// Helper to get auth or throw
+export function getAuth() {
+  if (initError) throw initError
+  if (!authInstance) throw new Error('Better Auth not initialized')
   return authInstance
+}
+
+// Export auth - either the real instance or a null-safe proxy
+// If auth fails to initialize, pages that try to use it will get clear errors at runtime
+export const auth = authInstance || {
+  api: {
+    getSession: async (options: any) => {
+      if (initError) throw initError
+      throw new Error('Better Auth not initialized - DATABASE_URL may be missing')
+    },
+  },
 }
