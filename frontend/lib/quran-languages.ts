@@ -2,6 +2,9 @@
 // Editions served free from the fawazahmed0/quran-api CDN (jsDelivr).
 // English is the default; more Indian languages are added one by one.
 
+/** Which upstream API serves a translation edition. */
+export type TranslationApi = 'fawazahmed' | 'alquran'
+
 export interface QuranLanguage {
   /** Internal code used in the UI */
   code: string
@@ -9,12 +12,16 @@ export interface QuranLanguage {
   label: string
   /** Native/label script name */
   nativeLabel: string
-  /** Edition ID on the fawazahmed0 quran-api CDN */
+  /** Edition ID (fawazahmed0 CDN slug, or alquran.cloud identifier) */
   edition: string
   /** Text direction of the translation */
   direction: 'ltr' | 'rtl'
   /** Translator credit */
   translator: string
+  /** Source API for this edition. Defaults to fawazahmed. */
+  api?: TranslationApi
+  /** Optional short note shown under the language (e.g. school of thought) */
+  note?: string
 }
 
 export const QURAN_LANGUAGES: QuranLanguage[] = [
@@ -26,6 +33,28 @@ export const QURAN_LANGUAGES: QuranLanguage[] = [
     direction: 'ltr',
     translator: 'Abdullah Yusuf Ali',
   },
+  // ----- Kanzul Imaan (Aala Hazrat Imam Ahmad Raza Khan) -----
+  {
+    code: 'ur-kanzuliman',
+    label: 'Kanzul Imaan (Urdu)',
+    nativeLabel: '\u06a9\u0646\u0632 \u0627\u0644\u0627\u06cc\u0645\u0627\u0646',
+    edition: 'ur.kanzuliman',
+    direction: 'rtl',
+    translator: "A'la Hazrat Imam Ahmad Raza Khan",
+    api: 'alquran',
+    note: 'Kanzul Imaan',
+  },
+  {
+    code: 'en-kanzuliman',
+    label: 'Kanzul Imaan (English)',
+    nativeLabel: 'Kanzul Imaan',
+    edition: 'en.ahmedraza',
+    direction: 'ltr',
+    translator: "A'la Hazrat Ahmad Raza Khan, tr. Prof. Shah Faridul Haque",
+    api: 'alquran',
+    note: 'Kanzul Imaan',
+  },
+  // ----- Urdu family -----
   {
     code: 'ur-roman',
     label: 'Roman Urdu',
@@ -42,6 +71,7 @@ export const QURAN_LANGUAGES: QuranLanguage[] = [
     direction: 'rtl',
     translator: 'Fateh Muhammad Jalandhri',
   },
+  // ----- Indian languages -----
   {
     code: 'hi',
     label: 'Hindi',
@@ -49,6 +79,14 @@ export const QURAN_LANGUAGES: QuranLanguage[] = [
     edition: 'hin-suhelfarooqkhan-la',
     direction: 'ltr',
     translator: 'Suhel Farooq Khan',
+  },
+  {
+    code: 'bn',
+    label: 'Bengali',
+    nativeLabel: 'বাংলা',
+    edition: 'ben-muhiuddinkhan-la',
+    direction: 'ltr',
+    translator: 'Muhiuddin Khan',
   },
   {
     code: 'te',
@@ -98,6 +136,47 @@ export const QURAN_LANGUAGES: QuranLanguage[] = [
     direction: 'ltr',
     translator: 'Shaykh Rafeequl Islam Habibur Rahman',
   },
+  // ----- World languages -----
+  {
+    code: 'fr',
+    label: 'French',
+    nativeLabel: 'Français',
+    edition: 'fra-muhammadhamidul-la',
+    direction: 'ltr',
+    translator: 'Muhammad Hamidullah',
+  },
+  {
+    code: 'es',
+    label: 'Spanish',
+    nativeLabel: 'Español',
+    edition: 'spa-muhammadisagarc-la',
+    direction: 'ltr',
+    translator: 'Muhammad Isa García',
+  },
+  {
+    code: 'tr',
+    label: 'Turkish',
+    nativeLabel: 'Türkçe',
+    edition: 'tur-diyanetisleri-la',
+    direction: 'ltr',
+    translator: 'Diyanet İşleri',
+  },
+  {
+    code: 'ru',
+    label: 'Russian',
+    nativeLabel: 'Русский',
+    edition: 'rus-elmirkuliev-la',
+    direction: 'ltr',
+    translator: 'Elmir Kuliev',
+  },
+  {
+    code: 'zh',
+    label: 'Chinese',
+    nativeLabel: '中文',
+    edition: 'zho-majian-la',
+    direction: 'ltr',
+    translator: 'Ma Jian',
+  },
 ]
 
 export const DEFAULT_LANGUAGE = 'en'
@@ -113,9 +192,39 @@ export function arabicUrl(surah: number) {
   return `${CDN_BASE}/editions/ara-quranuthmanihaf/${surah}.json`
 }
 
-/** Translation text for a surah in the given edition */
-export function translationUrl(edition: string, surah: number) {
-  return `${CDN_BASE}/editions/${edition}/${surah}.json`
+/** Translation text URL for a surah in the given language edition. */
+export function translationUrl(lang: QuranLanguage, surah: number) {
+  if (lang.api === 'alquran') {
+    return `https://api.alquran.cloud/v1/surah/${surah}/${lang.edition}`
+  }
+  return `${CDN_BASE}/editions/${lang.edition}/${surah}.json`
+}
+
+/**
+ * Fetch a translation and normalize either API shape into ChapterResponse.
+ * - fawazahmed0 returns `{ chapter: [{ chapter, verse, text }] }`
+ * - alquran.cloud returns `{ data: { number, ayahs: [{ numberInSurah, text }] } }`
+ */
+export async function fetchTranslation(url: string): Promise<ChapterResponse> {
+  const res = await fetch(url)
+  const json = await res.json()
+
+  if (Array.isArray(json?.chapter)) {
+    return json as ChapterResponse
+  }
+
+  if (Array.isArray(json?.data?.ayahs)) {
+    const chapterNo = json.data.number as number
+    return {
+      chapter: json.data.ayahs.map((a: { numberInSurah: number; text: string }) => ({
+        chapter: chapterNo,
+        verse: a.numberInSurah,
+        text: a.text,
+      })),
+    }
+  }
+
+  return { chapter: [] }
 }
 
 /** Per-ayah recitation by Sheikh Yasser Ad-Dussary (everyayah.com) */

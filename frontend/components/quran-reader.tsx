@@ -20,6 +20,7 @@ import {
   getLanguage,
   arabicUrl,
   translationUrl,
+  fetchTranslation,
   ayahAudioUrl,
   urduTranslationAudioUrl,
   hasTranslationAudio,
@@ -82,8 +83,8 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
 
   const { data: arabic } = useSWR<ChapterResponse>(arabicUrl(surah.number), fetcher)
   const { data: translation } = useSWR<ChapterResponse>(
-    mode === 'translation' ? translationUrl(language.edition, surah.number) : null,
-    fetcher,
+    mode === 'translation' ? translationUrl(language, surah.number) : null,
+    fetchTranslation,
   )
 
   // Per-ayah read-along audio (Arabic recitation, then optional Urdu translation - Islam360 style)
@@ -363,8 +364,11 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
 
           {/* Translator credit */}
           <p className="mt-8 text-center text-xs text-muted-foreground">
-            Translation: {language.translator} &middot; Recitation: Sheikh Yasser Ad-Dussary
-            {hasTranslationAudio(langCode) && ' \u00b7 Urdu audio: Shamshad Ali Khan'}
+            {language.note ? `${language.note} \u2014 ` : 'Translation: '}
+            {language.translator} &middot; Recitation: Sheikh Yasser Ad-Dussary
+            {mode === 'translation' &&
+              hasTranslationAudio(langCode) &&
+              ' \u00b7 Urdu audio: Shamshad Ali Khan'}
           </p>
         </>
       )}

@@ -7,7 +7,7 @@ import { SURAHS } from '@/lib/quran'
 export const metadata: Metadata = {
   title: 'Read Quran - TILAWA',
   description:
-    'Read the Holy Quran with Arabic text and translations in English, Roman Urdu, Urdu and more. Follow along with the recitation of Sheikh Yasser Ad-Dussary.',
+    'Read the Holy Quran with Arabic text and translations in 18+ languages including Kanzul Imaan, English, Roman Urdu, Urdu, Hindi, Bengali, Tamil and more. Follow along with the recitation of Sheikh Yasser Ad-Dussary.',
 }
 
 export default function ReadQuranPage() {
