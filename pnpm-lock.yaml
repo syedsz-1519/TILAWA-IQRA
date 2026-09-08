@@ -9,7 +9,7 @@ importers:
   .:
     devDependencies:
       typescript:
-        specifier: ^5.0.0
+        specifier: 5.7.3
         version: 5.7.3
 
   frontend:
