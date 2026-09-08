@@ -246,7 +246,7 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
             >
               {QURAN_LANGUAGES.map((l) => (
                 <option key={l.code} value={l.code}>
-                  {l.label}
+                  {l.label === l.nativeLabel ? l.label : `${l.label} — ${l.nativeLabel}`}
                 </option>
               ))}
             </select>

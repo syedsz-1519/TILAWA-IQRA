@@ -90,7 +90,7 @@ export function SiteHeader() {
             >
               {QURAN_LANGUAGES.map((l) => (
                 <option key={l.code} value={l.code} className="bg-card text-foreground">
-                  {l.label}
+                  {l.label === l.nativeLabel ? l.label : `${l.label} — ${l.nativeLabel}`}
                 </option>
               ))}
             </select>
