@@ -7,7 +7,7 @@ import { SURAHS } from '@/lib/quran'
 export const metadata: Metadata = {
   title: 'Read Quran - TILAWA',
   description:
-    'Read the Holy Quran with Arabic text and translations in English, Roman Urdu, Urdu and more. Follow along with the recitation of Sheikh Yasser Ad-Dussary.',
+    'Read the Holy Quran with Arabic text and translations in 18+ languages including Kanzul Imaan, English, Roman Urdu, Urdu, Hindi, Bengali, Tamil and more. Follow along with the recitation of Sheikh Yasser Ad-Dussary.',
 }
 
 export default function ReadQuranPage() {
@@ -18,7 +18,7 @@ export default function ReadQuranPage() {
           icon={BookOpenText}
           eyebrow="Read Quran"
           title="Recite, read, and understand"
-          description="The complete Holy Quran with Uthmani Arabic script and translations in your own language - English, Roman Urdu, and Urdu, with more Indian languages coming soon. Tap any surah to read verse by verse and follow along with the recitation."
+          description="The complete Holy Quran in Uthmani Arabic script. Switch between Translation mode - each ayah paired with its meaning in English, Roman Urdu, Urdu and more Indian languages - and Arabic-only Mushaf mode to read the pure Arabic and learn to recite. Tap any surah to begin."
         />
         <section className="mx-auto w-full max-w-5xl px-4" aria-label="All surahs">
           <ol className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

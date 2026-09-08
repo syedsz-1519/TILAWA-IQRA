@@ -3,7 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Languages, Pause, Play, Volume2 } from 'lucide-react'
+import {
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Languages,
+  Pause,
+  Play,
+  Type,
+  Volume2,
+} from 'lucide-react'
 import { SURAHS } from '@/lib/quran'
 import {
   QURAN_LANGUAGES,
@@ -11,6 +20,7 @@ import {
   getLanguage,
   arabicUrl,
   translationUrl,
+  fetchTranslation,
   ayahAudioUrl,
   urduTranslationAudioUrl,
   hasTranslationAudio,
@@ -20,25 +30,43 @@ import {
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 const LANG_STORAGE_KEY = 'tilawa-quran-lang'
+const MODE_STORAGE_KEY = 'tilawa-quran-mode'
+
+type ReadingMode = 'translation' | 'arabic'
+
+/** Convert a number to Arabic-Indic digits for verse-end markers. */
+function toArabicDigits(n: number): string {
+  const map = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669']
+  return String(n)
+    .split('')
+    .map((d) => map[Number(d)] ?? d)
+    .join('')
+}
+
+const BISMILLAH =
+  '\u0628\u0650\u0633\u0652\u0645\u0650 \u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0670\u0646\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650'
 
 export function QuranReader({ surahNumber }: { surahNumber: number }) {
   const surah = SURAHS.find((s) => s.number === surahNumber) ?? SURAHS[0]
   const [langCode, setLangCode] = useState(DEFAULT_LANGUAGE)
+  const [mode, setMode] = useState<ReadingMode>('translation')
   const language = getLanguage(langCode)
 
-  // Load saved language preference & listen to global changes
+  // Load saved language + mode preferences & listen to global changes
   useEffect(() => {
-    const loadLang = () => {
-      const saved = window.localStorage.getItem(LANG_STORAGE_KEY)
-      if (saved && QURAN_LANGUAGES.some((l) => l.code === saved)) setLangCode(saved)
+    const loadPrefs = () => {
+      const savedLang = window.localStorage.getItem(LANG_STORAGE_KEY)
+      if (savedLang && QURAN_LANGUAGES.some((l) => l.code === savedLang)) setLangCode(savedLang)
+      const savedMode = window.localStorage.getItem(MODE_STORAGE_KEY)
+      if (savedMode === 'translation' || savedMode === 'arabic') setMode(savedMode)
     }
-    loadLang()
+    loadPrefs()
 
-    window.addEventListener('storage', loadLang)
-    window.addEventListener('tilawa-lang-changed', loadLang)
+    window.addEventListener('storage', loadPrefs)
+    window.addEventListener('tilawa-lang-changed', loadPrefs)
     return () => {
-      window.removeEventListener('storage', loadLang)
-      window.removeEventListener('tilawa-lang-changed', loadLang)
+      window.removeEventListener('storage', loadPrefs)
+      window.removeEventListener('tilawa-lang-changed', loadPrefs)
     }
   }, [])
 
@@ -48,10 +76,15 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
     window.dispatchEvent(new CustomEvent('tilawa-lang-changed'))
   }
 
+  const changeMode = (next: ReadingMode) => {
+    setMode(next)
+    window.localStorage.setItem(MODE_STORAGE_KEY, next)
+  }
+
   const { data: arabic } = useSWR<ChapterResponse>(arabicUrl(surah.number), fetcher)
   const { data: translation } = useSWR<ChapterResponse>(
-    translationUrl(language.edition, surah.number),
-    fetcher,
+    mode === 'translation' ? translationUrl(language, surah.number) : null,
+    fetchTranslation,
   )
 
   // Per-ayah read-along audio (Arabic recitation, then optional Urdu translation - Islam360 style)
@@ -62,7 +95,9 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
   const continueRef = useRef(false)
   const translationAudioRef = useRef(true)
   const langRef = useRef(langCode)
+  const modeRef = useRef(mode)
   langRef.current = langCode
+  modeRef.current = mode
   translationAudioRef.current = translationAudio
 
   const stop = useCallback(() => {
@@ -91,8 +126,12 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
       }
 
       const playTranslationThenAdvance = () => {
-        // After the Arabic recitation, play the Urdu translation audio for this ayah
-        if (translationAudioRef.current && hasTranslationAudio(langRef.current)) {
+        // In Arabic-only mode, skip the translation audio entirely.
+        if (
+          modeRef.current === 'translation' &&
+          translationAudioRef.current &&
+          hasTranslationAudio(langRef.current)
+        ) {
           audio.src = urduTranslationAudioUrl(surah.number, ayah)
           audio.onended = advance
           audio.play().catch(advance)
@@ -127,6 +166,7 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
 
   const verses = arabic?.chapter ?? []
   const translations = translation?.chapter ?? []
+  const showBismillah = surah.number !== 1 && surah.number !== 9
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 pb-32">
@@ -142,7 +182,44 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
             {isPlaying ? 'Stop' : 'Play & follow'}
           </button>
         </div>
-        {hasTranslationAudio(langCode) && (
+
+        {/* Reading mode toggle */}
+        <div
+          role="tablist"
+          aria-label="Reading mode"
+          className="inline-flex items-center rounded-md border border-border bg-card p-0.5"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'translation'}
+            onClick={() => changeMode('translation')}
+            className={`inline-flex items-center gap-1.5 rounded-[calc(var(--radius)*0.6)] px-3 py-1.5 text-sm transition-colors ${
+              mode === 'translation'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Languages className="h-4 w-4" aria-hidden="true" />
+            Translation
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'arabic'}
+            onClick={() => changeMode('arabic')}
+            className={`inline-flex items-center gap-1.5 rounded-[calc(var(--radius)*0.6)] px-3 py-1.5 text-sm transition-colors ${
+              mode === 'arabic'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <BookOpen className="h-4 w-4" aria-hidden="true" />
+            Arabic only
+          </button>
+        </div>
+
+        {mode === 'translation' && hasTranslationAudio(langCode) && (
           <button
             type="button"
             onClick={() => setTranslationAudio((v) => !v)}
@@ -157,91 +234,144 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
             Urdu audio {translationAudio ? 'on' : 'off'}
           </button>
         )}
-        <label className="flex items-center gap-2 text-sm">
-          <Languages className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-          <span className="sr-only">Translation language</span>
-          <select
-            value={langCode}
-            onChange={(e) => changeLanguage(e.target.value)}
-            className="rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
-          >
-            {QURAN_LANGUAGES.map((l) => (
-              <option key={l.code} value={l.code}>
-                {l.label}
-              </option>
-            ))}
-          </select>
-        </label>
+
+        {mode === 'translation' && (
+          <label className="flex items-center gap-2 text-sm">
+            <Languages className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+            <span className="sr-only">Translation language</span>
+            <select
+              value={langCode}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
+            >
+              {QURAN_LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.label === l.nativeLabel ? l.label : `${l.label} — ${l.nativeLabel}`}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
       </div>
 
-      {/* Bismillah (except Surah 1 where it is verse 1, and Surah 9) */}
-      {surah.number !== 1 && surah.number !== 9 && (
-        <p lang="ar" dir="rtl" className="mb-8 text-center text-3xl leading-loose text-primary">
-          {'\u0628\u0650\u0633\u0652\u0645\u0650 \u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0670\u0646\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650'}
-        </p>
-      )}
-
-      {/* Verses */}
       {verses.length === 0 ? (
         <div className="flex flex-col gap-4" aria-busy="true" aria-label="Loading verses">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="h-28 animate-pulse rounded-lg bg-muted" />
           ))}
         </div>
-      ) : (
-        <ol className="flex flex-col gap-2">
-          {verses.map((v) => {
-            const isActive = activeAyah === v.verse
-            const tr = translations.find((t) => t.verse === v.verse)
-            return (
-              <li
-                key={v.verse}
-                id={`ayah-${v.verse}`}
-                className={`rounded-lg border p-5 transition-colors ${
-                  isActive ? 'border-primary bg-primary/5' : 'border-transparent hover:bg-muted/50'
-                }`}
-              >
-                <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-muted px-2 text-xs font-medium text-muted-foreground">
-                    {surah.number}:{v.verse}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => (isActive && isPlaying ? stop() : playAyah(v.verse, false))}
-                    aria-label={
-                      isActive && isPlaying
-                        ? `Stop verse ${v.verse}`
-                        : `Play verse ${v.verse}`
-                    }
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  >
-                    {isActive && isPlaying ? (
-                      <Pause className="h-4 w-4" />
-                    ) : (
-                      <Play className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-                <p lang="ar" dir="rtl" className="mb-4 text-2xl leading-loose text-foreground md:text-3xl md:leading-loose">
-                  {v.text}
-                </p>
-                <p
-                  dir={language.direction}
-                  className={`leading-relaxed text-muted-foreground ${language.direction === 'rtl' ? 'text-right font-serif text-lg' : 'text-pretty'}`}
+      ) : mode === 'arabic' ? (
+        /* ---------- Arabic-only Mushaf page ---------- */
+        <div className="rounded-2xl border border-primary/20 bg-card p-6 shadow-sm ring-1 ring-primary/5 md:p-10">
+          {showBismillah && (
+            <p
+              lang="ar"
+              dir="rtl"
+              className="mb-8 border-b border-primary/15 pb-6 text-center text-3xl leading-loose text-primary md:text-4xl"
+            >
+              {BISMILLAH}
+            </p>
+          )}
+          <p
+            lang="ar"
+            dir="rtl"
+            className="text-right text-[2rem] leading-[2.4] text-foreground md:text-[2.5rem] md:leading-[2.6]"
+            style={{ textAlignLast: 'right' }}
+          >
+            {verses.map((v) => {
+              const isActive = activeAyah === v.verse
+              return (
+                <span
+                  key={v.verse}
+                  id={`ayah-${v.verse}`}
+                  onClick={() => (isActive && isPlaying ? stop() : playAyah(v.verse, false))}
+                  className={`cursor-pointer rounded-md px-1 transition-colors ${
+                    isActive ? 'bg-primary/15 text-primary' : 'hover:bg-muted'
+                  }`}
                 >
-                  {tr?.text ?? '\u2026'}
-                </p>
-              </li>
-            )
-          })}
-        </ol>
-      )}
+                  {v.text}
+                  <span
+                    className="mx-1 inline-flex h-9 w-9 select-none items-center justify-center rounded-full border border-primary/30 text-base text-primary md:h-10 md:w-10"
+                    aria-hidden="true"
+                  >
+                    {toArabicDigits(v.verse)}
+                  </span>{' '}
+                </span>
+              )
+            })}
+          </p>
+          <p className="mt-8 text-center text-xs text-muted-foreground">
+            Uthmani script &middot; Tap any ayah to hear it &middot; Recitation: Sheikh Yasser
+            Ad-Dussary
+          </p>
+        </div>
+      ) : (
+        /* ---------- Translation view ---------- */
+        <>
+          {showBismillah && (
+            <p lang="ar" dir="rtl" className="mb-8 text-center text-3xl leading-loose text-primary">
+              {BISMILLAH}
+            </p>
+          )}
+          <ol className="flex flex-col gap-2">
+            {verses.map((v) => {
+              const isActive = activeAyah === v.verse
+              const tr = translations.find((t) => t.verse === v.verse)
+              return (
+                <li
+                  key={v.verse}
+                  id={`ayah-${v.verse}`}
+                  className={`rounded-lg border p-5 transition-colors ${
+                    isActive ? 'border-primary bg-primary/5' : 'border-transparent hover:bg-muted/50'
+                  }`}
+                >
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-muted px-2 text-xs font-medium text-muted-foreground">
+                      {surah.number}:{v.verse}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => (isActive && isPlaying ? stop() : playAyah(v.verse, false))}
+                      aria-label={
+                        isActive && isPlaying ? `Stop verse ${v.verse}` : `Play verse ${v.verse}`
+                      }
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      {isActive && isPlaying ? (
+                        <Pause className="h-4 w-4" />
+                      ) : (
+                        <Play className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                  <p
+                    lang="ar"
+                    dir="rtl"
+                    className="mb-4 text-2xl leading-loose text-foreground md:text-3xl md:leading-loose"
+                  >
+                    {v.text}
+                  </p>
+                  <p
+                    dir={language.direction}
+                    className={`leading-relaxed text-muted-foreground ${language.direction === 'rtl' ? 'text-right font-serif text-lg' : 'text-pretty'}`}
+                  >
+                    {tr?.text ?? '\u2026'}
+                  </p>
+                </li>
+              )
+            })}
+          </ol>
 
-      {/* Translator credit */}
-      <p className="mt-8 text-center text-xs text-muted-foreground">
-        Translation: {language.translator} &middot; Recitation: Sheikh Yasser Ad-Dussary
-        {hasTranslationAudio(langCode) && ' \u00b7 Urdu audio: Shamshad Ali Khan'}
-      </p>
+          {/* Translator credit */}
+          <p className="mt-8 text-center text-xs text-muted-foreground">
+            {language.note ? `${language.note} \u2014 ` : 'Translation: '}
+            {language.translator} &middot; Recitation: Sheikh Yasser Ad-Dussary
+            {mode === 'translation' &&
+              hasTranslationAudio(langCode) &&
+              ' \u00b7 Urdu audio: Shamshad Ali Khan'}
+          </p>
+        </>
+      )}
 
       {/* Prev / Next surah */}
       <nav className="mt-8 flex items-center justify-between gap-4" aria-label="Surah navigation">
