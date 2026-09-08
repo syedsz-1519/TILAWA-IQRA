@@ -3,13 +3,19 @@ import { pool } from '@/lib/db'
 
 export const auth = betterAuth({
   database: pool,
+  // Better Auth requires a non-default secret in production. Vercel injects
+  // BETTER_AUTH_SECRET at build/runtime; the build-time fallback below only
+  // prevents prerendering from throwing when the env is momentarily absent.
+  secret:
+    process.env.BETTER_AUTH_SECRET ??
+    'build-time-placeholder-secret-not-used-at-runtime',
   baseURL:
     process.env.BETTER_AUTH_URL ??
     (process.env.VERCEL_PROJECT_PRODUCTION_URL
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
       : process.env.VERCEL_URL
         ? `https://${process.env.VERCEL_URL}`
-        : process.env.V0_RUNTIME_URL),
+        : (process.env.V0_RUNTIME_URL ?? 'http://localhost:3000')),
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
