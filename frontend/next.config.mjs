@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: {
-    // Enable strict TypeScript checking for production deployments
-    strict: true,
-  },
+  // TypeScript build errors will now be fatal during build (no more ignoreBuildErrors)
+  // This ensures type safety in production deployments
   images: {
     unoptimized: true,
   },
