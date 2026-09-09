@@ -9,8 +9,11 @@ if (process.env.DATABASE_URL) {
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     // Vercel serverless: set connection timeout and idle timeout
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
+    // Increased to handle cold starts and network latency
+    idleTimeoutMillis: 60000,        // 60 seconds
+    connectionTimeoutMillis: 15000,  // 15 seconds (was 5s, too short)
+    max: 5,                           // Limit connections for serverless
+    min: 1,                           // Maintain minimum connection
   })
 }
 
@@ -34,7 +37,10 @@ export const db = pool ? drizzle(pool, { schema }) : null
 export function getDb() {
   const currentPool = getPool()
   if (!currentPool) {
-    throw new Error('DATABASE_URL not configured. Database operations not available.')
+    throw new Error(
+      'DATABASE_URL not configured. Database operations not available. ' +
+      'Ensure DATABASE_URL is set in Vercel environment variables.'
+    )
   }
   return drizzle(currentPool, { schema })
 }

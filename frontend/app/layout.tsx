@@ -5,7 +5,11 @@ import { PlayerProvider } from '@/components/player/player-provider'
 import { PlayerBar } from '@/components/player/player-bar'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AppShell } from '@/components/app-shell'
+import { logEnvironmentValidation } from '@/lib/env.validation'
 import './globals.css'
+
+// Validate environment variables on app startup
+logEnvironmentValidation()
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
 const amiri = Amiri({

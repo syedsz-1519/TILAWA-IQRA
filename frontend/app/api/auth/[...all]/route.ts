@@ -1,7 +1,34 @@
 import { auth, getAuth } from '@/lib/auth'
 import { toNextJsHandler } from 'better-auth/next-js'
 
-// Get auth instance - will throw if not properly configured
-const authInstance = auth || getAuth()
+let authHandlers: any = null
+let authInitError: Error | null = null
 
-export const { GET, POST } = toNextJsHandler(authInstance.handler)
+try {
+  const authInstance = auth || getAuth()
+  authHandlers = toNextJsHandler(authInstance.handler)
+} catch (error) {
+  authInitError = error instanceof Error ? error : new Error(String(error))
+  console.error('❌ Auth initialization failed:', authInitError.message)
+}
+
+// If auth initialization failed, return error responses
+if (!authHandlers || authInitError) {
+  const errorResponse = new Response(
+    JSON.stringify({
+      error: 'Authentication service unavailable',
+      details: authInitError?.message || 'Auth not initialized',
+      help: 'Ensure DATABASE_URL and BETTER_AUTH_SECRET are set in environment variables',
+    }),
+    {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' },
+    }
+  )
+
+  export const GET = () => errorResponse
+  export const POST = () => errorResponse
+} else {
+  // Auth is properly initialized, export handlers
+  export const { GET, POST } = authHandlers
+}

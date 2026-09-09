@@ -63,7 +63,14 @@ function getBaseURL(): string {
   }
 
   // Local development fallback
-  return 'http://localhost:3000'
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:3000'
+  }
+
+  // Production must have a URL
+  throw new Error(
+    'Cannot determine auth base URL. Set VERCEL_PROJECT_PRODUCTION_URL, VERCEL_URL, or BETTER_AUTH_URL.'
+  )
 }
 
 /**
@@ -92,6 +99,14 @@ function getTrustedOrigins(): string[] {
   // Always allow localhost in development
   if (process.env.NODE_ENV === 'development') {
     origins.push('http://localhost:3000', 'http://localhost:3001')
+  }
+
+  // In production, throw if no origins configured
+  if (origins.length === 0 && process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'No trusted origins configured for authentication. ' +
+      'Set VERCEL_PROJECT_PRODUCTION_URL, VERCEL_URL, or BETTER_AUTH_URL.'
+    )
   }
 
   return origins.length > 0 ? origins : ['http://localhost:3000']
