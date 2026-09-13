@@ -153,20 +153,20 @@ try {
   initError = error instanceof Error ? error : new Error(String(error))
 }
 
-// Helper to get auth or throw
+// Helper to get auth or fallback
 export function getAuth() {
-  if (initError) throw initError
-  if (!authInstance) throw new Error('Better Auth not initialized')
-  return authInstance
+  if (authInstance) return authInstance
+  return {
+    api: {
+      getSession: async () => null,
+    },
+  }
 }
 
 // Export auth - either the real instance or a null-safe proxy
-// If auth fails to initialize, pages that try to use it will get clear errors at runtime
 export const auth = authInstance || {
   api: {
-    getSession: async (options: any) => {
-      if (initError) throw initError
-      throw new Error('Better Auth not initialized - DATABASE_URL may be missing')
-    },
+    getSession: async () => null,
   },
 }
+

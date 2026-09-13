@@ -4,7 +4,11 @@ import { redirect } from 'next/navigation'
 import { AuthForm } from '@/components/auth-form'
 
 export default async function SignInPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (session?.user) redirect('/')
+  try {
+    const session = await auth?.api?.getSession({ headers: await headers() })
+    if (session?.user) redirect('/')
+  } catch {
+    // Continue to render the sign-in form
+  }
   return <AuthForm mode="sign-in" />
 }

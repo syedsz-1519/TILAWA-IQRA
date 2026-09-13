@@ -1,4 +1,3 @@
-import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Geist, Amiri } from 'next/font/google'
 import { PlayerProvider } from '@/components/player/player-provider'
@@ -55,7 +54,6 @@ export default function RootLayout({
             <PlayerBar />
           </PlayerProvider>
         </ThemeProvider>
-        {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
   )
