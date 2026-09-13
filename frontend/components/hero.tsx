@@ -1,12 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { BookOpenText, Headphones, Play } from 'lucide-react'
+import { BookOpenText, Headphones, Pause, Play } from 'lucide-react'
 import { usePlayer } from '@/components/player/player-provider'
-import { SURAHS, DEFAULT_RECITER } from '@/lib/quran'
+import { SURAHS } from '@/lib/quran'
 
 export function Hero() {
-  const { playSurah } = usePlayer()
+  const { playSurah, currentReciter, currentSurah, isPlaying } = usePlayer()
+  const isFatihahPlaying = currentSurah?.number === 1 && isPlaying
 
   return (
     <section className="border-b border-border bg-card">
@@ -23,20 +24,24 @@ export function Hero() {
         </h1>
         <p className="max-w-xl text-pretty leading-relaxed text-muted-foreground">
           Stream the complete Quran in the voice of{' '}
-          <span className="font-medium text-foreground">{DEFAULT_RECITER.nameEnglish}</span>{' '}
+          <span className="font-medium text-foreground">{currentReciter.nameEnglish}</span>{' '}
           <span lang="ar" dir="rtl" className="font-serif">
-            ({DEFAULT_RECITER.nameArabic})
+            ({currentReciter.nameArabic})
           </span>
-          , Imam of Masjid al-Haram — then practice with AI-powered tajweed feedback.
+          {' '}— then practice with AI-powered tajweed feedback.
         </p>
         <div className="flex flex-col items-center gap-3 sm:flex-row">
           <button
             type="button"
             onClick={() => playSurah(SURAHS[0])}
-            className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground shadow-md transition-all hover:opacity-90 active:scale-98"
           >
-            <Play className="size-4" aria-hidden="true" />
-            Play Al-Fatihah
+            {isFatihahPlaying ? (
+              <Pause className="size-4" aria-hidden="true" />
+            ) : (
+              <Play className="size-4" aria-hidden="true" />
+            )}
+            {isFatihahPlaying ? 'Pause Al-Fatihah' : 'Play Al-Fatihah'}
           </button>
           <Link
             href="/read"
@@ -54,7 +59,7 @@ export function Hero() {
           </a>
         </div>
         <p className="text-xs text-muted-foreground">
-          Riwayah: {DEFAULT_RECITER.riwayah} · Free forever · No ads
+          Riwayah: {currentReciter.riwayah} · Free forever · No ads
         </p>
       </div>
     </section>

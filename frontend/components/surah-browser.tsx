@@ -1,13 +1,14 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Pause, Play, Search } from 'lucide-react'
+import { BookOpen, Pause, Play, Search } from 'lucide-react'
+import Link from 'next/link'
 import { usePlayer } from '@/components/player/player-provider'
 import { SURAHS } from '@/lib/quran'
 
 export function SurahBrowser() {
   const [query, setQuery] = useState('')
-  const { currentSurah, isPlaying, playSurah } = usePlayer()
+  const { currentSurah, isPlaying, playSurah, currentReciter } = usePlayer()
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -27,7 +28,7 @@ export function SurahBrowser() {
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">The Noble Quran</h2>
           <p className="mt-1 leading-relaxed text-muted-foreground">
-            114 surahs recited by Yasser Al-Dosari. Tap any surah to listen.
+            114 surahs recited by {currentReciter.nameEnglish}. Tap to listen or read.
           </p>
         </div>
         <div className="relative w-full sm:w-72">
@@ -93,12 +94,17 @@ export function SurahBrowser() {
                         {surah.nameArabic}
                       </span>
                     </span>
-                    <span className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="truncate">{surah.nameTranslated}</span>
-                      <span aria-hidden="true">·</span>
-                      <span className="shrink-0">{surah.ayahCount} ayat</span>
-                      <span aria-hidden="true">·</span>
-                      <span className="shrink-0">{surah.revelationPlace}</span>
+                    <span className="mt-0.5 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                      <span className="truncate">{surah.nameTranslated} · {surah.ayahCount} ayat</span>
+                      <Link
+                        href={`/read/${surah.number}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium text-primary hover:bg-primary/10 transition-colors"
+                        title={`Read Surah ${surah.nameTransliterated}`}
+                      >
+                        <BookOpen className="size-3" />
+                        <span>Read</span>
+                      </Link>
                     </span>
                   </span>
                 </button>

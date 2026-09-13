@@ -7,6 +7,7 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
+  Headphones,
   Languages,
   Pause,
   Play,
@@ -14,6 +15,7 @@ import {
   Volume2,
 } from 'lucide-react'
 import { SURAHS } from '@/lib/quran'
+import { usePlayer } from '@/components/player/player-provider'
 import {
   QURAN_LANGUAGES,
   DEFAULT_LANGUAGE,
@@ -48,6 +50,7 @@ const BISMILLAH =
 
 export function QuranReader({ surahNumber }: { surahNumber: number }) {
   const surah = SURAHS.find((s) => s.number === surahNumber) ?? SURAHS[0]
+  const { playSurah } = usePlayer()
   const [langCode, setLangCode] = useState(DEFAULT_LANGUAGE)
   const [mode, setMode] = useState<ReadingMode>('translation')
   const language = getLanguage(langCode)
@@ -109,6 +112,11 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
 
   const playAyah = useCallback(
     (ayah: number, continueToEnd: boolean) => {
+      // Pause global surah audio if playing
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('tilawa-stop-global-audio'))
+      }
+
       if (!audioRef.current) {
         audioRef.current = new Audio()
         audioRef.current.preload = 'auto'
@@ -134,6 +142,7 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
         ) {
           audio.src = urduTranslationAudioUrl(surah.number, ayah)
           audio.onended = advance
+          audio.onerror = advance // If translation audio has a glitch, still advance
           audio.play().catch(advance)
         } else {
           advance()
@@ -142,6 +151,10 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
 
       audio.src = ayahAudioUrl(surah.number, ayah)
       audio.onended = playTranslationThenAdvance
+      audio.onerror = () => {
+        console.warn(`Could not load audio for ayah ${ayah}, trying next...`)
+        advance()
+      }
       audio
         .play()
         .then(() => {
@@ -156,13 +169,20 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
     [surah.number, surah.ayahCount],
   )
 
-  // Stop audio when leaving the page
+  // Stop audio when leaving the page or when global player requests pause
   useEffect(() => {
+    const onStopVerse = () => stop()
+    if (typeof window !== 'undefined') {
+      window.addEventListener('tilawa-stop-verse-audio', onStopVerse)
+    }
     return () => {
       audioRef.current?.pause()
       continueRef.current = false
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('tilawa-stop-verse-audio', onStopVerse)
+      }
     }
-  }, [])
+  }, [stop])
 
   const verses = arabic?.chapter ?? []
   const translations = translation?.chapter ?? []
@@ -176,10 +196,19 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
           <button
             type="button"
             onClick={() => (isPlaying ? stop() : playAyah(1, true))}
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
           >
             {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
             {isPlaying ? 'Stop' : 'Play & follow'}
+          </button>
+          <button
+            type="button"
+            onClick={() => playSurah(surah)}
+            className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3.5 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/50 hover:bg-muted"
+            title="Listen to full surah recitation"
+          >
+            <Headphones className="h-4 w-4 text-primary" />
+            <span className="hidden sm:inline">Full Surah</span>
           </button>
         </div>
 

@@ -17,7 +17,14 @@ const speedOptions = [0.75, 1, 1.25, 1.5]
 
 export function SettingsPanel() {
   const { theme, setTheme } = useTheme()
-  const { playbackRate, setPlaybackRate, repeat, toggleRepeat } = usePlayer()
+  const {
+    playbackRate,
+    setPlaybackRate,
+    repeat,
+    toggleRepeat,
+    currentReciter,
+    setReciter,
+  } = usePlayer()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -136,26 +143,47 @@ export function SettingsPanel() {
           The voice of your recitation experience.
         </p>
         <ul className="mt-4 flex flex-col gap-2">
-          {RECITERS.map((reciter) => (
-            <li
-              key={reciter.id}
-              className="flex items-center justify-between gap-3 rounded-lg border border-primary bg-primary/5 p-4"
-            >
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">{reciter.nameEnglish}</span>
-                <span lang="ar" dir="rtl" className="text-sm text-primary">
-                  {reciter.nameArabic}
-                </span>
-              </div>
-              <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
-                Active
-              </span>
-            </li>
-          ))}
+          {RECITERS.map((reciter) => {
+            const isSelected = currentReciter.id === reciter.id
+            return (
+              <li key={reciter.id}>
+                <button
+                  type="button"
+                  onClick={() => setReciter(reciter)}
+                  className={cn(
+                    'flex w-full items-center justify-between gap-3 rounded-lg border p-4 text-start transition-colors',
+                    isSelected
+                      ? 'border-primary bg-primary/10 shadow-sm'
+                      : 'border-border bg-background hover:border-primary/40 hover:bg-muted/50',
+                  )}
+                >
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-foreground">
+                      {reciter.nameEnglish}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{reciter.riwayah}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span lang="ar" dir="rtl" className="font-serif text-base text-primary">
+                      {reciter.nameArabic}
+                    </span>
+                    {isSelected ? (
+                      <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                        Active
+                      </span>
+                    ) : (
+                      <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+                        Select
+                      </span>
+                    )}
+                  </div>
+                </button>
+              </li>
+            )
+          })}
         </ul>
         <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-          More reciters are planned. Yasser Al-Dosari, imam of Masjid al-Haram, is the launch
-          reciter.
+          Select from renowned reciters with high-speed CDN audio streaming and automatic fallback mirrors.
         </p>
       </section>
     </div>

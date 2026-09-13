@@ -13,6 +13,7 @@ export interface Reciter {
   nameArabic: string
   riwayah: string
   cdnTemplate: string
+  backupTemplate?: string
 }
 
 export const RECITERS: Reciter[] = [
@@ -22,6 +23,47 @@ export const RECITERS: Reciter[] = [
     nameArabic: 'ياسر الدوسري',
     riwayah: "Hafs 'an 'Asim",
     cdnTemplate: 'https://server11.mp3quran.net/yasser/{surah}.mp3',
+    backupTemplate: 'https://download.quranicaudio.com/quran/yasser_ad-dussary/{surah}.mp3',
+  },
+  {
+    id: 'mishary-alafasy',
+    nameEnglish: 'Mishary Rashid Alafasy',
+    nameArabic: 'مشاري راشد العفاسي',
+    riwayah: "Hafs 'an 'Asim",
+    cdnTemplate: 'https://server8.mp3quran.net/afs/{surah}.mp3',
+    backupTemplate: 'https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/{surah}.mp3',
+  },
+  {
+    id: 'abdul-rahman-al-sudais',
+    nameEnglish: 'Abdul Rahman Al-Sudais',
+    nameArabic: 'عبد الرحمن السديس',
+    riwayah: "Hafs 'an 'Asim",
+    cdnTemplate: 'https://server11.mp3quran.net/sds/{surah}.mp3',
+    backupTemplate: 'https://download.quranicaudio.com/quran/abdul_rahmaan_as-sudays/{surah}.mp3',
+  },
+  {
+    id: 'maher-al-muaiqly',
+    nameEnglish: 'Maher Al-Muaiqly',
+    nameArabic: 'ماهر المعيقلي',
+    riwayah: "Hafs 'an 'Asim",
+    cdnTemplate: 'https://server12.mp3quran.net/maher/{surah}.mp3',
+    backupTemplate: 'https://download.quranicaudio.com/quran/maher_almu3aiqly/year1440/{surah}.mp3',
+  },
+  {
+    id: 'saad-al-ghamdi',
+    nameEnglish: 'Saad Al-Ghamdi',
+    nameArabic: 'سعد الغامدي',
+    riwayah: "Hafs 'an 'Asim",
+    cdnTemplate: 'https://server7.mp3quran.net/s_gmd/{surah}.mp3',
+    backupTemplate: 'https://download.quranicaudio.com/quran/sa3d_al-ghaamidi/complete/{surah}.mp3',
+  },
+  {
+    id: 'abdul-basit',
+    nameEnglish: 'Abdul Basit Abdul Samad',
+    nameArabic: 'عبد الباسط عبد الصمد',
+    riwayah: 'Murattal',
+    cdnTemplate: 'https://server7.mp3quran.net/basit/{surah}.mp3',
+    backupTemplate: 'https://download.quranicaudio.com/quran/abdulbaset_mujawwad/{surah}.mp3',
   },
 ]
 
@@ -30,6 +72,15 @@ export const DEFAULT_RECITER = RECITERS[0]
 export function getSurahAudioUrl(surahNumber: number, reciter: Reciter = DEFAULT_RECITER): string {
   const padded = String(surahNumber).padStart(3, '0')
   return reciter.cdnTemplate.replace('{surah}', padded)
+}
+
+export function getSurahAudioUrls(surahNumber: number, reciter: Reciter = DEFAULT_RECITER): string[] {
+  const padded = String(surahNumber).padStart(3, '0')
+  const urls = [reciter.cdnTemplate.replace('{surah}', padded)]
+  if (reciter.backupTemplate) {
+    urls.push(reciter.backupTemplate.replace('{surah}', padded))
+  }
+  return urls
 }
 
 export const SURAHS: Surah[] = [
