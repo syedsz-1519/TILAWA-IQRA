@@ -24,7 +24,8 @@ import {
   translationUrl,
   fetchTranslation,
   ayahAudioUrl,
-  urduTranslationAudioUrl,
+  translationAudioUrl,
+  translationAudioCredit,
   hasTranslationAudio,
   type ChapterResponse,
 } from '@/lib/quran-languages'
@@ -135,14 +136,16 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
 
       const playTranslationThenAdvance = () => {
         // In Arabic-only mode, skip the translation audio entirely.
-        if (
+        const tAudioUrl =
           modeRef.current === 'translation' &&
-          translationAudioRef.current &&
-          hasTranslationAudio(langRef.current)
-        ) {
-          audio.src = urduTranslationAudioUrl(surah.number, ayah)
+          translationAudioRef.current
+            ? translationAudioUrl(getLanguage(langRef.current), surah.number, ayah)
+            : null
+
+        if (tAudioUrl) {
+          audio.src = tAudioUrl
           audio.onended = advance
-          audio.onerror = advance // If translation audio has a glitch, still advance
+          audio.onerror = advance // If translation audio fails, still advance
           audio.play().catch(advance)
         } else {
           advance()
@@ -260,7 +263,7 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
             }`}
           >
             <Volume2 className="h-4 w-4" aria-hidden="true" />
-            Urdu audio {translationAudio ? 'on' : 'off'}
+            Translation audio {translationAudio ? 'on' : 'off'}
           </button>
         )}
 
@@ -395,9 +398,8 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
           <p className="mt-8 text-center text-xs text-muted-foreground">
             {language.note ? `${language.note} \u2014 ` : 'Translation: '}
             {language.translator} &middot; Recitation: Sheikh Yasser Ad-Dussary
-            {mode === 'translation' &&
-              hasTranslationAudio(langCode) &&
-              ' \u00b7 Urdu audio: Shamshad Ali Khan'}
+            {mode === 'translation' && hasTranslationAudio(langCode) && translationAudio &&
+              ` \u00b7 Translation audio: ${translationAudioCredit(language)}`}
           </p>
         </>
       )}

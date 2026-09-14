@@ -1,10 +1,15 @@
 'use client'
 
-import { Monitor, Moon, Sun } from 'lucide-react'
+import { Monitor, Moon, Sun, Volume2, VolumeX } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { usePlayer } from '@/components/player/player-provider'
 import { RECITERS } from '@/lib/quran'
+import {
+  FEATURED_TRANSLATORS,
+  QURAN_LANGUAGES,
+  TRANSLATOR_STORAGE_KEY,
+} from '@/lib/quran-languages'
 import { cn } from '@/lib/utils'
 
 const themeOptions = [
@@ -26,13 +31,32 @@ export function SettingsPanel() {
     setReciter,
   } = usePlayer()
   const [mounted, setMounted] = useState(false)
+  const [activeLangCode, setActiveLangCode] = useState<string>('')
 
   useEffect(() => {
     setMounted(true)
+    // Read the current translation preference from localStorage
+    const saved = window.localStorage.getItem(TRANSLATOR_STORAGE_KEY)
+    if (saved && QURAN_LANGUAGES.some((l) => l.code === saved)) {
+      setActiveLangCode(saved)
+    } else {
+      // Default to the first featured translator
+      setActiveLangCode(FEATURED_TRANSLATORS[0].code)
+    }
   }, [])
+
+  const selectTranslator = (code: string) => {
+    setActiveLangCode(code)
+    window.localStorage.setItem(TRANSLATOR_STORAGE_KEY, code)
+    // Notify the QuranReader across tabs / same page
+    window.dispatchEvent(new CustomEvent('tilawa-lang-changed'))
+  }
 
   return (
     <div className="flex flex-col gap-8">
+      {/* ------------------------------------------------------------------ */}
+      {/* Appearance                                                          */}
+      {/* ------------------------------------------------------------------ */}
       <section aria-labelledby="theme-heading" className="rounded-xl border border-border bg-card p-6">
         <h2 id="theme-heading" className="text-lg font-semibold">
           Appearance
@@ -74,6 +98,98 @@ export function SettingsPanel() {
         </div>
       </section>
 
+      {/* ------------------------------------------------------------------ */}
+      {/* Translation                                                         */}
+      {/* ------------------------------------------------------------------ */}
+      <section aria-labelledby="translation-heading" className="rounded-xl border border-border bg-card p-6">
+        <h2 id="translation-heading" className="text-lg font-semibold">
+          Translation
+        </h2>
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          Choose your preferred translator. Applied across all reading sessions.
+        </p>
+
+        <ul className="mt-4 flex flex-col gap-2" role="radiogroup" aria-label="Translation">
+          {FEATURED_TRANSLATORS.map((t) => {
+            const isSelected = mounted && activeLangCode === t.code
+            return (
+              <li key={t.code}>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  onClick={() => selectTranslator(t.code)}
+                  className={cn(
+                    'flex w-full items-start justify-between gap-3 rounded-lg border p-4 text-start transition-colors',
+                    isSelected
+                      ? 'border-primary bg-primary/10 shadow-sm'
+                      : 'border-border bg-background hover:border-primary/40 hover:bg-muted/50',
+                  )}
+                >
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <span className="text-sm font-semibold text-foreground">
+                      {t.nameEnglish}
+                    </span>
+                    <span className="text-xs leading-relaxed text-muted-foreground">
+                      {t.description}
+                    </span>
+                  </div>
+
+                  <div className="flex shrink-0 flex-col items-end gap-1.5">
+                    {/* Native-script name */}
+                    <span
+                      dir={t.nameNative === t.nameEnglish ? 'ltr' : 'rtl'}
+                      className="font-serif text-sm text-primary"
+                    >
+                      {t.nameNative}
+                    </span>
+
+                    <div className="flex items-center gap-1.5">
+                      {/* Audio badge */}
+                      {t.hasAudio ? (
+                        <span
+                          title="Per-ayah translation audio available"
+                          className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400"
+                        >
+                          <Volume2 className="size-3" aria-hidden="true" />
+                          Audio
+                        </span>
+                      ) : (
+                        <span
+                          title="No per-ayah audio for this translator"
+                          className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
+                        >
+                          <VolumeX className="size-3" aria-hidden="true" />
+                          Text only
+                        </span>
+                      )}
+
+                      {/* Active / Select pill */}
+                      {isSelected ? (
+                        <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                          Active
+                        </span>
+                      ) : (
+                        <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+                          Select
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+
+        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+          More translations are available in the reader's language selector inside each surah.
+        </p>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Playback                                                            */}
+      {/* ------------------------------------------------------------------ */}
       <section aria-labelledby="playback-heading" className="rounded-xl border border-border bg-card p-6">
         <h2 id="playback-heading" className="text-lg font-semibold">
           Playback
@@ -135,6 +251,9 @@ export function SettingsPanel() {
         </div>
       </section>
 
+      {/* ------------------------------------------------------------------ */}
+      {/* Reciter                                                             */}
+      {/* ------------------------------------------------------------------ */}
       <section aria-labelledby="reciter-heading" className="rounded-xl border border-border bg-card p-6">
         <h2 id="reciter-heading" className="text-lg font-semibold">
           Reciter

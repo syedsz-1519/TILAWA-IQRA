@@ -22,9 +22,125 @@ export interface QuranLanguage {
   api?: TranslationApi
   /** Optional short note shown under the language (e.g. school of thought) */
   note?: string
+  /**
+   * everyayah.com folder name for per-ayah translation audio.
+   * When set, the read-along player will play this audio after each Arabic ayah.
+   */
+  translationAudioFolder?: string
 }
 
+// ---------------------------------------------------------------------------
+// The 5 "Featured Translators" shown as quick-pick cards in Settings.
+// Each entry mirrors a code that exists in QURAN_LANGUAGES below.
+// ---------------------------------------------------------------------------
+export interface FeaturedTranslator {
+  code: string
+  nameEnglish: string
+  nameNative: string
+  description: string
+  /** Whether everyayah.com audio exists for this translator */
+  hasAudio: boolean
+}
+
+export const FEATURED_TRANSLATORS: FeaturedTranslator[] = [
+  {
+    code: 'ur-taqiusmani',
+    nameEnglish: 'Mufti Taqi Usmani',
+    nameNative: 'مفتی تقی عثمانی',
+    description: 'Tauzeeh Al-Qur\'an — authoritative contemporary Urdu translation',
+    hasAudio: false,
+  },
+  {
+    code: 'en-taqiusmani',
+    nameEnglish: 'Mufti Taqi Usmani (English)',
+    nameNative: 'Taqi Usmani',
+    description: 'Clear, scholarly English rendering by the renowned Pakistani jurist',
+    hasAudio: false,
+  },
+  {
+    code: 'en-sahih',
+    nameEnglish: 'Saheeh International',
+    nameNative: 'Saheeh International',
+    description: 'Modern, precise English translation widely used worldwide',
+    hasAudio: false,
+  },
+  {
+    code: 'en-pickthall',
+    nameEnglish: 'Pickthall',
+    nameNative: 'Pickthall',
+    description: 'The Meaning of the Glorious Qur\'an — classic literary English',
+    hasAudio: false,
+  },
+  {
+    code: 'en-asad',
+    nameEnglish: 'Muhammad Asad',
+    nameNative: 'Muhammad Asad',
+    description: 'The Message of the Qur\'an — intellectual, in-depth commentary',
+    hasAudio: false,
+  },
+]
+
 export const QURAN_LANGUAGES: QuranLanguage[] = [
+  // =========================================================================
+  // Featured Translators (shown in Settings)
+  // =========================================================================
+
+  // ----- Mufti Taqi Usmani -----
+  {
+    code: 'ur-taqiusmani',
+    label: 'Mufti Taqi Usmani (Urdu)',
+    nativeLabel: 'مفتی تقی عثمانی',
+    edition: 'urd-muhammadtaqiusm',
+    direction: 'rtl',
+    translator: 'Mufti Taqi Usmani',
+    note: 'Tauzeeh Al-Qur\'an',
+  },
+  {
+    code: 'en-taqiusmani',
+    label: 'Mufti Taqi Usmani (English)',
+    nativeLabel: 'Taqi Usmani',
+    edition: 'eng-muhammadtaqiusm',
+    direction: 'ltr',
+    translator: 'Mufti Taqi Usmani',
+    note: 'Tauzeeh Al-Qur\'an',
+  },
+
+  // ----- Saheeh International -----
+  {
+    code: 'en-sahih',
+    label: 'Saheeh International',
+    nativeLabel: 'Saheeh International',
+    edition: 'en.sahih',
+    direction: 'ltr',
+    translator: 'Saheeh International',
+    api: 'alquran',
+  },
+
+  // ----- Pickthall -----
+  {
+    code: 'en-pickthall',
+    label: 'Pickthall (English)',
+    nativeLabel: 'Pickthall',
+    edition: 'eng-mohammedmarmadu',
+    direction: 'ltr',
+    translator: 'Mohammed Marmaduke Pickthall',
+  },
+
+  // ----- Muhammad Asad -----
+  {
+    code: 'en-asad',
+    label: 'Muhammad Asad (English)',
+    nativeLabel: 'Muhammad Asad',
+    edition: 'eng-muhammadasad',
+    direction: 'ltr',
+    translator: 'Muhammad Asad',
+    note: 'The Message of the Qur\'an',
+  },
+
+  // =========================================================================
+  // Classic / existing editions
+  // =========================================================================
+
   {
     code: 'en',
     label: 'English',
@@ -33,11 +149,12 @@ export const QURAN_LANGUAGES: QuranLanguage[] = [
     direction: 'ltr',
     translator: 'Abdullah Yusuf Ali',
   },
+
   // ----- Kanzul Imaan (Aala Hazrat Imam Ahmad Raza Khan) -----
   {
     code: 'ur-kanzuliman',
     label: 'Kanzul Imaan (Urdu)',
-    nativeLabel: '\u06a9\u0646\u0632 \u0627\u0644\u0627\u06cc\u0645\u0627\u0646',
+    nativeLabel: 'کنز الایمان',
     edition: 'ur.kanzuliman',
     direction: 'rtl',
     translator: "A'la Hazrat Imam Ahmad Raza Khan",
@@ -74,7 +191,8 @@ export const QURAN_LANGUAGES: QuranLanguage[] = [
     api: 'alquran',
     note: 'Kanzul Imaan',
   },
-  // ----- Urdu family -----
+
+  // ----- Urdu family (with spoken translation audio) -----
   {
     code: 'ur-roman',
     label: 'Roman Urdu',
@@ -82,15 +200,29 @@ export const QURAN_LANGUAGES: QuranLanguage[] = [
     edition: 'urd-fatehmuhammadja-la',
     direction: 'ltr',
     translator: 'Fateh Muhammad Jalandhri',
+    // Shamshad Ali Khan spoken Urdu works for Roman Urdu too (same speech)
+    translationAudioFolder: 'urdu_shamshad_ali_khan_46kbps',
   },
   {
     code: 'ur',
     label: 'Urdu',
-    nativeLabel: '\u0627\u0631\u062f\u0648',
+    nativeLabel: 'اردو',
     edition: 'urd-fatehmuhammadja',
     direction: 'rtl',
     translator: 'Fateh Muhammad Jalandhri',
+    translationAudioFolder: 'urdu_shamshad_ali_khan_46kbps',
   },
+  {
+    code: 'ur-farhat',
+    label: 'Urdu — Farhat Hashmi',
+    nativeLabel: 'فرحت ہاشمی',
+    edition: 'urd-fatehmuhammadja',   // text falls back to Jalandhri; audio is the key differentiator
+    direction: 'rtl',
+    translator: 'Dr. Farhat Hashmi (audio) / Fateh Muhammad Jalandhri (text)',
+    translationAudioFolder: 'urdu_farhat_hashmi',
+    note: 'Al-Huda',
+  },
+
   // ----- Indian languages -----
   {
     code: 'hi',
@@ -156,6 +288,7 @@ export const QURAN_LANGUAGES: QuranLanguage[] = [
     direction: 'ltr',
     translator: 'Shaykh Rafeequl Islam Habibur Rahman',
   },
+
   // ----- World languages -----
   {
     code: 'fr',
@@ -199,7 +332,7 @@ export const QURAN_LANGUAGES: QuranLanguage[] = [
   },
 ]
 
-export const DEFAULT_LANGUAGE = 'en'
+export const DEFAULT_LANGUAGE = 'ur-taqiusmani'
 
 export function getLanguage(code: string): QuranLanguage {
   return QURAN_LANGUAGES.find((l) => l.code === code) ?? QURAN_LANGUAGES[0]
@@ -254,17 +387,35 @@ export function ayahAudioUrl(surah: number, ayah: number) {
   return `https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/${s}${a}.mp3`
 }
 
-/** Per-ayah Urdu translation audio by Shamshad Ali Khan (everyayah.com).
- * Spoken Urdu serves both the Urdu and Roman Urdu (same spoken language) modes. */
-export function urduTranslationAudioUrl(surah: number, ayah: number) {
+/**
+ * Per-ayah translation audio URL.
+ * Returns a URL if the language has a `translationAudioFolder`, otherwise null.
+ * Audio is served from everyayah.com/data/translations/<folder>/<SSS><AAA>.mp3
+ */
+export function translationAudioUrl(lang: QuranLanguage, surah: number, ayah: number): string | null {
+  if (!lang.translationAudioFolder) return null
   const s = String(surah).padStart(3, '0')
   const a = String(ayah).padStart(3, '0')
-  return `https://everyayah.com/data/translations/urdu_shamshad_ali_khan_46kbps/${s}${a}.mp3`
+  return `https://everyayah.com/data/translations/${lang.translationAudioFolder}/${s}${a}.mp3`
 }
 
-/** Languages that have interleaved translation audio available */
-export function hasTranslationAudio(code: string) {
-  return code === 'ur' || code === 'ur-roman'
+/**
+ * Returns the human-readable audio attribution for a language's translation audio.
+ * Used in footer credits.
+ */
+export function translationAudioCredit(lang: QuranLanguage): string | null {
+  if (!lang.translationAudioFolder) return null
+  const map: Record<string, string> = {
+    urdu_shamshad_ali_khan_46kbps: 'Shamshad Ali Khan',
+    urdu_farhat_hashmi: 'Dr. Farhat Hashmi',
+  }
+  return map[lang.translationAudioFolder] ?? lang.translationAudioFolder
+}
+
+/** Whether a language has interleaved per-ayah translation audio */
+export function hasTranslationAudio(code: string): boolean {
+  const lang = getLanguage(code)
+  return !!lang.translationAudioFolder
 }
 
 export interface ApiVerse {
