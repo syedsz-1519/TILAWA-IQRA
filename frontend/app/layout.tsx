@@ -4,6 +4,7 @@ import { PlayerProvider } from '@/components/player/player-provider'
 import { PlayerBar } from '@/components/player/player-bar'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AppShell } from '@/components/app-shell'
+import { ServiceWorkerRegister } from '@/components/service-worker-register'
 import { logEnvironmentValidation } from '@/lib/env.validation'
 import './globals.css'
 
@@ -18,9 +19,10 @@ const amiri = Amiri({
 })
 
 export const metadata: Metadata = {
-  title: 'TILAWA — Learn, Listen, and Recite the Quran',
+  title: 'TILAWA - Quranic Recitation & Learning',
   description:
-    'AI-powered Quranic recitation learning. Listen to beautiful recitation by Yasser Al-Dosari, track your khatm, and perfect your tajweed.',
+    'AI-powered Quranic recitation learning, tajweed rules, hadith library, and memorization companion.',
+  manifest: '/manifest.webmanifest',
   generator: 'v0.app',
   icons: {
     icon: '/images/tilawa-logo.jpeg',
@@ -52,6 +54,7 @@ export default function RootLayout({
           <PlayerProvider>
             <AppShell>{children}</AppShell>
             <PlayerBar />
+            <ServiceWorkerRegister />
           </PlayerProvider>
         </ThemeProvider>
       </body>
