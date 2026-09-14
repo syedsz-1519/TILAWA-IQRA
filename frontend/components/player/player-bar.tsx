@@ -69,10 +69,10 @@ export function PlayerBar() {
     <div
       role="region"
       aria-label="Quran recitation audio player"
-      className="fixed inset-x-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85 shadow-lg"
+      className="fixed inset-x-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85 shadow-lg lg:bottom-0"
       style={{
         // On mobile, sit above the bottom nav bar (56px) + safe-area inset.
-        // On desktop (lg+) handled via Tailwind override below but we let CSS media query win.
+        // On desktop (lg+) the lg:bottom-0 class overrides this to bottom: 0.
         bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
       }}
     >

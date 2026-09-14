@@ -29,11 +29,9 @@ import {
   hasTranslationAudio,
   type ChapterResponse,
 } from '@/lib/quran-languages'
+import { KEYS, EVENTS } from '@/lib/prefs'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
-
-const LANG_STORAGE_KEY = 'tilawa-quran-lang'
-const MODE_STORAGE_KEY = 'tilawa-quran-mode'
 
 type ReadingMode = 'translation' | 'arabic'
 
@@ -59,30 +57,30 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
   // Load saved language + mode preferences & listen to global changes
   useEffect(() => {
     const loadPrefs = () => {
-      const savedLang = window.localStorage.getItem(LANG_STORAGE_KEY)
+      const savedLang = window.localStorage.getItem(KEYS.LANG)
       if (savedLang && QURAN_LANGUAGES.some((l) => l.code === savedLang)) setLangCode(savedLang)
-      const savedMode = window.localStorage.getItem(MODE_STORAGE_KEY)
+      const savedMode = window.localStorage.getItem(KEYS.READING_MODE)
       if (savedMode === 'translation' || savedMode === 'arabic') setMode(savedMode)
     }
     loadPrefs()
 
     window.addEventListener('storage', loadPrefs)
-    window.addEventListener('tilawa-lang-changed', loadPrefs)
+    window.addEventListener(EVENTS.LANG_CHANGED, loadPrefs)
     return () => {
       window.removeEventListener('storage', loadPrefs)
-      window.removeEventListener('tilawa-lang-changed', loadPrefs)
+      window.removeEventListener(EVENTS.LANG_CHANGED, loadPrefs)
     }
   }, [])
 
   const changeLanguage = (code: string) => {
     setLangCode(code)
-    window.localStorage.setItem(LANG_STORAGE_KEY, code)
-    window.dispatchEvent(new CustomEvent('tilawa-lang-changed'))
+    window.localStorage.setItem(KEYS.LANG, code)
+    window.dispatchEvent(new CustomEvent(EVENTS.LANG_CHANGED))
   }
 
   const changeMode = (next: ReadingMode) => {
     setMode(next)
-    window.localStorage.setItem(MODE_STORAGE_KEY, next)
+    window.localStorage.setItem(KEYS.READING_MODE, next)
   }
 
   const { data: arabic } = useSWR<ChapterResponse>(arabicUrl(surah.number), fetcher)
@@ -115,7 +113,7 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
     (ayah: number, continueToEnd: boolean) => {
       // Pause global surah audio if playing
       if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('tilawa-stop-global-audio'))
+        window.dispatchEvent(new CustomEvent(EVENTS.STOP_GLOBAL_AUDIO))
       }
 
       if (!audioRef.current) {
@@ -176,13 +174,13 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
   useEffect(() => {
     const onStopVerse = () => stop()
     if (typeof window !== 'undefined') {
-      window.addEventListener('tilawa-stop-verse-audio', onStopVerse)
+      window.addEventListener(EVENTS.STOP_VERSE_AUDIO, onStopVerse)
     }
     return () => {
       audioRef.current?.pause()
       continueRef.current = false
       if (typeof window !== 'undefined') {
-        window.removeEventListener('tilawa-stop-verse-audio', onStopVerse)
+        window.removeEventListener(EVENTS.STOP_VERSE_AUDIO, onStopVerse)
       }
     }
   }, [stop])

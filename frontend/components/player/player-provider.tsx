@@ -17,6 +17,7 @@ import {
   type Reciter,
   type Surah,
 } from '@/lib/quran'
+import { EVENTS } from '@/lib/prefs'
 
 interface PlayerState {
   currentSurah: Surah | null
@@ -90,7 +91,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     (surah: Surah, reciterOverride?: Reciter) => {
       // Pause any ongoing per-ayah recitation on reader page
       if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('tilawa-stop-verse-audio'))
+        window.dispatchEvent(new CustomEvent(EVENTS.STOP_VERSE_AUDIO))
       }
 
       const activeReciter = reciterOverride || currentReciterRef.current
@@ -349,7 +350,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     audio.addEventListener('ended', onEnded)
 
     if (typeof window !== 'undefined') {
-      window.addEventListener('tilawa-stop-global-audio', onStopGlobal)
+      window.addEventListener(EVENTS.STOP_GLOBAL_AUDIO, onStopGlobal)
     }
 
     return () => {
@@ -362,7 +363,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       audio.removeEventListener('error', onError)
       audio.removeEventListener('ended', onEnded)
       if (typeof window !== 'undefined') {
-        window.removeEventListener('tilawa-stop-global-audio', onStopGlobal)
+        window.removeEventListener(EVENTS.STOP_GLOBAL_AUDIO, onStopGlobal)
       }
     }
   }, [getAudio, playSurah])
