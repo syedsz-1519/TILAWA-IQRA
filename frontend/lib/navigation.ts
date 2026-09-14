@@ -33,7 +33,7 @@ export const navGroups: NavGroup[] = [
     label: 'Core',
     items: [
       {
-        title: 'Dashboard',
+        title: 'Home',
         href: '/dashboard',
         description: 'Track streaks, XP, and progress',
         icon: LayoutDashboard,
