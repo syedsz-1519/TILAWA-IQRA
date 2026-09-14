@@ -216,7 +216,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       currentReciterRef.current = reciter
       setCurrentReciterState(reciter)
       if (typeof window !== 'undefined') {
-        window.localStorage.setItem('tilawa-reciter-id', reciter.id)
+        window.localStorage.setItem(KEYS.RECITER, reciter.id)
       }
       if (currentSurahRef.current) {
         playSurah(currentSurahRef.current, reciter)
@@ -272,7 +272,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     // Restore saved reciter preference from localStorage
     if (typeof window !== 'undefined') {
-      const savedReciterId = window.localStorage.getItem('tilawa-reciter-id')
+      const savedReciterId = window.localStorage.getItem(KEYS.RECITER)
       if (savedReciterId) {
         const found = RECITERS.find((r) => r.id === savedReciterId)
         if (found) {
