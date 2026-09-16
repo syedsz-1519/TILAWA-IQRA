@@ -34,14 +34,14 @@ export const navGroups: NavGroup[] = [
     items: [
       {
         title: 'Home',
-        href: '/dashboard',
-        description: 'Track streaks, XP, and progress',
+        href: '/',
+        description: 'From Iqra to Tilawa',
         icon: LayoutDashboard,
       },
       {
-        title: 'Listen',
-        href: '/#listen',
-        description: 'Stream all 114 surahs by Yasser Al-Dosari',
+        title: 'Listen Quran',
+        href: '/listen',
+        description: 'Complete 114 Surahs audio recitation & station',
         icon: Headphones,
       },
       {

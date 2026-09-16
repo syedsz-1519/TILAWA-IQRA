@@ -1,12 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { BookOpenText, Headphones, Pause, Play } from 'lucide-react'
+import { BookOpenText, Headphones, Pause, Play, Square } from 'lucide-react'
 import { usePlayer } from '@/components/player/player-provider'
 import { SURAHS } from '@/lib/quran'
 
 export function Hero() {
-  const { playSurah, currentReciter, currentSurah, isPlaying } = usePlayer()
+  const { playSurah, stop, currentReciter, currentSurah, isPlaying } = usePlayer()
   const isFatihahPlaying = currentSurah?.number === 1 && isPlaying
 
   return (
@@ -33,7 +33,7 @@ export function Hero() {
         <div className="flex flex-col items-center gap-3 sm:flex-row">
           <button
             type="button"
-            onClick={() => playSurah(SURAHS[0])}
+            onClick={() => (isFatihahPlaying ? stop() : playSurah(SURAHS[0]))}
             className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground shadow-md transition-all hover:opacity-90 active:scale-98"
           >
             {isFatihahPlaying ? (
@@ -43,6 +43,17 @@ export function Hero() {
             )}
             {isFatihahPlaying ? 'Pause Al-Fatihah' : 'Play Al-Fatihah'}
           </button>
+          {isFatihahPlaying && (
+            <button
+              type="button"
+              onClick={stop}
+              className="flex items-center gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-5 py-3 font-medium text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground active:scale-98"
+              title="Stop recitation"
+            >
+              <Square className="size-4 fill-current" aria-hidden="true" />
+              <span>Stop</span>
+            </button>
+          )}
           <Link
             href="/read"
             className="flex items-center gap-2 rounded-lg border border-border bg-background px-6 py-3 font-medium transition-colors hover:bg-muted"

@@ -25,7 +25,7 @@ import { KEYS, EVENTS } from '@/lib/prefs'
 // ---------------------------------------------------------------------------
 const BOTTOM_TABS = [
   { label: 'Home',   href: '/',           icon: Home        },
-  { label: 'Listen', href: '/#listen',    icon: Headphones  },
+  { label: 'Listen', href: '/listen',     icon: Headphones  },
   { label: 'Read',   href: '/read',       icon: BookOpenText },
   { label: 'Dua',    href: '/hadith-dua', icon: Lightbulb   },
   // "More" tab handled separately — opens the drawer
@@ -91,8 +91,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => {
                 const active =
-                  item.href !== '/#listen' &&
-                  (pathname === item.href || pathname.startsWith(item.href + '/'))
+                  pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/'))
                 return (
                   <li key={item.href}>
                     <Link
@@ -233,10 +232,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {/* Regular tabs */}
           {BOTTOM_TABS.map((tab) => {
             const Icon = tab.icon
-            // href='/#listen' should never be "active" based on pathname
             const active =
-              tab.href !== '/#listen' &&
-              (pathname === tab.href || pathname.startsWith(tab.href + '/'))
+              pathname === tab.href || (tab.href !== '/' && pathname.startsWith(tab.href + '/'))
             return (
               <li key={tab.href} className="flex flex-1">
                 <Link

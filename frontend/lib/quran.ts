@@ -14,6 +14,7 @@ export interface Reciter {
   riwayah: string
   cdnTemplate: string
   backupTemplate?: string
+  backupTemplate2?: string
 }
 
 export const RECITERS: Reciter[] = [
@@ -32,6 +33,7 @@ export const RECITERS: Reciter[] = [
     riwayah: "Hafs 'an 'Asim",
     cdnTemplate: 'https://server8.mp3quran.net/afs/{surah}.mp3',
     backupTemplate: 'https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/{surah}.mp3',
+    backupTemplate2: 'https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/{surah_raw}.mp3',
   },
   {
     id: 'abdul-rahman-al-sudais',
@@ -39,7 +41,7 @@ export const RECITERS: Reciter[] = [
     nameArabic: 'عبد الرحمن السديس',
     riwayah: "Hafs 'an 'Asim",
     cdnTemplate: 'https://server11.mp3quran.net/sds/{surah}.mp3',
-    backupTemplate: 'https://download.quranicaudio.com/quran/abdul_rahmaan_as-sudays/{surah}.mp3',
+    backupTemplate: 'https://download.quranicaudio.com/quran/abdurrahmaan_as-sudays/{surah}.mp3',
   },
   {
     id: 'maher-al-muaiqly',
@@ -64,6 +66,7 @@ export const RECITERS: Reciter[] = [
     riwayah: 'Murattal',
     cdnTemplate: 'https://server7.mp3quran.net/basit/{surah}.mp3',
     backupTemplate: 'https://download.quranicaudio.com/quran/abdulbaset_mujawwad/{surah}.mp3',
+    backupTemplate2: 'https://cdn.islamic.network/quran/audio-surah/128/ar.abdulbasitmurattal/{surah_raw}.mp3',
   },
 ]
 
@@ -76,9 +79,13 @@ export function getSurahAudioUrl(surahNumber: number, reciter: Reciter = DEFAULT
 
 export function getSurahAudioUrls(surahNumber: number, reciter: Reciter = DEFAULT_RECITER): string[] {
   const padded = String(surahNumber).padStart(3, '0')
+  const raw = String(surahNumber)
   const urls = [reciter.cdnTemplate.replace('{surah}', padded)]
   if (reciter.backupTemplate) {
     urls.push(reciter.backupTemplate.replace('{surah}', padded))
+  }
+  if (reciter.backupTemplate2) {
+    urls.push(reciter.backupTemplate2.replace('{surah_raw}', raw).replace('{surah}', padded))
   }
   return urls
 }

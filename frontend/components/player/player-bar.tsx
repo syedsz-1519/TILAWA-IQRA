@@ -10,6 +10,7 @@ import {
   Repeat,
   SkipBack,
   SkipForward,
+  Square,
   Volume2,
   VolumeX,
   X,
@@ -41,6 +42,7 @@ export function PlayerBar() {
     isMuted,
     errorMessage,
     togglePlay,
+    stop,
     seek,
     next,
     previous,
@@ -255,6 +257,17 @@ export function PlayerBar() {
             ) : (
               <Play className="ms-0.5 size-4 sm:size-5" />
             )}
+          </button>
+
+          {/* Stop */}
+          <button
+            type="button"
+            onClick={stop}
+            aria-label="Stop recitation"
+            title="Stop recitation (روکیں)"
+            className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/15 hover:text-destructive active:scale-95 sm:size-9"
+          >
+            <Square className="size-4 fill-current sm:size-4.5" />
           </button>
 
           {/* Next */}

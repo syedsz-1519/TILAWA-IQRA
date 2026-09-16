@@ -11,6 +11,7 @@ import {
   Languages,
   Pause,
   Play,
+  Square,
   Type,
   Volume2,
 } from 'lucide-react'
@@ -24,6 +25,7 @@ import {
   translationUrl,
   fetchTranslation,
   ayahAudioUrl,
+  ayahAudioUrls,
   translationAudioUrl,
   translationAudioCredit,
   hasTranslationAudio,
@@ -89,7 +91,7 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
     fetchTranslation,
   )
 
-  // Per-ayah read-along audio (Arabic recitation, then optional Urdu translation - Islam360 style)
+  // Per-ayah read-along audio (Arabic recitation, then translation audio)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [activeAyah, setActiveAyah] = useState<number | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -98,12 +100,22 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
   const translationAudioRef = useRef(true)
   const langRef = useRef(langCode)
   const modeRef = useRef(mode)
+  const translationsRef = useRef<ChapterResponse['chapter']>([])
   langRef.current = langCode
   modeRef.current = mode
   translationAudioRef.current = translationAudio
+  translationsRef.current = translation?.chapter ?? []
 
   const stop = useCallback(() => {
-    audioRef.current?.pause()
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel()
+      } catch {}
+    }
     continueRef.current = false
     setIsPlaying(false)
     setActiveAyah(null)
@@ -132,40 +144,131 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
         }
       }
 
-      const playTranslationThenAdvance = () => {
-        // In Arabic-only mode, skip the translation audio entirely.
-        const tAudioUrl =
-          modeRef.current === 'translation' &&
-          translationAudioRef.current
-            ? translationAudioUrl(getLanguage(langRef.current), surah.number, ayah)
-            : null
+      const speakOrAdvance = () => {
+        if (!continueRef.current) {
+          setIsPlaying(false)
+          setActiveAyah(null)
+          return
+        }
 
-        if (tAudioUrl) {
-          audio.src = tAudioUrl
-          audio.onended = advance
-          audio.onerror = advance // If translation audio fails, still advance
-          audio.play().catch(advance)
+        const activeLang = getLanguage(langRef.current)
+        const trList = translationsRef.current
+        const verseTr = trList.find((item) => item.verse === ayah)
+        const textToSpeak = verseTr?.text?.replace(/<[^>]+>/g, '')?.trim()
+
+        if (
+          typeof window !== 'undefined' &&
+          'speechSynthesis' in window &&
+          textToSpeak
+        ) {
+          try {
+            window.speechSynthesis.cancel()
+            const utterance = new SpeechSynthesisUtterance(textToSpeak)
+            if (activeLang.code.startsWith('hi')) {
+              utterance.lang = 'hi-IN'
+            } else if (activeLang.code.startsWith('ur')) {
+              utterance.lang = 'ur-PK'
+            } else if (activeLang.code.startsWith('en')) {
+              utterance.lang = 'en-US'
+            } else if (activeLang.code.startsWith('bn')) {
+              utterance.lang = 'bn-BD'
+            } else if (activeLang.code.startsWith('ta')) {
+              utterance.lang = 'ta-IN'
+            } else if (activeLang.code.startsWith('te')) {
+              utterance.lang = 'te-IN'
+            } else if (activeLang.code.startsWith('mr')) {
+              utterance.lang = 'mr-IN'
+            } else if (activeLang.code.startsWith('gu')) {
+              utterance.lang = 'gu-IN'
+            } else if (activeLang.code.startsWith('ml')) {
+              utterance.lang = 'ml-IN'
+            } else if (activeLang.code.startsWith('fr')) {
+              utterance.lang = 'fr-FR'
+            } else if (activeLang.code.startsWith('es')) {
+              utterance.lang = 'es-ES'
+            } else if (activeLang.code.startsWith('tr')) {
+              utterance.lang = 'tr-TR'
+            } else if (activeLang.code.startsWith('ru')) {
+              utterance.lang = 'ru-RU'
+            } else if (activeLang.code.startsWith('zh')) {
+              utterance.lang = 'zh-CN'
+            } else {
+              utterance.lang = activeLang.direction === 'rtl' ? 'ur-PK' : 'en-US'
+            }
+            utterance.rate = 0.95
+            utterance.onend = () => {
+              if (continueRef.current) advance()
+            }
+            utterance.onerror = () => {
+              if (continueRef.current) advance()
+            }
+            window.speechSynthesis.speak(utterance)
+            return
+          } catch {
+            advance()
+          }
         } else {
           advance()
         }
       }
 
-      audio.src = ayahAudioUrl(surah.number, ayah)
-      audio.onended = playTranslationThenAdvance
-      audio.onerror = () => {
-        console.warn(`Could not load audio for ayah ${ayah}, trying next...`)
-        advance()
+      const playTranslationThenAdvance = () => {
+        // In Arabic-only mode or when translation audio is disabled, skip translation
+        if (modeRef.current !== 'translation' || !translationAudioRef.current) {
+          advance()
+          return
+        }
+
+        const activeLang = getLanguage(langRef.current)
+        const tAudioUrl = translationAudioUrl(activeLang, surah.number, ayah)
+
+        if (tAudioUrl) {
+          audio.src = tAudioUrl
+          audio.onended = advance
+          audio.onerror = () => {
+            // Audio recording failed, attempt speech synthesis or advance
+            speakOrAdvance()
+          }
+          audio.play().catch(() => speakOrAdvance())
+        } else {
+          // No pre-recorded MP3 exists; speak translation text via SpeechSynthesis (e.g. Hindi, regional languages)
+          speakOrAdvance()
+        }
       }
-      audio
-        .play()
-        .then(() => {
-          setActiveAyah(ayah)
-          setIsPlaying(true)
-          document
-            .getElementById(`ayah-${ayah}`)
-            ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        })
-        .catch(() => setIsPlaying(false))
+
+      const mirrors = ayahAudioUrls(surah.number, ayah)
+      let currentMirrorIndex = 0
+
+      const tryPlayAyahMirror = (idx: number) => {
+        if (idx >= mirrors.length) {
+          console.warn(`Could not load audio for ayah ${ayah} across mirrors, trying next...`)
+          advance()
+          return
+        }
+        audio.src = mirrors[idx]
+        audio.load()
+        audio.onended = playTranslationThenAdvance
+        audio.onerror = () => {
+          tryPlayAyahMirror(idx + 1)
+        }
+        const promise = audio.play()
+        if (promise !== undefined) {
+          promise
+            .then(() => {
+              setActiveAyah(ayah)
+              setIsPlaying(true)
+              document
+                .getElementById(`ayah-${ayah}`)
+                ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            })
+            .catch((err) => {
+              console.warn(`Ayah audio mirror ${idx} error:`, err)
+              tryPlayAyahMirror(idx + 1)
+            })
+        }
+      }
+
+      tryPlayAyahMirror(currentMirrorIndex)
     },
     [surah.number, surah.ayahCount],
   )
@@ -197,11 +300,22 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
           <button
             type="button"
             onClick={() => (isPlaying ? stop() : playAyah(1, true))}
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 active:scale-95"
           >
             {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-            {isPlaying ? 'Stop' : 'Play & follow'}
+            {isPlaying ? 'Pause' : 'Play & follow'}
           </button>
+          {isPlaying && (
+            <button
+              type="button"
+              onClick={stop}
+              className="inline-flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground active:scale-95"
+              title="Stop recitation completely (روکیں)"
+            >
+              <Square className="h-4 w-4 fill-current" />
+              <span>Stop</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={() => playSurah(surah)}
@@ -249,7 +363,7 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
           </button>
         </div>
 
-        {mode === 'translation' && hasTranslationAudio(langCode) && (
+        {mode === 'translation' && (
           <button
             type="button"
             onClick={() => setTranslationAudio((v) => !v)}
@@ -261,7 +375,7 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
             }`}
           >
             <Volume2 className="h-4 w-4" aria-hidden="true" />
-            Translation audio {translationAudio ? 'on' : 'off'}
+            <span>Translation audio: {translationAudio ? 'ON' : 'OFF'}</span>
           </button>
         )}
 
@@ -359,20 +473,33 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
                     <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-muted px-2 text-xs font-medium text-muted-foreground">
                       {surah.number}:{v.verse}
                     </span>
-                    <button
-                      type="button"
-                      onClick={() => (isActive && isPlaying ? stop() : playAyah(v.verse, false))}
-                      aria-label={
-                        isActive && isPlaying ? `Stop verse ${v.verse}` : `Play verse ${v.verse}`
-                      }
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    >
-                      {isActive && isPlaying ? (
-                        <Pause className="h-4 w-4" />
-                      ) : (
-                        <Play className="h-4 w-4" />
+                    <div className="flex items-center gap-1">
+                      {isActive && isPlaying && (
+                        <button
+                          type="button"
+                          onClick={stop}
+                          aria-label={`Stop verse ${v.verse}`}
+                          title="Stop recitation"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-full text-destructive transition-colors hover:bg-destructive/15 active:scale-95"
+                        >
+                          <Square className="h-3.5 w-3.5 fill-current" />
+                        </button>
                       )}
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => (isActive && isPlaying ? stop() : playAyah(v.verse, false))}
+                        aria-label={
+                          isActive && isPlaying ? `Stop verse ${v.verse}` : `Play verse ${v.verse}`
+                        }
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      >
+                        {isActive && isPlaying ? (
+                          <Pause className="h-4 w-4" />
+                        ) : (
+                          <Play className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                   <p
                     lang="ar"
