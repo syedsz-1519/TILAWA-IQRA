@@ -17,7 +17,7 @@ import {
   type Reciter,
   type Surah,
 } from '@/lib/quran'
-import { EVENTS } from '@/lib/prefs'
+import { EVENTS, KEYS } from '@/lib/prefs'
 
 interface PlayerState {
   currentSurah: Surah | null
