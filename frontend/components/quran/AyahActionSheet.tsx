@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { X, Volume2, Copy, Share2, BookmarkPlus, BookOpen, ChevronDown, ChevronUp } from 'lucide-react'
 import { useAudioPlayer } from '@/lib/audio-context'
+import { getAyahTranslation, getAyahAudio, getTafseer, logApiError } from '@/lib/api-client'
 
 interface AyahActionSheetProps {
   surahNumber: number
@@ -38,42 +39,44 @@ export function AyahActionSheet({
 
   const ayahRef = `${surahNumber}:${ayahNumber}`
 
-  // Fetch translation on open
   useEffect(() => {
     if (!isOpen || translation !== null) return
 
     const fetchTranslation = async () => {
       try {
-        const response = await fetch(
-          `https://api.alquran.cloud/v1/ayah/${ayahRef}/en.asad`
-        )
-        if (!response.ok) throw new Error('Failed to fetch translation')
-        const data = await response.json()
-        setTranslation({
-          text: data.data.text,
-          language: 'en',
-        })
+        const { data, error } = await getAyahTranslation(surahNumber, ayahNumber)
+        if (error) {
+          logApiError(`Translation [${ayahRef}]`, error)
+          return
+        }
+        if (data?.data) {
+          setTranslation({
+            text: data.data.text,
+            language: 'en',
+          })
+        }
       } catch (error) {
         console.error('Failed to fetch translation:', error)
       }
     }
 
     fetchTranslation()
-  }, [isOpen, ayahRef, translation])
+  }, [isOpen, ayahRef, surahNumber, ayahNumber, translation])
 
-  // Fetch audio URL
   useEffect(() => {
     if (!isOpen || audioUrl) return
 
     const fetchAudio = async () => {
       try {
         setAudioLoading(true)
-        const response = await fetch(
-          `https://api.alquran.cloud/v1/ayah/${ayahRef}/ar.alafasy`
-        )
-        if (!response.ok) throw new Error('Failed to fetch audio')
-        const data = await response.json()
-        setAudioUrl(data.data.audio)
+        const { data, error } = await getAyahAudio(surahNumber, ayahNumber)
+        if (error) {
+          logApiError(`Audio [${ayahRef}]`, error)
+          return
+        }
+        if (data?.data?.audio) {
+          setAudioUrl(data.data.audio)
+        }
       } catch (error) {
         console.error('Failed to fetch audio:', error)
       } finally {
@@ -82,20 +85,19 @@ export function AyahActionSheet({
     }
 
     fetchAudio()
-  }, [isOpen, ayahRef, audioUrl])
+  }, [isOpen, ayahRef, surahNumber, ayahNumber, audioUrl])
 
-  // Fetch tafseer
   const fetchTafseer = async () => {
     if (tafseer !== null) return
-
     try {
-      const response = await fetch(
-        `https://api.quran.com/api/v4/tafsirs/169/by_ayah/${surahNumber}:${ayahNumber}`
-      )
-      if (response.ok) {
-        const data = await response.json()
+      const { data, error } = await getTafseer(surahNumber, ayahNumber)
+      if (error) {
+        logApiError(`Tafseer [${ayahRef}]`, error)
+        return
+      }
+      if (data?.tafsirs?.[0]?.text) {
         setTafseer({
-          text: data.tafsirs?.[0]?.text || 'Tafseer not available',
+          text: data.tafsirs[0].text,
           tafsir: 'Ibn Kathir',
         })
       }
@@ -116,7 +118,6 @@ export function AyahActionSheet({
 
   const handlePlay = async () => {
     if (!audioUrl) return
-
     if (isPlaying && currentUrl === audioUrl) {
       pause()
     } else {
@@ -137,15 +138,10 @@ export function AyahActionSheet({
         await navigator.share(shareData)
       } catch (error) {
         console.log('Share cancelled')
+        handleCopy()
       }
     } else {
-      // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(shareText)
-        alert('Ayah copied to clipboard!')
-      } catch {
-        alert('Failed to copy')
-      }
+      handleCopy()
     }
   }
 
@@ -159,26 +155,25 @@ export function AyahActionSheet({
         savedAt: new Date().toISOString(),
       }
 
-      // Avoid duplicates
       if (!saved.some((a: any) => a.surahNumber === surahNumber && a.ayahNumber === ayahNumber)) {
         saved.push(newAyah)
         localStorage.setItem('tilawa_saved_ayahs', JSON.stringify(saved))
-        alert('Ayah saved!')
+        alert('✅ Ayah saved!')
       } else {
-        alert('Already saved')
+        alert('⚠️ Already saved')
       }
     } catch (error) {
       console.error('Error saving ayah:', error)
-      alert('Failed to save')
+      alert('❌ Failed to save')
     }
   }
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(arabicText)
-      alert('Arabic text copied!')
+      alert('✅ Arabic text copied!')
     } catch {
-      alert('Failed to copy')
+      alert('❌ Failed to copy')
     }
   }
 
@@ -186,33 +181,23 @@ export function AyahActionSheet({
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
-      {/* Sheet / Panel */}
       <div className="fixed bottom-0 left-0 right-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t border-border bg-background md:left-1/2 md:bottom-auto md:top-1/2 md:right-auto md:max-h-[80vh] md:w-full md:max-w-2xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border">
-        {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background/95 p-6 backdrop-blur-sm">
           <div>
             <h2 className="text-lg font-bold text-foreground">Ayah Actions</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Surah {surahNumber}, Ayah {ayahNumber}
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">Surah {surahNumber}, Ayah {ayahNumber}</p>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-lg p-2 hover:bg-muted"
-          >
+          <button onClick={onClose} className="rounded-lg p-2 hover:bg-muted">
             <X className="size-5" />
           </button>
         </div>
 
-        {/* Content */}
         <div className="space-y-2 p-6">
-          {/* Arabic Text */}
           <div className="mb-6 rounded-lg border border-border bg-card p-4">
             <div
               lang="ar"
@@ -224,7 +209,6 @@ export function AyahActionSheet({
             </div>
           </div>
 
-          {/* Listen Section */}
           <div className="rounded-lg border border-border">
             <button
               onClick={() => toggleSection('listen')}
@@ -234,11 +218,7 @@ export function AyahActionSheet({
                 <Volume2 className="size-5 text-primary" />
                 <span className="font-semibold">Listen</span>
               </div>
-              {expandedSections.has('listen') ? (
-                <ChevronUp className="size-5" />
-              ) : (
-                <ChevronDown className="size-5" />
-              )}
+              {expandedSections.has('listen') ? <ChevronUp className="size-5" /> : <ChevronDown className="size-5" />}
             </button>
 
             {expandedSections.has('listen') && (
@@ -253,9 +233,7 @@ export function AyahActionSheet({
                       <Volume2 className="size-5" />
                       {isPlaying && currentUrl === audioUrl ? 'Pause' : 'Play'} Recitation
                     </button>
-                    <p className="text-xs text-muted-foreground">
-                      Reciter: Yasser Al-Dosary
-                    </p>
+                    <p className="text-xs text-muted-foreground">Reciter: Yasser Al-Dosary</p>
                   </div>
                 ) : audioLoading ? (
                   <p className="text-sm text-muted-foreground">Loading audio...</p>
@@ -266,7 +244,6 @@ export function AyahActionSheet({
             )}
           </div>
 
-          {/* Translation Section */}
           <div className="rounded-lg border border-border">
             <button
               onClick={() => toggleSection('translation')}
@@ -276,11 +253,7 @@ export function AyahActionSheet({
                 <BookOpen className="size-5 text-primary" />
                 <span className="font-semibold">Translation</span>
               </div>
-              {expandedSections.has('translation') ? (
-                <ChevronUp className="size-5" />
-              ) : (
-                <ChevronDown className="size-5" />
-              )}
+              {expandedSections.has('translation') ? <ChevronUp className="size-5" /> : <ChevronDown className="size-5" />}
             </button>
 
             {expandedSections.has('translation') && (
@@ -288,9 +261,7 @@ export function AyahActionSheet({
                 {translation ? (
                   <div className="space-y-3">
                     <p className="leading-relaxed text-foreground">{translation.text}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Translation: Sahih International (Asad)
-                    </p>
+                    <p className="text-xs text-muted-foreground">Translation: Sahih International (Asad)</p>
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">Translation not available</p>
@@ -299,7 +270,6 @@ export function AyahActionSheet({
             )}
           </div>
 
-          {/* Tafseer Section */}
           <div className="rounded-lg border border-border">
             <button
               onClick={() => {
@@ -314,11 +284,7 @@ export function AyahActionSheet({
                 <BookOpen className="size-5 text-primary" />
                 <span className="font-semibold">Tafseer</span>
               </div>
-              {expandedSections.has('tafseer') ? (
-                <ChevronUp className="size-5" />
-              ) : (
-                <ChevronDown className="size-5" />
-              )}
+              {expandedSections.has('tafseer') ? <ChevronUp className="size-5" /> : <ChevronDown className="size-5" />}
             </button>
 
             {expandedSections.has('tafseer') && (
@@ -326,9 +292,7 @@ export function AyahActionSheet({
                 {tafseer ? (
                   <div className="space-y-3">
                     <p className="leading-relaxed text-foreground">{tafseer.text}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Source: {tafseer.tafsir}
-                    </p>
+                    <p className="text-xs text-muted-foreground">Source: {tafseer.tafsir}</p>
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">Tafseer not available</p>
@@ -337,7 +301,6 @@ export function AyahActionSheet({
             )}
           </div>
 
-          {/* Action Buttons */}
           <div className="grid gap-2 pt-4 sm:grid-cols-2">
             <button
               onClick={handleCopy}
