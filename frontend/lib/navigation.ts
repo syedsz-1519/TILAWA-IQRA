@@ -33,15 +33,15 @@ export const navGroups: NavGroup[] = [
     label: 'Core',
     items: [
       {
-        title: 'Dashboard',
-        href: '/dashboard',
-        description: 'Track streaks, XP, and progress',
+        title: 'Home',
+        href: '/',
+        description: 'From Iqra to Tilawa',
         icon: LayoutDashboard,
       },
       {
-        title: 'Listen',
-        href: '/#listen',
-        description: 'Stream all 114 surahs by Yasser Al-Dosari',
+        title: 'Listen Quran',
+        href: '/listen',
+        description: 'Complete 114 Surahs audio recitation & station',
         icon: Headphones,
       },
       {

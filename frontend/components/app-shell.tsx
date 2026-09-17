@@ -4,33 +4,58 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Languages } from 'lucide-react'
+import {
+  BookOpenText,
+  Grid2x2,
+  Headphones,
+  Heart,
+  Home,
+  Languages,
+  Lightbulb,
+  Menu,
+  X,
+} from 'lucide-react'
 import { navGroups, settingsItem } from '@/lib/navigation'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { QURAN_LANGUAGES, DEFAULT_LANGUAGE } from '@/lib/quran-languages'
+import { KEYS, EVENTS } from '@/lib/prefs'
 
+// ---------------------------------------------------------------------------
+// Mobile bottom-nav tabs — icon only with label underneath
+// ---------------------------------------------------------------------------
+const BOTTOM_TABS = [
+  { label: 'Home',   href: '/',           icon: Home        },
+  { label: 'Listen', href: '/listen',     icon: Headphones  },
+  { label: 'Read',   href: '/read',       icon: BookOpenText },
+  { label: 'Dua',    href: '/hadith-dua', icon: Lightbulb   },
+  // "More" tab handled separately — opens the drawer
+] as const
+
+// ---------------------------------------------------------------------------
+// Sidebar (used both on desktop and inside the mobile drawer)
+// ---------------------------------------------------------------------------
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
   const [langCode, setLangCode] = useState(DEFAULT_LANGUAGE)
 
   useEffect(() => {
     const loadLang = () => {
-      const saved = window.localStorage.getItem('tilawa-quran-lang')
+      const saved = window.localStorage.getItem(KEYS.LANG)
       if (saved && QURAN_LANGUAGES.some((l) => l.code === saved)) setLangCode(saved)
     }
     loadLang()
     window.addEventListener('storage', loadLang)
-    window.addEventListener('tilawa-lang-changed', loadLang)
+    window.addEventListener(EVENTS.LANG_CHANGED, loadLang)
     return () => {
       window.removeEventListener('storage', loadLang)
-      window.removeEventListener('tilawa-lang-changed', loadLang)
+      window.removeEventListener(EVENTS.LANG_CHANGED, loadLang)
     }
   }, [])
 
   const changeLanguage = (code: string) => {
     setLangCode(code)
-    window.localStorage.setItem('tilawa-quran-lang', code)
-    window.dispatchEvent(new CustomEvent('tilawa-lang-changed'))
+    window.localStorage.setItem(KEYS.LANG, code)
+    window.dispatchEvent(new CustomEvent(EVENTS.LANG_CHANGED))
   }
 
   return (
@@ -40,7 +65,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         <Link href="/" onClick={onNavigate} className="flex items-center gap-3">
           <Image
             src="/images/tilawa-logo.jpeg"
-            alt="TILAWA logo - a rehal Quran stand"
+            alt="TILAWA logo"
             width={44}
             height={44}
             className="size-11 shrink-0 rounded-lg object-cover"
@@ -56,7 +81,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         </Link>
       </div>
 
-      {/* Groups */}
+      {/* Nav groups */}
       <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Main navigation">
         {navGroups.map((group) => (
           <div key={group.label} className="mb-5">
@@ -66,8 +91,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => {
                 const active =
-                  item.href !== '/#listen' &&
-                  (pathname === item.href || pathname.startsWith(item.href + '/'))
+                  pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/'))
                 return (
                   <li key={item.href}>
                     <Link
@@ -91,7 +115,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      {/* Language Selector pinned bottom */}
+      {/* Language selector */}
       <div className="border-t border-border p-3 pb-0">
         <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground/80">
           <span className="flex items-center gap-3 text-muted-foreground">
@@ -101,7 +125,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           <select
             value={langCode}
             onChange={(e) => changeLanguage(e.target.value)}
-            className="bg-transparent text-xs font-semibold focus:outline-none cursor-pointer pr-1 text-foreground"
+            className="cursor-pointer bg-transparent pr-1 text-xs font-semibold text-foreground focus:outline-none"
             aria-label="Select Quran translation language"
           >
             {QURAN_LANGUAGES.map((l) => (
@@ -113,7 +137,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       </div>
 
-      {/* Settings pinned bottom */}
+      {/* Settings + theme toggle */}
       <div className="border-t border-border p-3">
         <Link
           href={settingsItem.href}
@@ -135,35 +159,15 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
+// ---------------------------------------------------------------------------
+// AppShell
+// ---------------------------------------------------------------------------
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false)
-  const [langCode, setLangCode] = useState(DEFAULT_LANGUAGE)
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const pathname = usePathname()
 
-  useEffect(() => {
-    const loadLang = () => {
-      const saved = window.localStorage.getItem('tilawa-quran-lang')
-      if (saved && QURAN_LANGUAGES.some((l) => l.code === saved)) setLangCode(saved)
-    }
-    loadLang()
-    window.addEventListener('storage', loadLang)
-    window.addEventListener('tilawa-lang-changed', loadLang)
-    return () => {
-      window.removeEventListener('storage', loadLang)
-      window.removeEventListener('tilawa-lang-changed', loadLang)
-    }
-  }, [])
-
-  const changeLanguage = (code: string) => {
-    setLangCode(code)
-    window.localStorage.setItem('tilawa-quran-lang', code)
-    window.dispatchEvent(new CustomEvent('tilawa-lang-changed'))
-  }
-
-  // Close the mobile drawer on route change
-  useEffect(() => {
-    setOpen(false)
-  }, [pathname])
+  // Close drawer on navigation
+  useEffect(() => { setDrawerOpen(false) }, [pathname])
 
   return (
     <div className="flex min-h-dvh">
@@ -172,8 +176,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <SidebarContent />
       </aside>
 
-      {/* Mobile top bar */}
-      <div className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-border bg-background/95 px-4 py-3 backdrop-blur lg:hidden">
+      {/* ------------------------------------------------------------------ */}
+      {/* Mobile top bar — logo only + hamburger (no lang picker)             */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur lg:hidden">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
             src="/images/tilawa-logo.jpeg"
@@ -184,53 +190,99 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           />
           <span className="font-serif text-lg font-bold tracking-[0.2em] text-primary">TILAWA</span>
         </Link>
-        
-        <div className="flex items-center gap-2">
-          {/* Mobile Language Selector */}
-          <div className="flex items-center rounded-md border border-border bg-card px-2 py-1 text-sm text-foreground">
-            <Languages className="mr-1 size-3.5 text-muted-foreground" aria-hidden="true" />
-            <select
-              value={langCode}
-              onChange={(e) => changeLanguage(e.target.value)}
-              className="bg-transparent text-xs font-semibold focus:outline-none cursor-pointer text-foreground pr-1"
-              aria-label="Select Quran translation language"
-            >
-              {QURAN_LANGUAGES.map((l) => (
-                <option key={l.code} value={l.code} className="bg-card text-foreground">
-                  {l.label === l.nativeLabel ? l.label : `${l.label} — ${l.nativeLabel}`}
-                </option>
-              ))}
-            </select>
-          </div>
 
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-expanded={open}
-            aria-label={open ? 'Close menu' : 'Open menu'}
-            className="rounded-md border border-border p-2 text-foreground hover:bg-muted"
-          >
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
-        </div>
+        {/* Hamburger — only for the full drawer (all sections) */}
+        <button
+          type="button"
+          onClick={() => setDrawerOpen((v) => !v)}
+          aria-expanded={drawerOpen}
+          aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+          className="flex size-9 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:bg-muted"
+        >
+          {drawerOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+        </button>
       </div>
 
-      {/* Mobile drawer */}
-      {open && (
-        <div className="fixed inset-0 z-30 lg:hidden">
+      {/* Mobile full drawer */}
+      {drawerOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-foreground/40"
+            className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
             aria-hidden="true"
-            onClick={() => setOpen(false)}
+            onClick={() => setDrawerOpen(false)}
           />
           <div className="absolute inset-y-0 left-0 w-72 max-w-[85vw] border-r border-border bg-card pt-14 shadow-xl">
-            <SidebarContent onNavigate={() => setOpen(false)} />
+            <SidebarContent onNavigate={() => setDrawerOpen(false)} />
           </div>
         </div>
       )}
 
-      {/* Main content */}
-      <main className="min-w-0 flex-1 pt-14 lg:pt-0">{children}</main>
+      {/* Main content — extra bottom padding on mobile for top bar + bottom nav + player bar */}
+      <main className="min-w-0 flex-1 pt-14 pb-28 lg:pb-0 lg:pt-0">{children}</main>
+
+      {/* ================================================================== */}
+      {/* Mobile bottom navigation bar                                        */}
+      {/* ================================================================== */}
+      <nav
+        aria-label="Quick navigation"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur lg:hidden"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <ul className="flex items-stretch">
+          {/* Regular tabs */}
+          {BOTTOM_TABS.map((tab) => {
+            const Icon = tab.icon
+            const active =
+              pathname === tab.href || (tab.href !== '/' && pathname.startsWith(tab.href + '/'))
+            return (
+              <li key={tab.href} className="flex flex-1">
+                <Link
+                  href={tab.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 text-[10px] font-medium transition-colors ${
+                    active
+                      ? 'text-primary'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Icon
+                    className={`size-5 transition-transform ${active ? 'scale-110' : ''}`}
+                    aria-hidden="true"
+                    strokeWidth={active ? 2.5 : 1.75}
+                  />
+                  {tab.label}
+                  {/* Active dot indicator */}
+                  {active && (
+                    <span className="mt-0.5 h-1 w-1 rounded-full bg-primary" aria-hidden="true" />
+                  )}
+                </Link>
+              </li>
+            )
+          })}
+
+          {/* "More" tab — opens the full drawer */}
+          <li className="flex flex-1">
+            <button
+              type="button"
+              onClick={() => setDrawerOpen((v) => !v)}
+              aria-label="Open full navigation menu"
+              className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 text-[10px] font-medium transition-colors ${
+                drawerOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Grid2x2
+                className={`size-5 transition-transform ${drawerOpen ? 'scale-110' : ''}`}
+                aria-hidden="true"
+                strokeWidth={drawerOpen ? 2.5 : 1.75}
+              />
+              More
+              {drawerOpen && (
+                <span className="mt-0.5 h-1 w-1 rounded-full bg-primary" aria-hidden="true" />
+              )}
+            </button>
+          </li>
+        </ul>
+      </nav>
     </div>
   )
 }

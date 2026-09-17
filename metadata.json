@@ -1,0 +1,10 @@
+{
+  "name": "TILAWA - Quranic Recitation & Learning",
+  "description": "AI-powered Quranic recitation learning, tajweed rules, hadith library, and memorization companion.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -12,9 +12,8 @@ try {
   console.error('❌ Auth initialization failed:', authInitError.message)
 }
 
-// If auth initialization failed, return error responses
-if (!authHandlers || authInitError) {
-  const errorResponse = new Response(
+const getErrorResponse = () =>
+  new Response(
     JSON.stringify({
       error: 'Authentication service unavailable',
       details: authInitError?.message || 'Auth not initialized',
@@ -26,9 +25,17 @@ if (!authHandlers || authInitError) {
     }
   )
 
-  export const GET = () => errorResponse
-  export const POST = () => errorResponse
-} else {
-  // Auth is properly initialized, export handlers
-  export const { GET, POST } = authHandlers
+export const GET = (req: Request) => {
+  if (authHandlers?.GET) {
+    return authHandlers.GET(req)
+  }
+  return getErrorResponse()
 }
+
+export const POST = (req: Request) => {
+  if (authHandlers?.POST) {
+    return authHandlers.POST(req)
+  }
+  return getErrorResponse()
+}
+

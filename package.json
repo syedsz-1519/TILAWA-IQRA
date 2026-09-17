@@ -2,13 +2,16 @@
   "name": "tilawa-workspace",
   "version": "1.0.0",
   "private": true,
-  "description": "Workspace manager for TILAWA (Next.js frontend & FastAPI backend)",
+  "description": "Workspace manager for TILAWA",
+  "workspaces": [
+    "frontend"
+  ],
   "scripts": {
-    "dev": "pnpm --filter frontend dev",
-    "build": "pnpm --filter frontend build",
-    "start": "pnpm --filter frontend start",
-    "lint": "pnpm --filter frontend lint",
-    "typecheck": "pnpm --filter frontend typecheck"
+    "dev": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=frontend",
+    "start": "npm run start --workspace=frontend",
+    "lint": "npm run lint --workspace=frontend",
+    "typecheck": "npm run typecheck --workspace=frontend"
   },
   "devDependencies": {
     "typescript": "5.7.3"
