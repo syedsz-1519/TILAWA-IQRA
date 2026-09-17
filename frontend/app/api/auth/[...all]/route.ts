@@ -1,41 +1,88 @@
-import { auth, getAuth } from '@/lib/auth'
-import { toNextJsHandler } from 'better-auth/next-js'
+import { NextRequest, NextResponse } from 'next/server'
 
-let authHandlers: any = null
-let authInitError: Error | null = null
+/**
+ * Auth proxy routes - forwards to backend
+ * Backend handles all auth operations (Better Auth)
+ */
 
-try {
-  const authInstance = auth || getAuth()
-  authHandlers = toNextJsHandler(authInstance.handler)
-} catch (error) {
-  authInitError = error instanceof Error ? error : new Error(String(error))
-  console.error('❌ Auth initialization failed:', authInitError.message)
-}
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
-const getErrorResponse = () =>
-  new Response(
-    JSON.stringify({
-      error: 'Authentication service unavailable',
-      details: authInitError?.message || 'Auth not initialized',
-      help: 'Ensure DATABASE_URL and BETTER_AUTH_SECRET are set in environment variables',
-    }),
-    {
-      status: 503,
-      headers: { 'Content-Type': 'application/json' },
+/**
+ * GET /api/auth/[...all]
+ * Proxy to backend auth endpoint
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const pathname = request.nextUrl.pathname
+    const searchParams = request.nextUrl.search
+
+    const backendUrl = `${API_URL}${pathname}${searchParams}`
+
+    const response = await fetch(backendUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: request.headers.get('cookie') || '',
+      },
+    })
+
+    // Create response with proper headers
+    const data = await response.json()
+    const nextResponse = NextResponse.json(data, { status: response.status })
+
+    // Forward auth cookies
+    const setCookie = response.headers.get('set-cookie')
+    if (setCookie) {
+      nextResponse.headers.set('set-cookie', setCookie)
     }
-  )
 
-export const GET = (req: Request) => {
-  if (authHandlers?.GET) {
-    return authHandlers.GET(req)
+    return nextResponse
+  } catch (error) {
+    console.error('Auth proxy GET error:', error)
+    return NextResponse.json(
+      { error: 'Auth service unavailable' },
+      { status: 503 }
+    )
   }
-  return getErrorResponse()
 }
 
-export const POST = (req: Request) => {
-  if (authHandlers?.POST) {
-    return authHandlers.POST(req)
+/**
+ * POST /api/auth/[...all]
+ * Proxy to backend auth endpoint
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const pathname = request.nextUrl.pathname
+    const body = await request.json().catch(() => ({}))
+
+    const backendUrl = `${API_URL}${pathname}`
+
+    const response = await fetch(backendUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: request.headers.get('cookie') || '',
+      },
+      body: JSON.stringify(body),
+    })
+
+    // Create response with proper headers
+    const data = await response.json()
+    const nextResponse = NextResponse.json(data, { status: response.status })
+
+    // Forward auth cookies
+    const setCookie = response.headers.get('set-cookie')
+    if (setCookie) {
+      nextResponse.headers.set('set-cookie', setCookie)
+    }
+
+    return nextResponse
+  } catch (error) {
+    console.error('Auth proxy POST error:', error)
+    return NextResponse.json(
+      { error: 'Auth service unavailable' },
+      { status: 503 }
+    )
   }
-  return getErrorResponse()
 }
 
