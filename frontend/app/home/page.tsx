@@ -117,7 +117,7 @@ export default function HomePage() {
         </section>
       </div>
 
-      {/* Ayah Action Popup (TODO: Build this component) */}
+      {/* Ayah Action Popup */}
       {showAyahPopup && selectedAyah && (
         <div
           className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
@@ -136,26 +136,26 @@ export default function HomePage() {
 
             {/* Placeholder for ayah actions */}
             <div className="space-y-4">
-              <button className="w-full rounded-lg border border-border bg-card p-3 text-left hover:bg-muted">
+              <button className="w-full rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-muted">
                 🔊 Listen
               </button>
-              <button className="w-full rounded-lg border border-border bg-card p-3 text-left hover:bg-muted">
+              <button className="w-full rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-muted">
                 📖 Translation
               </button>
-              <button className="w-full rounded-lg border border-border bg-card p-3 text-left hover:bg-muted">
+              <button className="w-full rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-muted">
                 📚 Tafseer
               </button>
-              <button className="w-full rounded-lg border border-border bg-card p-3 text-left hover:bg-muted">
+              <button className="w-full rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-muted">
                 📤 Share
               </button>
-              <button className="w-full rounded-lg border border-border bg-card p-3 text-left hover:bg-muted">
+              <button className="w-full rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-muted">
                 💾 Save
               </button>
             </div>
 
             <button
               onClick={() => setShowAyahPopup(false)}
-              className="mt-6 w-full rounded-lg border border-border bg-muted px-4 py-3 font-semibold hover:bg-muted/80"
+              className="mt-6 w-full rounded-lg border border-border bg-muted px-4 py-3 font-semibold transition-colors hover:bg-muted/80"
             >
               Close
             </button>

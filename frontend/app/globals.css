@@ -2,6 +2,23 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cairo:wght@300;400;500;600;700&display=swap');
+
+@font-face {
+  font-family: 'Amiri Quran';
+  src: url('https://cdn.jsdelivr.net/npm/amiri-quran@0.4/data/fonts/Amiri%20Quran.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/npm/amiri-quran@0.4/data/fonts/Amiri%20Quran.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'KFGQPC Uthmanic Script HAFS';
+  src: url('https://cdn.jsdelivr.net/npm/@quran-js/fonts@1.0.0/KFGQPC%20Uthmani%20Hafs%20Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -164,5 +181,21 @@
   }
   [lang='ar'] {
     @apply font-serif;
+    text-align: right;
+    direction: rtl;
   }
+  [dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+  }
+  [dir="ltr"] {
+    direction: ltr;
+    text-align: left;
+  }
+}
+
+/* Preserve Quran text styling in dark mode */
+.dark .quran-text,
+[lang="ar"].quran-text {
+  color: rgb(15 23 42); /* slate-900 - keep dark for readability */
 }
