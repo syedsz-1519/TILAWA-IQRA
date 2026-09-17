@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Mock data storage - in production, this would use database
-const mockBookmarks: Record<string, Array<{ surahNumber: number; ayahNumber: number; bookmarkedAt: string }>> = {}
-
+/**
+ * Proxy to backend bookmarks API
+ * GET /api/bookmarks?userId=<userId>
+ */
 export async function GET(request: NextRequest) {
   try {
     const userId = request.nextUrl.searchParams.get('userId')
@@ -11,14 +12,36 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'userId required' }, { status: 400 })
     }
 
-    const bookmarks = mockBookmarks[userId] || []
-    return NextResponse.json(bookmarks)
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    const response = await fetch(`${backendUrl}/api/bookmarks?userId=${userId}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+      console.error(`Backend bookmarks GET failed: ${response.status}`)
+      return NextResponse.json(
+        { error: 'Failed to fetch bookmarks from backend' },
+        { status: response.status }
+      )
+    }
+
+    const data = await response.json()
+    return NextResponse.json(data.data || data)
   } catch (error) {
-    console.error('Bookmarks GET error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Bookmarks proxy GET error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
 }
 
+/**
+ * Proxy to backend bookmarks API
+ * POST /api/bookmarks
+ * Body: { userId: string, surahNumber: number, ayahNumber: number }
+ */
 export async function POST(request: NextRequest) {
   try {
     const { userId, surahNumber, ayahNumber } = await request.json()
@@ -30,32 +53,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!mockBookmarks[userId]) {
-      mockBookmarks[userId] = []
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    const response = await fetch(`${backendUrl}/api/bookmarks`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, surahNumber, ayahNumber }),
+    })
+
+    if (!response.ok) {
+      console.error(`Backend bookmarks POST failed: ${response.status}`)
+      return NextResponse.json(
+        { error: 'Failed to add bookmark in backend' },
+        { status: response.status }
+      )
     }
 
-    const existing = mockBookmarks[userId].find(
-      (b) => b.surahNumber === surahNumber && b.ayahNumber === ayahNumber
-    )
-
-    if (existing) {
-      return NextResponse.json(existing)
-    }
-
-    const bookmark = {
-      surahNumber,
-      ayahNumber,
-      bookmarkedAt: new Date().toISOString(),
-    }
-
-    mockBookmarks[userId].push(bookmark)
-    return NextResponse.json(bookmark, { status: 201 })
+    const data = await response.json()
+    return NextResponse.json(data.data || data, { status: 201 })
   } catch (error) {
-    console.error('Bookmarks POST error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Bookmarks proxy POST error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
 }
 
+/**
+ * Proxy to backend bookmarks API
+ * DELETE /api/bookmarks
+ * Body: { userId: string, surahNumber: number, ayahNumber: number }
+ */
 export async function DELETE(request: NextRequest) {
   try {
     const { userId, surahNumber, ayahNumber } = await request.json()
@@ -67,17 +95,28 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    if (!mockBookmarks[userId]) {
-      return NextResponse.json({ success: true })
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    const response = await fetch(`${backendUrl}/api/bookmarks`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, surahNumber, ayahNumber }),
+    })
+
+    if (!response.ok) {
+      console.error(`Backend bookmarks DELETE failed: ${response.status}`)
+      return NextResponse.json(
+        { error: 'Failed to remove bookmark in backend' },
+        { status: response.status }
+      )
     }
 
-    mockBookmarks[userId] = mockBookmarks[userId].filter(
-      (b) => !(b.surahNumber === surahNumber && b.ayahNumber === ayahNumber)
-    )
-
-    return NextResponse.json({ success: true })
+    const data = await response.json()
+    return NextResponse.json(data)
   } catch (error) {
-    console.error('Bookmarks DELETE error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Bookmarks proxy DELETE error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
 }

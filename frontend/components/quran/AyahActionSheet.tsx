@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { X, Volume2, Copy, Share2, BookmarkPlus, BookOpen, ChevronDown, ChevronUp } from 'lucide-react'
 import { useAudioPlayer } from '@/lib/audio-context'
 
@@ -32,10 +32,9 @@ export function AyahActionSheet({
   const [translation, setTranslation] = useState<Translation | null>(null)
   const [tafseer, setTafseer] = useState<Tafseer | null>(null)
   const [audioUrl, setAudioUrl] = useState<string>('')
-  const [loading, setLoading] = useState(false)
+  const [audioLoading, setAudioLoading] = useState(false)
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['listen']))
-  const { play, pause, isPlaying } = useAudioPlayer()
-  const audioRef = useRef<HTMLAudioElement>(null)
+  const { play, pause, isPlaying, currentUrl } = useAudioPlayer()
 
   const ayahRef = `${surahNumber}:${ayahNumber}`
 
@@ -45,10 +44,10 @@ export function AyahActionSheet({
 
     const fetchTranslation = async () => {
       try {
-        setLoading(true)
         const response = await fetch(
           `https://api.alquran.cloud/v1/ayah/${ayahRef}/en.asad`
         )
+        if (!response.ok) throw new Error('Failed to fetch translation')
         const data = await response.json()
         setTranslation({
           text: data.data.text,
@@ -56,8 +55,6 @@ export function AyahActionSheet({
         })
       } catch (error) {
         console.error('Failed to fetch translation:', error)
-      } finally {
-        setLoading(false)
       }
     }
 
@@ -70,14 +67,17 @@ export function AyahActionSheet({
 
     const fetchAudio = async () => {
       try {
+        setAudioLoading(true)
         const response = await fetch(
           `https://api.alquran.cloud/v1/ayah/${ayahRef}/ar.alafasy`
         )
+        if (!response.ok) throw new Error('Failed to fetch audio')
         const data = await response.json()
-        const audio = data.data.audio
-        setAudioUrl(audio)
+        setAudioUrl(data.data.audio)
       } catch (error) {
         console.error('Failed to fetch audio:', error)
+      } finally {
+        setAudioLoading(false)
       }
     }
 
@@ -89,7 +89,6 @@ export function AyahActionSheet({
     if (tafseer !== null) return
 
     try {
-      setLoading(true)
       const response = await fetch(
         `https://api.quran.com/api/v4/tafsirs/169/by_ayah/${surahNumber}:${ayahNumber}`
       )
@@ -102,8 +101,6 @@ export function AyahActionSheet({
       }
     } catch (error) {
       console.error('Failed to fetch tafseer:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -120,14 +117,10 @@ export function AyahActionSheet({
   const handlePlay = async () => {
     if (!audioUrl) return
 
-    if (isPlaying && audioRef.current) {
+    if (isPlaying && currentUrl === audioUrl) {
       pause()
     } else {
-      if (audioRef.current) {
-        audioRef.current.src = audioUrl
-        audioRef.current.play()
-        play()
-      }
+      await play(audioUrl)
     }
   }
 
@@ -136,7 +129,7 @@ export function AyahActionSheet({
     const shareData = {
       title: `Ayah ${surahNumber}:${ayahNumber}`,
       text: shareText,
-      url: window.location.origin,
+      url: typeof window !== 'undefined' ? window.location.origin : '',
     }
 
     if (navigator.share) {
@@ -147,29 +140,46 @@ export function AyahActionSheet({
       }
     } else {
       // Fallback: copy to clipboard
-      navigator.clipboard.writeText(shareText)
-      alert('Ayah copied to clipboard!')
+      try {
+        await navigator.clipboard.writeText(shareText)
+        alert('Ayah copied to clipboard!')
+      } catch {
+        alert('Failed to copy')
+      }
     }
   }
 
   const handleSave = async () => {
-    // Save to localStorage for now (TODO: integrate with Supabase)
-    const saved = JSON.parse(localStorage.getItem('tilawa_saved_ayahs') || '[]')
-    const newAyah = { surahNumber, ayahNumber, text: arabicText, savedAt: new Date().toISOString() }
+    try {
+      const saved = JSON.parse(localStorage.getItem('tilawa_saved_ayahs') || '[]')
+      const newAyah = {
+        surahNumber,
+        ayahNumber,
+        text: arabicText,
+        savedAt: new Date().toISOString(),
+      }
 
-    // Avoid duplicates
-    if (!saved.some((a: any) => a.surahNumber === surahNumber && a.ayahNumber === ayahNumber)) {
-      saved.push(newAyah)
-      localStorage.setItem('tilawa_saved_ayahs', JSON.stringify(saved))
-      alert('Ayah saved!')
-    } else {
-      alert('Already saved')
+      // Avoid duplicates
+      if (!saved.some((a: any) => a.surahNumber === surahNumber && a.ayahNumber === ayahNumber)) {
+        saved.push(newAyah)
+        localStorage.setItem('tilawa_saved_ayahs', JSON.stringify(saved))
+        alert('Ayah saved!')
+      } else {
+        alert('Already saved')
+      }
+    } catch (error) {
+      console.error('Error saving ayah:', error)
+      alert('Failed to save')
     }
   }
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(arabicText)
-    alert('Arabic text copied!')
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(arabicText)
+      alert('Arabic text copied!')
+    } catch {
+      alert('Failed to copy')
+    }
   }
 
   if (!isOpen) return null
@@ -233,22 +243,24 @@ export function AyahActionSheet({
 
             {expandedSections.has('listen') && (
               <div className="border-t border-border p-4">
-                {audioUrl ? (
+                {audioUrl && !audioLoading ? (
                   <div className="space-y-3">
-                    <audio ref={audioRef} />
                     <button
                       onClick={handlePlay}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 font-semibold text-primary-foreground transition-all hover:bg-primary/90"
+                      disabled={!audioUrl}
+                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 font-semibold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
                     >
                       <Volume2 className="size-5" />
-                      {isPlaying ? 'Pause' : 'Play'} Recitation
+                      {isPlaying && currentUrl === audioUrl ? 'Pause' : 'Play'} Recitation
                     </button>
                     <p className="text-xs text-muted-foreground">
                       Reciter: Yasser Al-Dosary
                     </p>
                   </div>
-                ) : (
+                ) : audioLoading ? (
                   <p className="text-sm text-muted-foreground">Loading audio...</p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Audio not available</p>
                 )}
               </div>
             )}
@@ -280,8 +292,6 @@ export function AyahActionSheet({
                       Translation: Sahih International (Asad)
                     </p>
                   </div>
-                ) : loading ? (
-                  <p className="text-sm text-muted-foreground">Loading translation...</p>
                 ) : (
                   <p className="text-sm text-muted-foreground">Translation not available</p>
                 )}
@@ -320,8 +330,6 @@ export function AyahActionSheet({
                       Source: {tafseer.tafsir}
                     </p>
                   </div>
-                ) : loading ? (
-                  <p className="text-sm text-muted-foreground">Loading tafseer...</p>
                 ) : (
                   <p className="text-sm text-muted-foreground">Tafseer not available</p>
                 )}
