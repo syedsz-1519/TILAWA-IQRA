@@ -6,6 +6,7 @@ import { PlayerBar } from '@/components/player/player-bar'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AppShell } from '@/components/app-shell'
 import { logEnvironmentValidation } from '@/lib/env.validation'
+import { MidnightRefreshInitializer } from '@/components/midnight-refresh-initializer'
 import './globals.css'
 
 // Validate environment variables on app startup
@@ -51,6 +52,7 @@ export default function RootLayout({
       <body className="antialiased font-sans">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <PlayerProvider>
+            <MidnightRefreshInitializer />
             <AppShell>{children}</AppShell>
             <PlayerBar />
           </PlayerProvider>
