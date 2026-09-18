@@ -11,6 +11,8 @@ import { StatsOverview } from '@/components/home/StatsOverview'
 import { StudyStreakBadge } from '@/components/home/StudyStreakBadge'
 import { ReadingGoals } from '@/components/home/ReadingGoals'
 import { PersonalizedRecommendations } from '@/components/home/PersonalizedRecommendations'
+import { WeeklyActivityChart } from '@/components/home/WeeklyActivityChart'
+import { AchievementsBadges } from '@/components/home/AchievementsBadges'
 import { getHijriDate, type HijriDateData } from '@/lib/hijri'
 import { getDailyAyah, type DailyAyahData } from '@/lib/dailyAyah'
 import { getPrayerTimes, getUserLocation, getCalculationMethod, type PrayerTimes } from '@/lib/prayerTimes'
@@ -103,6 +105,16 @@ export default function HomePage() {
         {/* Stats Overview */}
         <section className="mb-8">
           <StatsOverview userId={undefined} />
+        </section>
+
+        {/* Weekly Activity Chart */}
+        <section className="mb-8">
+          <WeeklyActivityChart />
+        </section>
+
+        {/* Achievements & Badges */}
+        <section className="mb-8">
+          <AchievementsBadges currentStreak={currentStreak} totalXP={0} />
         </section>
 
         {/* Next Salah (Hero) */}
