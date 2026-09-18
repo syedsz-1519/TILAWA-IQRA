@@ -144,9 +144,20 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
  */
 export function ErrorDebugPanel() {
   const [isOpen, setIsOpen] = React.useState(false)
-  const logs = getErrorLogs()
+  const [logs, setLogs] = React.useState<any[]>([])
+  const [mounted, setMounted] = React.useState(false)
+
+  // Only access logs on client after mount to avoid hydration mismatch
+  React.useEffect(() => {
+    setMounted(true)
+    setLogs(getErrorLogs())
+  }, [])
 
   if (process.env.NODE_ENV === 'production') {
+    return null
+  }
+
+  if (!mounted) {
     return null
   }
 
