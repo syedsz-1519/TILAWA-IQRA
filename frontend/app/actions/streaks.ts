@@ -6,8 +6,8 @@ import { updateStreaks as updateStreaksAPI, getStreaks as getStreaksAPI } from '
 async function getUserId() {
   try {
     const session = await getSession()
-    if (!session?.id) throw new Error('Unauthorized')
-    return session.id
+    if (!session?.user?.id) throw new Error('Unauthorized')
+    return session.user.id
   } catch (error) {
     throw new Error('Authentication failed: ' + (error instanceof Error ? error.message : String(error)))
   }
