@@ -3,7 +3,6 @@
 import {
   Check,
   Clock,
-  Database,
   Globe,
   Headphones,
   Mic,
@@ -553,38 +552,7 @@ export function SettingsPanel() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Database & Cloud Sync Instructions                                 */}
-      {/* ------------------------------------------------------------------ */}
-      <section aria-labelledby="db-heading" className="rounded-xl border border-border bg-card p-5 sm:p-6">
-        <div className="flex items-center gap-2">
-          <Database className="size-4 text-primary" aria-hidden="true" />
-          <h2 id="db-heading" className="text-base font-semibold sm:text-lg">Database & Cloud Sync</h2>
-        </div>
-        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-          Instructions for connecting PostgreSQL / Cloud SQL and persistent synchronization.
-        </p>
 
-        <div className="mt-4 rounded-lg border border-border bg-background p-4 text-xs leading-relaxed">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="font-semibold text-foreground">Storage Engine Status:</span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 font-medium text-emerald-600 dark:text-emerald-400">
-              <Check className="size-3" />
-              Hybrid Storage (Cloud Ready + Client Local Cache)
-            </span>
-          </div>
-          <p className="text-muted-foreground">
-            Tilawa stores your active reading preferences, last-read ayah, streak records, and Nafs reflection habits in client local storage automatically.
-          </p>
-          <div className="mt-3 rounded border border-border bg-muted/30 p-2.5 font-mono text-[11px] text-foreground">
-            # To connect full PostgreSQL / Cloud SQL database, set in .env:<br />
-            DATABASE_URL=&quot;postgres://username:password@host:5432/tilawa_db&quot;
-          </div>
-          <p className="mt-2 text-muted-foreground">
-            Managed tables: <code className="text-foreground">streaks</code>, <code className="text-foreground">nafsTracking</code>, <code className="text-foreground">mushafBookmarks</code>, <code className="text-foreground">readingProgress</code>, <code className="text-foreground">tajweedScores</code>.
-          </p>
-        </div>
-      </section>
     </div>
   )
 }
