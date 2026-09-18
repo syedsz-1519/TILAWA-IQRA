@@ -10,11 +10,9 @@ export function ThemeProvider({
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // Set initial theme from localStorage or system preference
-    const theme = localStorage.getItem('theme') || 'system'
-    const isDark =
-      theme === 'dark' ||
-      (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    // Set initial theme from localStorage or default to light
+    const theme = localStorage.getItem('theme') || 'light'
+    const isDark = theme === 'dark'
 
     if (isDark) {
       document.documentElement.classList.add('dark')
@@ -22,10 +20,10 @@ export function ThemeProvider({
       document.documentElement.classList.remove('dark')
     }
 
-    // Listen for system theme changes
+    // Listen for system theme changes (only if theme is set to system)
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = (e: MediaQueryListEvent) => {
-      const currentTheme = localStorage.getItem('theme') || 'system'
+      const currentTheme = localStorage.getItem('theme') || 'light'
       if (currentTheme === 'system') {
         if (e.matches) {
           document.documentElement.classList.add('dark')
