@@ -7,6 +7,7 @@ import { AppShell } from '@/components/app-shell'
 import { ServiceWorkerRegister } from '@/components/service-worker-register'
 import { logEnvironmentValidation } from '@/lib/env.validation'
 import { MidnightRefreshInitializer } from '@/components/midnight-refresh-initializer'
+import './fonts.css'
 import './globals.css'
 
 // Validate environment variables on app startup
