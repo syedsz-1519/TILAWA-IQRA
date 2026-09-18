@@ -10,6 +10,9 @@ export function ThemeProvider({
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    // Ensure we're on the client before accessing browser APIs
+    if (typeof window === 'undefined') return
+
     // Set initial theme from localStorage or default to light
     const theme = localStorage.getItem('theme') || 'light'
     const isDark = theme === 'dark'
@@ -39,6 +42,7 @@ export function ThemeProvider({
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
+  // During SSR and before mount, return children as-is (no DOM modifications)
   if (!mounted) return <>{children}</>
 
   return <>{children}</>

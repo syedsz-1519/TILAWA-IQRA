@@ -32,7 +32,7 @@ const BOTTOM_TABS = [
 // Sidebar (used both on desktop and inside the mobile drawer)
 // ---------------------------------------------------------------------------
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
-  const pathname = usePathname()
+  const pathname = usePathname() || '/'
 
   useEffect(() => {
     // Language selector removed
@@ -123,7 +123,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 // ---------------------------------------------------------------------------
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const pathname = usePathname()
+  const pathname = usePathname() || '/'
 
   // Close drawer on navigation
   useEffect(() => { setDrawerOpen(false) }, [pathname])
