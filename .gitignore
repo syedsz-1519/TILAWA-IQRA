@@ -6,13 +6,30 @@ __v0_jsx-dev-runtime.ts
 .v0-trash/
 .vercel/
 
-# Environment variables
+# Environment variables (CRITICAL - NEVER COMMIT)
 .env
 .env.local
 .env.*.local
 .env.production.local
+.env.*.private
+
+# Database credentials (MongoDB, etc.)
+*.mongodb
+*.db
+*.sql
+
+# API Keys and Secrets (if stored locally)
+*secret*
+*credentials*
+*password*
+*token*
+.aws/
+.auth/
 
 # Common ignores
 node_modules
 .next/
 .DS_Store
+dist/
+build/
+.turbo/
