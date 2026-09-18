@@ -52,7 +52,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased font-sans">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider>
           <PlayerProvider>
             <MidnightRefreshInitializer />
             <AppShell>{children}</AppShell>
