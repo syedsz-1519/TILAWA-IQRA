@@ -7,12 +7,8 @@ import { DailyAyahCard } from '@/components/home/DailyAyahCard'
 import { QuickAccessGrid } from '@/components/home/QuickAccessGrid'
 import { AdhkarStrip } from '@/components/home/AdhkarStrip'
 import { ContinueReadingCard } from '@/components/home/ContinueReadingCard'
-import { StatsOverview } from '@/components/home/StatsOverview'
-import { StudyStreakBadge } from '@/components/home/StudyStreakBadge'
 import { ReadingGoals } from '@/components/home/ReadingGoals'
 import { PersonalizedRecommendations } from '@/components/home/PersonalizedRecommendations'
-import { WeeklyActivityChart } from '@/components/home/WeeklyActivityChart'
-import { AchievementsBadges } from '@/components/home/AchievementsBadges'
 import { ReadingInsights } from '@/components/home/ReadingInsights'
 import { StudyTipsCarousel } from '@/components/home/StudyTipsCarousel'
 import { getHijriDate, type HijriDateData } from '@/lib/hijri'
@@ -33,7 +29,6 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [selectedAyah, setSelectedAyah] = useState<DailyAyahData | undefined>()
   const [showAyahPopup, setShowAyahPopup] = useState(false)
-  const [currentStreak, setCurrentStreak] = useState(0)
 
   // Load data on mount
   useEffect(() => {
@@ -80,12 +75,6 @@ export default function HomePage() {
             // Invalid progress data
           }
         }
-
-        // Load current streak
-        const savedStreak = localStorage.getItem('tilawa_streak')
-        if (savedStreak) {
-          setCurrentStreak(parseInt(savedStreak))
-        }
       } finally {
         setLoading(false)
       }
@@ -99,36 +88,6 @@ export default function HomePage() {
       <HeaderBar hijriDate={hijriDate} loading={loading} />
 
       <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
-        {/* Study Streak Badge (Hero Section) */}
-        <section className="mb-8">
-          <StudyStreakBadge currentStreak={currentStreak} />
-        </section>
-
-        {/* Stats Overview */}
-        <section className="mb-8">
-          <StatsOverview userId={undefined} />
-        </section>
-
-        {/* Weekly Activity Chart */}
-        <section className="mb-8">
-          <WeeklyActivityChart />
-        </section>
-
-        {/* Achievements & Badges */}
-        <section className="mb-8">
-          <AchievementsBadges currentStreak={currentStreak} totalXP={0} />
-        </section>
-
-        {/* Reading Insights */}
-        <section className="mb-8">
-          <ReadingInsights />
-        </section>
-
-        {/* Study Tips Carousel */}
-        <section className="mb-8">
-          <StudyTipsCarousel />
-        </section>
-
         {/* Next Salah (Hero) */}
         <section className="mb-8">
           <NextSalahCard prayerTimes={prayerTimes} loading={loading} />
