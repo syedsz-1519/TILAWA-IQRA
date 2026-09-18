@@ -70,7 +70,7 @@ export async function fetchSurah(surahNumber: number): Promise<SurahData | null>
       ayahs: data.data.ayahs.map((a: any) => ({
         number: a.number,
         text: a.text,
-        surah: a.surah.number,
+        surah: typeof a.surah === 'object' ? a.surah.number : a.surah,
         numberInSurah: a.numberInSurah,
       })),
     }
