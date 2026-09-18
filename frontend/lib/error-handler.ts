@@ -317,7 +317,7 @@ export function logError(error: unknown, context?: ErrorContext) {
   if (typeof window !== 'undefined') {
     try {
       const logs = getSafeStorageItem('tilawa_error_logs', '[]', false)
-      const logsArray = safeJsonParse(logs as string, []) || []
+      const logsArray: any[] = safeJsonParse(logs as string, []) || []
 
       if (Array.isArray(logsArray)) {
         logsArray.push(logEntry)

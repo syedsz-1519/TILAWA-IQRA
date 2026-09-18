@@ -39,7 +39,7 @@ export async function getSession(): Promise<Session | null> {
 
   try {
     // Check cache first
-    const cached = getSafeStorageItem<Session>(SESSION_CACHE_KEY, null, true)
+    const cached = getSafeStorageItem<Session | null>(SESSION_CACHE_KEY, null, true)
     if (cached && new Date(cached.expiresAt).getTime() > Date.now()) {
       return cached
     }
@@ -82,7 +82,7 @@ export async function getSession(): Promise<Session | null> {
     logError(error, { ...errorContext, context: { error: String(error) } })
     
     // Fallback to cached session if available
-    const cached = getSafeStorageItem<Session>(SESSION_CACHE_KEY, null, true)
+    const cached = getSafeStorageItem<Session | null>(SESSION_CACHE_KEY, null, true)
     return cached || null
   }
 }
