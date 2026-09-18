@@ -5,59 +5,103 @@ import { updateStreaks as updateStreaksAPI, getStreaks as getStreaksAPI } from '
 /**
  * Server action to get user streaks
  * Requires userId to be passed from client
+ * Handles API response and error handling
  */
 export async function getStreaks(userId: string) {
   try {
-    if (!userId) {
-      throw new Error('User ID is required')
+    if (!userId || typeof userId !== 'string') {
+      throw new Error('Valid User ID is required')
     }
 
+    // Call API client which handles retries and timeouts
     const { data, error } = await getStreaksAPI(userId)
 
+    // Handle API error
     if (error) {
-      throw new Error(error.message)
+      throw new Error(`API Error: ${error.message}`)
+    }
+
+    // API returns { success: true, data: { ... } }
+    const streaksData = data?.data || data
+    
+    if (!streaksData) {
+      // Return default streaks if none exist yet
+      return {
+        success: true,
+        data: {
+          userId,
+          currentStreak: 0,
+          totalXP: 0,
+          lastActivityDate: null,
+        },
+      }
     }
 
     return {
       success: true,
-      data: data || { userId, currentStreak: 0, totalXP: 0 },
+      data: streaksData,
     }
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to get streaks'
+    console.error('[getStreaks]', message)
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to get streaks',
+      error: message,
     }
   }
 }
 
 /**
  * Server action to add XP to user
- * Requires userId to be passed from client
+ * Requires userId and amount to be passed from client
+ * Automatically updates streaks via API
  */
 export async function addXP(userId: string, amount: number) {
   try {
-    if (!userId) {
-      throw new Error('User ID is required')
+    // Validate inputs
+    if (!userId || typeof userId !== 'string') {
+      throw new Error('Valid User ID is required')
     }
 
-    if (typeof amount !== 'number' || amount <= 0) {
-      throw new Error('Amount must be a positive number')
+    if (typeof amount !== 'number') {
+      throw new Error('XP amount must be a number')
     }
 
+    if (amount <= 0) {
+      throw new Error('XP amount must be greater than 0')
+    }
+
+    if (!Number.isFinite(amount)) {
+      throw new Error('XP amount must be a valid number')
+    }
+
+    // Call API client which handles retries and timeouts
     const { data, error } = await updateStreaksAPI(userId, amount)
 
+    // Handle API error
     if (error) {
-      throw new Error(error.message)
+      throw new Error(`API Error: ${error.message}`)
+    }
+
+    // API returns { success: true, data: { ... } }
+    const updatedData = data?.data || data
+
+    if (!updatedData) {
+      throw new Error('No data returned from server')
     }
 
     return {
       success: true,
-      data,
+      data: updatedData,
     }
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to add XP'
+    console.error('[addXP]', message)
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to add XP',
+      error: message,
     }
   }
 }
