@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -15,8 +15,7 @@ import {
   X,
 } from 'lucide-react'
 import { navGroups, settingsItem } from '@/lib/navigation'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { KEYS, EVENTS } from '@/lib/prefs'
+import { ThemeToggle } from '@/components/theme-provider'
 
 // ---------------------------------------------------------------------------
 // Mobile bottom-nav tabs — icon only with label underneath
@@ -34,6 +33,11 @@ const BOTTOM_TABS = [
 // ---------------------------------------------------------------------------
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
+
+  useEffect(() => {
+    // Language selector removed
+  }, [])
+
 
   return (
     <div className="flex h-full flex-col">
