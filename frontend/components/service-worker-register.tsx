@@ -10,6 +10,14 @@ export function ServiceWorkerRegister() {
 
     const register = async () => {
       try {
+        // Clear old caches to fix module loading issues
+        const cacheNames = await caches.keys()
+        await Promise.all(
+          cacheNames
+            .filter((name) => !name.includes('v2'))
+            .map((name) => caches.delete(name))
+        )
+
         const registration = await navigator.serviceWorker.register('/sw.js', {
           scope: '/',
         })

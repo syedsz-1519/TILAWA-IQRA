@@ -1,7 +1,7 @@
 // TILAWA Service Worker for Offline Quran Reading
-const CACHE_VERSION = 'tilawa-quran-v1'
-const RUNTIME_CACHE = 'tilawa-runtime-v1'
-const API_CACHE = 'tilawa-quran-api-v1'
+const CACHE_VERSION = 'tilawa-quran-v2'
+const RUNTIME_CACHE = 'tilawa-runtime-v2'
+const API_CACHE = 'tilawa-quran-api-v2'
 
 // Core surah pages & essential assets to precache for offline reading
 const PRECACHE_URLS = [
