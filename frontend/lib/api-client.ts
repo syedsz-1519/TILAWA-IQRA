@@ -16,7 +16,7 @@ export interface ApiError {
 /**
  * Fetch with standardized error handling
  */
-async function apiFetch<T>(
+async function apiFetch<T = any>(
   url: string,
   options?: RequestInit
 ): Promise<{ data: T | null; error: ApiError | null }> {
@@ -40,7 +40,7 @@ async function apiFetch<T>(
     }
 
     const data = await response.json()
-    return { data, error: null }
+    return { data: data as T, error: null }
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     console.error('API fetch error:', message)
