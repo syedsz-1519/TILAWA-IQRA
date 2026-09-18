@@ -12,7 +12,8 @@ import { StudyStreakBadge } from '@/components/home/StudyStreakBadge'
 import { ReadingGoals } from '@/components/home/ReadingGoals'
 import { PersonalizedRecommendations } from '@/components/home/PersonalizedRecommendations'
 import { WeeklyActivityChart } from '@/components/home/WeeklyActivityChart'
-import { AchievementsBadges } from '@/components/home/AchievementsBadges'
+import { ReadingInsights } from '@/components/home/ReadingInsights'
+import { StudyTipsCarousel } from '@/components/home/StudyTipsCarousel'
 import { getHijriDate, type HijriDateData } from '@/lib/hijri'
 import { getDailyAyah, type DailyAyahData } from '@/lib/dailyAyah'
 import { getPrayerTimes, getUserLocation, getCalculationMethod, type PrayerTimes } from '@/lib/prayerTimes'
@@ -115,6 +116,16 @@ export default function HomePage() {
         {/* Achievements & Badges */}
         <section className="mb-8">
           <AchievementsBadges currentStreak={currentStreak} totalXP={0} />
+        </section>
+
+        {/* Reading Insights */}
+        <section className="mb-8">
+          <ReadingInsights />
+        </section>
+
+        {/* Study Tips Carousel */}
+        <section className="mb-8">
+          <StudyTipsCarousel />
         </section>
 
         {/* Next Salah (Hero) */}
