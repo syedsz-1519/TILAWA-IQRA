@@ -3,7 +3,7 @@
  * Fetches Salah times from Aladhan API with caching
  */
 
-interface PrayerTimes {
+export interface PrayerTimes {
   Fajr: string
   Sunrise: string
   Dhuhr: string

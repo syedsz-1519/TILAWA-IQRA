@@ -3,7 +3,7 @@
  * Converts Gregorian dates to Hijri and fetches formatted date strings
  */
 
-interface HijriDateData {
+export interface HijriDateData {
   day: number
   monthAr: string
   monthEn: string

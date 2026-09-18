@@ -2,7 +2,7 @@
  * Quran text utilities - fetches Arabic Uthmani script from APIs
  */
 
-interface SurahData {
+export interface SurahData {
   number: number
   name: string
   englishName: string
@@ -14,7 +14,7 @@ interface SurahData {
   }>
 }
 
-interface SurahMetadata {
+export interface SurahMetadata {
   number: number
   name: string
   englishName: string

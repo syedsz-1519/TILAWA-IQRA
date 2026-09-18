@@ -3,7 +3,7 @@
  * Fetches a "daily" ayah deterministic by day-of-year
  */
 
-interface DailyAyahData {
+export interface DailyAyahData {
   surahNumber: number
   ayahNumber: number
   surahName: string
