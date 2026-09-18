@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -15,7 +15,7 @@ import {
   X,
 } from 'lucide-react'
 import { navGroups, settingsItem } from '@/lib/navigation'
-import { ThemeToggle } from '@/components/theme-provider'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 // ---------------------------------------------------------------------------
 // Mobile bottom-nav tabs — icon only with label underneath
