@@ -1,7 +1,16 @@
 /**
- * Standardized API client with error handling
+ * Standardized API client with error handling & automatic recovery
  * Centralized place for all API calls with consistent error handling
  */
+
+import {
+  withRetry,
+  logError,
+  attemptAutoRecovery,
+  classifyError,
+  validateData,
+  type ErrorContext,
+} from './error-handler'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 const QURAN_API_BASE = process.env.NEXT_PUBLIC_ALQURAN_CLOUD_API || 'https://api.alquran.cloud/v1'
@@ -14,41 +23,93 @@ export interface ApiError {
 }
 
 /**
- * Fetch with standardized error handling
+ * Fetch with automatic retry, timeout, and error recovery
  */
 async function apiFetch<T = any>(
   url: string,
-  options?: RequestInit
+  options?: RequestInit & { retries?: number; errorContext?: ErrorContext }
 ): Promise<{ data: T | null; error: ApiError | null }> {
+  const { retries = 2, errorContext, ...fetchOptions } = options ?? {}
+
   try {
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
+    const response = await withRetry(
+      async () => {
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 30000)
+
+        try {
+          return await fetch(url, {
+            headers: {
+              'Content-Type': 'application/json',
+              ...fetchOptions.headers,
+            },
+            ...fetchOptions,
+            signal: controller.signal,
+          })
+        } finally {
+          clearTimeout(timeout)
+        }
       },
-      ...options,
-    })
+      {
+        maxAttempts: retries + 1,
+        delayMs: 1000,
+        backoffMultiplier: 2,
+      }
+    )
+
+    if (!response) {
+      const error: ApiError = {
+        message: 'All retry attempts failed',
+        code: 'RETRY_FAILED',
+      }
+
+      logError(
+        new Error(error.message),
+        errorContext || { action: 'apiFetch', context: { url } }
+      )
+
+      return { data: null, error }
+    }
 
     if (!response.ok) {
-      return {
-        data: null,
-        error: {
-          message: `API error: ${response.status} ${response.statusText}`,
-          status: response.status,
-        },
+      const error: ApiError = {
+        message: `API error: ${response.status} ${response.statusText}`,
+        status: response.status,
+        code: `HTTP_${response.status}`,
       }
+
+      // Attempt auto-recovery for specific status codes
+      if (response.status === 401) {
+        await attemptAutoRecovery('AUTH_ERROR', errorContext)
+      } else if (response.status === 408 || response.status === 504) {
+        await attemptAutoRecovery('TIMEOUT_ERROR', errorContext)
+      }
+
+      logError(new Error(error.message), errorContext)
+
+      return { data: null, error }
     }
 
     const data = await response.json()
     return { data: data as T, error: null }
   } catch (error) {
+    const errorType = classifyError(error)
     const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error('API fetch error:', message)
+
+    logError(error, {
+      ...errorContext,
+      component: 'apiFetch',
+      context: { url, errorType },
+    })
+
+    // Attempt auto-recovery
+    await attemptAutoRecovery(errorType, errorContext)
+
     return {
       data: null,
       error: {
         message: `Failed to fetch: ${message}`,
-        code: 'FETCH_ERROR',
+        code: errorType,
       },
     }
   }

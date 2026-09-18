@@ -5,6 +5,7 @@ import { PlayerBar } from '@/components/player/player-bar'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AppShell } from '@/components/app-shell'
 import { ServiceWorkerRegister } from '@/components/service-worker-register'
+import { ErrorBoundary, ErrorDebugPanel } from '@/components/error-boundary'
 import { logEnvironmentValidation } from '@/lib/env.validation'
 import { MidnightRefreshInitializer } from '@/components/midnight-refresh-initializer'
 import './fonts.css'
@@ -52,14 +53,22 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased font-sans">
-        <ThemeProvider>
-          <PlayerProvider>
-            <MidnightRefreshInitializer />
-            <AppShell>{children}</AppShell>
-            <PlayerBar />
-            <ServiceWorkerRegister />
-          </PlayerProvider>
-        </ThemeProvider>
+        <ErrorBoundary
+          context={{
+            component: 'RootLayout',
+            action: 'render',
+          }}
+        >
+          <ThemeProvider>
+            <PlayerProvider>
+              <MidnightRefreshInitializer />
+              <AppShell>{children}</AppShell>
+              <PlayerBar />
+              <ServiceWorkerRegister />
+              <ErrorDebugPanel />
+            </PlayerProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )
