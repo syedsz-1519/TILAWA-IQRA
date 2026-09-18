@@ -10,14 +10,12 @@ import {
   Headphones,
   Heart,
   Home,
-  Languages,
   Lightbulb,
   Menu,
   X,
 } from 'lucide-react'
 import { navGroups, settingsItem } from '@/lib/navigation'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { QURAN_LANGUAGES, DEFAULT_LANGUAGE } from '@/lib/quran-languages'
 import { KEYS, EVENTS } from '@/lib/prefs'
 
 // ---------------------------------------------------------------------------
@@ -36,27 +34,6 @@ const BOTTOM_TABS = [
 // ---------------------------------------------------------------------------
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
-  const [langCode, setLangCode] = useState(DEFAULT_LANGUAGE)
-
-  useEffect(() => {
-    const loadLang = () => {
-      const saved = window.localStorage.getItem(KEYS.LANG)
-      if (saved && QURAN_LANGUAGES.some((l) => l.code === saved)) setLangCode(saved)
-    }
-    loadLang()
-    window.addEventListener('storage', loadLang)
-    window.addEventListener(EVENTS.LANG_CHANGED, loadLang)
-    return () => {
-      window.removeEventListener('storage', loadLang)
-      window.removeEventListener(EVENTS.LANG_CHANGED, loadLang)
-    }
-  }, [])
-
-  const changeLanguage = (code: string) => {
-    setLangCode(code)
-    window.localStorage.setItem(KEYS.LANG, code)
-    window.dispatchEvent(new CustomEvent(EVENTS.LANG_CHANGED))
-  }
 
   return (
     <div className="flex h-full flex-col">
@@ -114,28 +91,6 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           </div>
         ))}
       </nav>
-
-      {/* Language selector */}
-      <div className="border-t border-border p-3 pb-0">
-        <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground/80">
-          <span className="flex items-center gap-3 text-muted-foreground">
-            <Languages className="size-4 shrink-0" aria-hidden="true" />
-            Language
-          </span>
-          <select
-            value={langCode}
-            onChange={(e) => changeLanguage(e.target.value)}
-            className="cursor-pointer bg-transparent pr-1 text-xs font-semibold text-foreground focus:outline-none"
-            aria-label="Select Quran translation language"
-          >
-            {QURAN_LANGUAGES.map((l) => (
-              <option key={l.code} value={l.code} className="bg-card text-foreground">
-                {l.label === l.nativeLabel ? l.label : `${l.label} — ${l.nativeLabel}`}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
 
       {/* Settings + theme toggle */}
       <div className="border-t border-border p-3">
