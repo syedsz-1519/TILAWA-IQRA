@@ -1,44 +1,63 @@
 'use server'
 
-import { getSession } from '@/lib/auth'
 import { updateStreaks as updateStreaksAPI, getStreaks as getStreaksAPI } from '@/lib/api-client'
 
-async function getUserId() {
+/**
+ * Server action to get user streaks
+ * Requires userId to be passed from client
+ */
+export async function getStreaks(userId: string) {
   try {
-    const session = await getSession()
-    if (!session?.user?.id) throw new Error('Unauthorized')
-    return session.user.id
-  } catch (error) {
-    throw new Error('Authentication failed: ' + (error instanceof Error ? error.message : String(error)))
-  }
-}
+    if (!userId) {
+      throw new Error('User ID is required')
+    }
 
-export async function getStreaks() {
-  try {
-    const userId = await getUserId()
     const { data, error } = await getStreaksAPI(userId)
-    
+
     if (error) {
       throw new Error(error.message)
     }
-    
-    return data || { userId, currentStreak: 0, totalXP: 0 }
+
+    return {
+      success: true,
+      data: data || { userId, currentStreak: 0, totalXP: 0 },
+    }
   } catch (error) {
-    throw new Error('Failed to get streaks: ' + (error instanceof Error ? error.message : String(error)))
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get streaks',
+    }
   }
 }
 
-export async function addXP(amount: number) {
+/**
+ * Server action to add XP to user
+ * Requires userId to be passed from client
+ */
+export async function addXP(userId: string, amount: number) {
   try {
-    const userId = await getUserId()
+    if (!userId) {
+      throw new Error('User ID is required')
+    }
+
+    if (typeof amount !== 'number' || amount <= 0) {
+      throw new Error('Amount must be a positive number')
+    }
+
     const { data, error } = await updateStreaksAPI(userId, amount)
-    
+
     if (error) {
       throw new Error(error.message)
     }
-    
-    return { success: true, data }
+
+    return {
+      success: true,
+      data,
+    }
   } catch (error) {
-    throw new Error('Failed to add XP: ' + (error instanceof Error ? error.message : String(error)))
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to add XP',
+    }
   }
 }
