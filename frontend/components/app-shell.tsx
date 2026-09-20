@@ -33,9 +33,11 @@ const BOTTOM_TABS = [
 // ---------------------------------------------------------------------------
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname() || '/'
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
-    // Language selector removed
+    // Only render active states after hydration
+    setIsClient(true)
   }, [])
 
 
@@ -71,8 +73,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             </p>
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => {
-                const active =
+                const active = isClient && (
                   pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/'))
+                )
                 return (
                   <li key={item.href}>
                     <Link
@@ -102,7 +105,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           href={settingsItem.href}
           onClick={onNavigate}
           className={`flex items-center justify-between rounded-lg border px-3 py-2.5 text-sm transition-colors ${
-            pathname === settingsItem.href
+            isClient && pathname === settingsItem.href
               ? 'border-primary/40 bg-primary/10 font-medium text-primary'
               : 'border-border text-foreground/80 hover:bg-muted hover:text-foreground'
           }`}
@@ -123,10 +126,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 // ---------------------------------------------------------------------------
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [isClient, setIsClient] = useState(false)
   const pathname = usePathname() || '/'
 
-  // Close drawer on navigation
-  useEffect(() => { setDrawerOpen(false) }, [pathname])
+  // Set client flag and close drawer on navigation
+  useEffect(() => {
+    setIsClient(true)
+    setDrawerOpen(false)
+  }, [pathname])
 
   return (
     <div className="flex min-h-dvh">
@@ -191,8 +198,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {/* Regular tabs */}
           {BOTTOM_TABS.map((tab) => {
             const Icon = tab.icon
-            const active =
+            const active = isClient && (
               pathname === tab.href || (tab.href !== '/' && pathname.startsWith(tab.href + '/'))
+            )
             return (
               <li key={tab.href} className="flex flex-1">
                 <Link
