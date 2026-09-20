@@ -1,159 +1,130 @@
-import type { Metadata } from 'next'
-import { BookOpen, Moon, ScrollText, Sparkles } from 'lucide-react'
-import {
-  historyFacts,
-  historyIntro,
-  historyTimeline,
-  nuzoolFacts,
-  nuzoolIntro,
-  nuzoolStages,
-} from '@/lib/iqra-content'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Iqra Mode — History of the Quran & Nuzool-e-Quran | TILAWA',
-  description:
-    'Learn how the Quran was revealed (Nuzool-e-Quran) and preserved through history — from the Cave of Hira to the mushaf in your hands.',
-}
+import { useState } from 'react'
+import Link from 'next/link'
+import { Volume2, Zap } from 'lucide-react'
+import { getTajweedCategories, getAllTajweedRules, Difficulty } from '@/lib/tajweed'
 
-export default function IqraPage() {
+export default function IQRAPage() {
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty | 'all'>('all')
+  const categories = getTajweedCategories()
+  const allRules = getAllTajweedRules()
+
+  // Filter rules by difficulty
+  const filteredRules =
+    selectedDifficulty === 'all'
+      ? allRules
+      : allRules.filter((rule) => rule.difficulty === selectedDifficulty)
+
+  const getDifficultyColor = (difficulty: Difficulty) => {
+    switch (difficulty) {
+      case 'beginner':
+        return 'bg-green-500/10 text-green-700 border-green-200'
+      case 'intermediate':
+        return 'bg-yellow-500/10 text-yellow-700 border-yellow-200'
+      case 'advanced':
+        return 'bg-red-500/10 text-red-700 border-red-200'
+    }
+  }
+
   return (
-    <>
-      <main className="pb-40">
-        {/* Page hero */}
-        <section className="border-b border-border bg-card">
-          <div className="mx-auto max-w-6xl px-4 py-14 text-center">
-            <p className="mb-3 flex items-center justify-center gap-2 text-sm font-medium text-primary">
-              <Sparkles className="size-4" aria-hidden="true" />
-              Iqra Mode — Learn
-            </p>
-            <p lang="ar" dir="rtl" className="mb-4 text-4xl leading-relaxed text-primary sm:text-5xl">
-              {'اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ'}
-            </p>
-            <h1 className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-              The Story of the Quran
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
-              &ldquo;Read in the name of your Lord who created&rdquo; (96:1) — the very first word revealed
-              was <em>Iqra</em>: Read. Begin your journey by understanding how the Quran descended and how
-              it reached you, letter-perfect, fourteen centuries later.
-            </p>
-          </div>
-        </section>
-
-        {/* Nuzool-e-Quran */}
-        <section id="nuzool" aria-labelledby="nuzool-heading" className="mx-auto max-w-6xl px-4 py-16">
-          <div className="mb-10 flex items-start gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Moon className="size-5" aria-hidden="true" />
-            </span>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b border-border bg-gradient-to-r from-primary/5 to-transparent">
+        <div className="mx-auto max-w-6xl px-4 py-6 md:px-8">
+          <div className="flex items-center gap-3">
+            <div className="text-4xl">📖</div>
             <div>
-              <h2 id="nuzool-heading" className="text-2xl font-semibold tracking-tight">
-                Nuzool-e-Quran <span lang="ar" className="text-primary">{'نزول القرآن'}</span>
-              </h2>
-              <p className="mt-2 max-w-3xl leading-relaxed text-muted-foreground">{nuzoolIntro}</p>
+              <h1 className="text-3xl font-bold">IQRA Mode</h1>
+              <p className="text-muted-foreground text-sm mt-1">Learn Tajweed & Proper Quran Recitation</p>
             </div>
           </div>
+        </div>
+      </div>
 
-          <h3 className="mb-4 text-lg font-semibold">The three stages of descent</h3>
-          <div className="mb-12 grid gap-4 md:grid-cols-3">
-            {nuzoolStages.map((stage) => (
-              <article key={stage.title} className="rounded-xl border border-border bg-card p-5">
-                {stage.arabic && (
-                  <p lang="ar" dir="rtl" className="mb-2 text-xl text-primary">
-                    {stage.arabic}
-                  </p>
-                )}
-                <h4 className="font-semibold">{stage.title}</h4>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{stage.description}</p>
-              </article>
-            ))}
-          </div>
-
-          <h3 className="mb-4 text-lg font-semibold">Key facts about the revelation</h3>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {nuzoolFacts.map((fact) => (
-              <article key={fact.title} className="rounded-xl border border-border bg-card p-5">
-                <h4 className="font-semibold">{fact.title}</h4>
-                {fact.arabic && (
-                  <p lang="ar" dir="rtl" className="mt-2 text-xl leading-relaxed text-primary">
-                    {fact.arabic}
-                  </p>
-                )}
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{fact.description}</p>
-              </article>
+      {/* Main Content */}
+      <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
+        {/* Tajweed Categories */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold mb-6">Tajweed Categories</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {categories.map((category) => (
+              <Link
+                key={category.id}
+                href={`/iqra/tajweed/${category.id}`}
+                className="group rounded-lg border border-border p-4 hover:border-primary hover:bg-primary/5 transition-all"
+              >
+                <div className="text-3xl mb-2">{category.icon}</div>
+                <h3 className="font-semibold group-hover:text-primary transition-colors">
+                  {category.name}
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">{category.description}</p>
+                <div className="mt-3 text-xs font-medium text-primary">
+                  {allRules.filter((r) => r.category === category.id).length} Rules →
+                </div>
+              </Link>
             ))}
           </div>
         </section>
 
-        {/* History of the Quran */}
-        <section
-          id="history"
-          aria-labelledby="history-heading"
-          className="border-t border-border bg-card/50"
-        >
-          <div className="mx-auto max-w-6xl px-4 py-16">
-            <div className="mb-10 flex items-start gap-3">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <ScrollText className="size-5" aria-hidden="true" />
-              </span>
-              <div>
-                <h2 id="history-heading" className="text-2xl font-semibold tracking-tight">
-                  History of the Quran <span lang="ar" className="text-primary">{'تاريخ القرآن'}</span>
-                </h2>
-                <p className="mt-2 max-w-3xl leading-relaxed text-muted-foreground">{historyIntro}</p>
-              </div>
-            </div>
-
-            <h3 className="mb-6 text-lg font-semibold">Timeline of preservation</h3>
-            <ol className="relative mb-12 flex flex-col gap-8 border-s-2 border-primary/30 ps-6">
-              {historyTimeline.map((event) => (
-                <li key={event.title} className="relative">
-                  <span
-                    aria-hidden="true"
-                    className="absolute -start-[31px] top-1 size-3 rounded-full border-2 border-primary bg-background"
-                  />
-                  <p className="text-sm font-semibold text-primary">{event.period}</p>
-                  <h4 className="mt-1 font-semibold">{event.title}</h4>
-                  <p className="mt-1 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-                    {event.description}
-                  </p>
-                </li>
-              ))}
-            </ol>
-
-            <div className="grid gap-4 md:grid-cols-3">
-              {historyFacts.map((fact) => (
-                <article key={fact.title} className="rounded-xl border border-border bg-background p-5">
-                  <h4 className="font-semibold">{fact.title}</h4>
-                  {fact.arabic && (
-                    <p lang="ar" dir="rtl" className="mt-2 text-lg leading-relaxed text-primary">
-                      {fact.arabic}
-                    </p>
-                  )}
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{fact.description}</p>
-                </article>
+        {/* Difficulty Filter */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">All Tajweed Rules</h2>
+            <div className="flex gap-2">
+              {(['all', 'beginner', 'intermediate', 'advanced'] as const).map((diff) => (
+                <button
+                  key={diff}
+                  onClick={() => setSelectedDifficulty(diff)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    selectedDifficulty === diff
+                      ? 'bg-primary text-primary-foreground'
+                      : 'border border-border hover:bg-muted'
+                  }`}
+                >
+                  {diff.charAt(0).toUpperCase() + diff.slice(1)}
+                </button>
               ))}
             </div>
           </div>
-        </section>
 
-        {/* CTA back to listening */}
-        <section className="mx-auto max-w-6xl px-4 py-16 text-center">
-          <h2 className="text-balance text-2xl font-semibold tracking-tight">
-            Now hear it recited
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-pretty leading-relaxed text-muted-foreground">
-            The same words revealed in the Cave of Hira — recited beautifully by Sheikh Yasser Al-Dosari.
-          </p>
-          <a
-            href="/#listen"
-            className="mt-6 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 font-medium text-primary-foreground transition-opacity hover:opacity-90"
-          >
-            <BookOpen className="size-4" aria-hidden="true" />
-            Start Listening
-          </a>
+          {/* Rules List */}
+          <div className="space-y-4">
+            {filteredRules.map((rule) => (
+              <Link
+                key={rule.id}
+                href={`/iqra/tajweed/${rule.category}/${rule.id}`}
+                className="group rounded-lg border border-border p-5 hover:border-primary hover:bg-primary/5 transition-all"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">
+                        {rule.name}
+                      </h3>
+                      <span className={`px-2 py-1 rounded text-xs font-medium border ${getDifficultyColor(rule.difficulty)}`}>
+                        {rule.difficulty}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">{rule.description}</p>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span>{rule.examples.length} Examples</span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <Volume2 className="h-3 w-3" />
+                        Audio Guide
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-3xl ml-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                    {rule.nameArabic}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </section>
-      </main>
-    </>
+      </div>
+    </div>
   )
 }
