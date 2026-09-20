@@ -197,6 +197,105 @@ export const duaFavorites = pgTable(
 )
 
 // ========================================
+// HIFZ (Memorization) Tables
+// ========================================
+
+export const hifzProgress = pgTable(
+  'hifzProgress',
+  {
+    id: serial('id').primaryKey(),
+    userId: text('userId').notNull(),
+    cardId: text('cardId').notNull(),
+    deckId: text('deckId').notNull(),
+    status: text('status').notNull().default('new'), // 'new' | 'learning' | 'review' | 'mastered'
+    attempts: integer('attempts').notNull().default(0),
+    correctAttempts: integer('correctAttempts').notNull().default(0),
+    lastReviewed: timestamp('lastReviewed'),
+    nextReviewDate: timestamp('nextReviewDate'),
+    interval: integer('interval').notNull().default(0),
+    easeFactor: integer('easeFactor').notNull().default(250), // stored as integer (2.5 * 100)
+    createdAt: timestamp('createdAt').notNull().defaultNow(),
+    updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index('idx_hifz_user').on(table.userId),
+    cardIdIdx: index('idx_hifz_card').on(table.cardId),
+    userCardIdx: unique('uniq_user_card').on(table.userId, table.cardId),
+  })
+)
+
+export const hifzSessions = pgTable(
+  'hifzSessions',
+  {
+    id: serial('id').primaryKey(),
+    userId: text('userId').notNull(),
+    deckId: text('deckId').notNull(),
+    startTime: timestamp('startTime').notNull().defaultNow(),
+    endTime: timestamp('endTime'),
+    cardsReviewed: integer('cardsReviewed').notNull().default(0),
+    correctCount: integer('correctCount').notNull().default(0),
+    accuracy: integer('accuracy'), // percentage 0-100
+  },
+  (table) => ({
+    userIdIdx: index('idx_session_user').on(table.userId),
+  })
+)
+
+// ========================================
+// Story Bookmarks
+// ========================================
+
+export const storyBookmarks = pgTable(
+  'storyBookmarks',
+  {
+    id: serial('id').primaryKey(),
+    userId: text('userId').notNull(),
+    storyId: text('storyId').notNull(),
+    bookmarkedAt: timestamp('bookmarkedAt').notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index('idx_story_user').on(table.userId),
+    userStoryIdx: unique('uniq_user_story').on(table.userId, table.storyId),
+  })
+)
+
+// ========================================
+// Language Preferences
+// ========================================
+
+export const userLanguagePrefs = pgTable(
+  'userLanguagePrefs',
+  {
+    id: serial('id').primaryKey(),
+    userId: text('userId').notNull(),
+    primaryLanguage: text('primaryLanguage').notNull().default('en'),
+    secondaryLanguages: json('secondaryLanguages').$type<string[]>().default([]),
+    updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: unique('uniq_user_lang_prefs').on(table.userId),
+  })
+)
+
+// ========================================
+// Tajweed Completion
+// ========================================
+
+export const tajweedCompletion = pgTable(
+  'tajweedCompletion',
+  {
+    id: serial('id').primaryKey(),
+    userId: text('userId').notNull(),
+    ruleId: text('ruleId').notNull(),
+    completedAt: timestamp('completedAt').notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index('idx_tajweed_completion_user').on(table.userId),
+    userRuleIdx: unique('uniq_user_rule').on(table.userId, table.ruleId),
+  })
+)
+
+// ========================================
 // Relations
 // ========================================
 
@@ -222,4 +321,24 @@ export const accountRelations = relations(account, ({ one }) => ({
 
 export const streaksRelations = relations(streaks, ({ one }) => ({
   user: one(user, { fields: [streaks.userId], references: [user.id] }),
+}))
+
+export const hifzProgressRelations = relations(hifzProgress, ({ one }) => ({
+  user: one(user, { fields: [hifzProgress.userId], references: [user.id] }),
+}))
+
+export const hifzSessionsRelations = relations(hifzSessions, ({ one }) => ({
+  user: one(user, { fields: [hifzSessions.userId], references: [user.id] }),
+}))
+
+export const storyBookmarksRelations = relations(storyBookmarks, ({ one }) => ({
+  user: one(user, { fields: [storyBookmarks.userId], references: [user.id] }),
+}))
+
+export const userLanguagePrefsRelations = relations(userLanguagePrefs, ({ one }) => ({
+  user: one(user, { fields: [userLanguagePrefs.userId], references: [user.id] }),
+}))
+
+export const tajweedCompletionRelations = relations(tajweedCompletion, ({ one }) => ({
+  user: one(user, { fields: [tajweedCompletion.userId], references: [user.id] }),
 }))

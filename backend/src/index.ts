@@ -10,6 +10,7 @@ import * as streakRoutes from './routes/streaks'
 import * as bookmarkRoutes from './routes/bookmarks'
 import * as readingProgressRoutes from './routes/reading-progress'
 import languageRoutes from './routes/languages'
+import hifzRoutes from './routes/hifz'
 
 // Verify required environment variables
 const requiredEnvVars = ['DATABASE_URL', 'NODE_ENV', 'BETTER_AUTH_SECRET']
@@ -41,6 +42,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Mount language routes
 app.use(languageRoutes)
+
+// Mount hifz routes
+app.use('/api/hifz', hifzRoutes)
+
+// Mount bookmarks routes
+app.use('/api/bookmarks', bookmarkRoutes)
 
 // =====================
 // STREAKS ENDPOINTS
