@@ -32,7 +32,7 @@ const BOTTOM_TABS = [
 // Sidebar (used both on desktop and inside the mobile drawer)
 // ---------------------------------------------------------------------------
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
-  const pathname = usePathname() || '/'
+  const pathname = usePathname()
   const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
@@ -73,7 +73,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             </p>
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => {
-                const active = isClient && (
+                const active = isClient && pathname && (
                   pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/'))
                 )
                 return (
@@ -121,17 +121,17 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
-// ---------------------------------------------------------------------------
-// AppShell
-// ---------------------------------------------------------------------------
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [isClient, setIsClient] = useState(false)
-  const pathname = usePathname() || '/'
+  const pathname = usePathname()
 
   // Set client flag and close drawer on navigation
   useEffect(() => {
     setIsClient(true)
+  }, [])
+
+  useEffect(() => {
     setDrawerOpen(false)
   }, [pathname])
 
@@ -198,7 +198,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {/* Regular tabs */}
           {BOTTOM_TABS.map((tab) => {
             const Icon = tab.icon
-            const active = isClient && (
+            const active = isClient && pathname && (
               pathname === tab.href || (tab.href !== '/' && pathname.startsWith(tab.href + '/'))
             )
             return (
