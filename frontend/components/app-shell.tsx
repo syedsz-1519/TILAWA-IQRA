@@ -28,18 +28,28 @@ const BOTTOM_TABS = [
   // "More" tab handled separately — opens the drawer
 ] as const
 
-// ---------------------------------------------------------------------------
-// Sidebar (used both on desktop and inside the mobile drawer)
-// ---------------------------------------------------------------------------
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+// Compute active state safely (only on client)
+function useActivePathCheck() {
   const pathname = usePathname()
   const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
-    // Only render active states after hydration
     setIsClient(true)
   }, [])
 
+  const isActive = (href: string): boolean => {
+    if (!isClient || !pathname) return false
+    return pathname === href || (href !== '/' && pathname.startsWith(href + '/'))
+  }
+
+  return { isClient, isActive }
+}
+
+// ---------------------------------------------------------------------------
+// Sidebar (used both on desktop and inside the mobile drawer)
+// ---------------------------------------------------------------------------
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+  const { isClient, isActive } = useActivePathCheck()
 
   return (
     <div className="flex h-full flex-col">
@@ -73,9 +83,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             </p>
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => {
-                const active = isClient && pathname && (
-                  pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/'))
-                )
+                const active = isActive(item.href)
                 return (
                   <li key={item.href}>
                     <Link
@@ -105,7 +113,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           href={settingsItem.href}
           onClick={onNavigate}
           className={`flex items-center justify-between rounded-lg border px-3 py-2.5 text-sm transition-colors ${
-            isClient && pathname === settingsItem.href
+            isActive(settingsItem.href)
               ? 'border-primary/40 bg-primary/10 font-medium text-primary'
               : 'border-border text-foreground/80 hover:bg-muted hover:text-foreground'
           }`}
@@ -121,6 +129,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
+// ---------------------------------------------------------------------------
+// AppShell
+// ---------------------------------------------------------------------------
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [isClient, setIsClient] = useState(false)
@@ -198,8 +209,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {/* Regular tabs */}
           {BOTTOM_TABS.map((tab) => {
             const Icon = tab.icon
-            const active = isClient && pathname && (
-              pathname === tab.href || (tab.href !== '/' && pathname.startsWith(tab.href + '/'))
+            const pathname_val = isClient ? pathname : null
+            const active = pathname_val && (
+              pathname_val === tab.href || (tab.href !== '/' && pathname_val.startsWith(tab.href + '/'))
             )
             return (
               <li key={tab.href} className="flex flex-1">
