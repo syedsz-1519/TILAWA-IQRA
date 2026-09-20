@@ -1,10 +1,9 @@
 'use client'
 
-import { useContext } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Copy, Volume2, Bookmark } from 'lucide-react'
 import { getDuaCategory, getDuasByCategory, getDuaTranslation } from '@/lib/dua-data'
-import { LanguageContext } from '@/lib/language-context'
+import { useLanguage } from '@/lib/language-context'
 
 interface CategoryPageProps {
   params: {
@@ -14,7 +13,7 @@ interface CategoryPageProps {
 
 export default function DuaCategoryPage({ params }: CategoryPageProps) {
   const { categoryId } = params
-  const { currentLanguage } = useContext(LanguageContext)
+  const { currentLanguage } = useLanguage()
 
   const category = getDuaCategory(categoryId as any)
   const duas = getDuasByCategory(categoryId as any)

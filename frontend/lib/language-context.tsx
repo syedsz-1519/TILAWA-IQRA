@@ -22,20 +22,24 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    const savedLanguage = localStorage.getItem('tilawa_language') as LanguageCode
-    const savedPreferred = localStorage.getItem('tilawa_preferred_languages')
+    try {
+      const savedLanguage = localStorage.getItem('tilawa_language') as LanguageCode
+      const savedPreferred = localStorage.getItem('tilawa_preferred_languages')
 
-    if (savedLanguage && LANGUAGES[savedLanguage]) {
-      setCurrentLanguage(savedLanguage)
-    }
-
-    if (savedPreferred) {
-      try {
-        const parsed = JSON.parse(savedPreferred) as LanguageCode[]
-        setPreferredLanguages(parsed)
-      } catch {
-        // Invalid JSON, use default
+      if (savedLanguage && LANGUAGES[savedLanguage]) {
+        setCurrentLanguage(savedLanguage)
       }
+
+      if (savedPreferred) {
+        try {
+          const parsed = JSON.parse(savedPreferred) as LanguageCode[]
+          setPreferredLanguages(parsed)
+        } catch (parseError) {
+          console.warn('Failed to parse preferred languages from storage:', parseError)
+        }
+      }
+    } catch (storageError) {
+      console.warn('Failed to retrieve language preferences from storage:', storageError)
     }
 
     setMounted(true)
@@ -45,13 +49,21 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof document === 'undefined') return
 
-    const direction = getLanguageDirection(currentLanguage)
-    document.documentElement.dir = direction
-    document.documentElement.lang = currentLanguage
+    try {
+      const direction = getLanguageDirection(currentLanguage)
+      document.documentElement.dir = direction
+      document.documentElement.lang = currentLanguage
 
-    // Save to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('tilawa_language', currentLanguage)
+      // Save to localStorage
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('tilawa_language', currentLanguage)
+        } catch (storageError) {
+          console.warn('Failed to save language preference to storage:', storageError)
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to update document direction:', error)
     }
   }, [currentLanguage])
 
@@ -68,7 +80,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const handleSetPreferredLanguages = (languages: LanguageCode[]) => {
     setPreferredLanguages(languages)
     if (typeof window !== 'undefined') {
-      localStorage.setItem('tilawa_preferred_languages', JSON.stringify(languages))
+      try {
+        localStorage.setItem('tilawa_preferred_languages', JSON.stringify(languages))
+      } catch (storageError) {
+        console.warn('Failed to save preferred languages to storage:', storageError)
+      }
     }
   }
 
@@ -97,7 +113,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 export function useLanguage() {
   const context = useContext(LanguageContext)
   if (!context) {
-    throw new Error('useLanguage must be used within LanguageProvider')
+    // Return default context if provider is missing (fallback for SSR/provider errors)
+    console.warn('useLanguage called outside LanguageProvider. Using default language context.')
+    return {
+      currentLanguage: 'en' as LanguageCode,
+      setLanguage: () => {},
+      direction: 'ltr' as const,
+      preferredLanguages: ['en', 'ur'],
+      setPreferredLanguages: () => {},
+    }
   }
   return context
 }

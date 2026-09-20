@@ -1,10 +1,9 @@
 'use client'
 
-import { useContext } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Share2, Bookmark, Copy } from 'lucide-react'
 import { getHadithById, getHadithTranslation, getCollection } from '@/lib/hadith-data'
-import { LanguageContext } from '@/lib/language-context'
+import { useLanguage } from '@/lib/language-context'
 
 interface HadithDetailPageProps {
   params: {
@@ -15,7 +14,7 @@ interface HadithDetailPageProps {
 
 export default function HadithDetailPage({ params }: HadithDetailPageProps) {
   const { collectionId, hadithId } = params
-  const { currentLanguage } = useContext(LanguageContext)
+  const { currentLanguage } = useLanguage()
 
   const hadith = getHadithById(hadithId)
   const collection = getCollection(collectionId as any)

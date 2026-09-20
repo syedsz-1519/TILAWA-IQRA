@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useContext } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Volume2, RotateCw, ChevronRight, X } from 'lucide-react'
 import { getHifzDeck, getCardsByDeck, calculateNextReview } from '@/lib/hifz-data'
-import { LanguageContext } from '@/lib/language-context'
+import { useLanguage } from '@/lib/language-context'
 
 interface DeckPageProps {
   params: {
@@ -14,7 +14,7 @@ interface DeckPageProps {
 
 export default function HifzDeckPage({ params }: DeckPageProps) {
   const { deckId } = params
-  const { currentLanguage } = useContext(LanguageContext)
+  const { currentLanguage } = useLanguage()
 
   const deck = getHifzDeck(deckId)
   const cards = getCardsByDeck(deckId)

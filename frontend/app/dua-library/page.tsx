@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useContext } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { Search, Bookmark, Copy, Volume2 } from 'lucide-react'
 import {
@@ -9,10 +9,10 @@ import {
   getFeaturedDuas,
   getDuaTranslation,
 } from '@/lib/dua-data'
-import { LanguageContext } from '@/lib/language-context'
+import { useLanguage } from '@/lib/language-context'
 
 export default function DuaLibraryPage() {
-  const { currentLanguage } = useContext(LanguageContext)
+  const { currentLanguage } = useLanguage()
   const [searchQuery, setSearchQuery] = useState('')
   const [activeTab, setActiveTab] = useState<'featured' | 'categories'>('featured')
 

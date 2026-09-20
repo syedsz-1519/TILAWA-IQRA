@@ -1,10 +1,10 @@
 'use client'
 
-import { useContext } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Copy, Volume2, Bookmark, Share2, Check } from 'lucide-react'
 import { getDuaById, getDuaTranslation, getDuaCategory } from '@/lib/dua-data'
-import { LanguageContext } from '@/lib/language-context'
+import { useLanguage } from '@/lib/language-context'
 import { useState } from 'react'
 
 interface DuaDetailPageProps {
@@ -15,7 +15,7 @@ interface DuaDetailPageProps {
 
 export default function DuaDetailPage({ params }: DuaDetailPageProps) {
   const { duaId } = params
-  const { currentLanguage } = useContext(LanguageContext)
+  const { currentLanguage } = useLanguage()
   const [bookmarked, setBookmarked] = useState(false)
   const [copied, setCopied] = useState(false)
 

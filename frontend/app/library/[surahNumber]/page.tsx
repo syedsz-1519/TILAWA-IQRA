@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useContext, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Volume2, Bookmark, Share2, Download } from 'lucide-react'
 import { getSurah, getTranslation, RECITERS } from '@/lib/quran-data'
-import { LanguageContext } from '@/lib/language-context'
+import { useLanguage } from '@/lib/language-context'
 import { LANGUAGES } from '@/lib/languages'
 
 interface SurahPageProps {
@@ -17,7 +17,7 @@ interface SurahPageProps {
 export default function SurahPage({ params }: SurahPageProps) {
   const { surahNumber } = params
   const searchParams = useSearchParams()
-  const { currentLanguage } = useContext(LanguageContext)
+  const { currentLanguage } = useLanguage()
 
   const surah = getSurah(parseInt(surahNumber))
   const [selectedReciter, setSelectedReciter] = useState(RECITERS[0]?.id || 'abdul-basit')

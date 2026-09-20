@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useContext } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { Search, BookOpen, Filter } from 'lucide-react'
 import { getHadithCollections, getHadithStats, HADITH_TOPICS } from '@/lib/hadith-data'
-import { LanguageContext } from '@/lib/language-context'
+import { useLanguage } from '@/lib/language-context'
 
 export default function HadithLibraryPage() {
-  const { currentLanguage } = useContext(LanguageContext)
+  const { currentLanguage } = useLanguage()
   const [activeTab, setActiveTab] = useState<'collections' | 'topics' | 'search'>('collections')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedGrade, setSelectedGrade] = useState<'all' | 'Sahih' | 'Hasan' | 'Daif'>('all')

@@ -3,6 +3,7 @@ import { Geist, Amiri } from 'next/font/google'
 import { PlayerProvider } from '@/components/player/player-provider'
 import { PlayerBar } from '@/components/player/player-bar'
 import { ThemeProvider } from '@/components/theme-provider'
+import { LanguageProvider } from '@/lib/language-context'
 import { AppShell } from '@/components/app-shell'
 import { ServiceWorkerRegister } from '@/components/service-worker-register'
 import { ErrorBoundary, ErrorDebugPanel } from '@/components/error-boundary'
@@ -62,13 +63,15 @@ export default function RootLayout({
           }}
         >
           <ThemeProvider>
-            <PlayerProvider>
-              <MidnightRefreshInitializer />
-              <AppShell>{children}</AppShell>
-              <PlayerBar />
-              <ServiceWorkerRegister />
-              <ErrorDebugPanel />
-            </PlayerProvider>
+            <LanguageProvider>
+              <PlayerProvider>
+                <MidnightRefreshInitializer />
+                <AppShell>{children}</AppShell>
+                <PlayerBar />
+                <ServiceWorkerRegister />
+                <ErrorDebugPanel />
+              </PlayerProvider>
+            </LanguageProvider>
           </ThemeProvider>
         </ErrorBoundary>
       </body>

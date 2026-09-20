@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useContext } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Search, Filter } from 'lucide-react'
 import { getCollection, getHadithsByCollection, SAMPLE_HADITHS } from '@/lib/hadith-data'
-import { LanguageContext } from '@/lib/language-context'
+import { useLanguage } from '@/lib/language-context'
 
 interface CollectionPageProps {
   params: {
@@ -14,7 +14,7 @@ interface CollectionPageProps {
 
 export default function CollectionPage({ params }: CollectionPageProps) {
   const { collectionId } = params
-  const { currentLanguage } = useContext(LanguageContext)
+  const { currentLanguage } = useLanguage()
 
   const collection = getCollection(collectionId as any)
   const [searchQuery, setSearchQuery] = useState('')
