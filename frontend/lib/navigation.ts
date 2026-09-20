@@ -57,6 +57,12 @@ export const navGroups: NavGroup[] = [
         icon: BookOpen,
       },
       {
+        title: 'Quran Library',
+        href: '/library',
+        description: 'Complete Quran with translations in 15+ languages',
+        icon: BookOpen,
+      },
+      {
         title: 'Hadith & Dua',
         href: '/hadith-dua',
         description: 'Authentic hadith and Quranic duas',
