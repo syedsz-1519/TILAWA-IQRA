@@ -92,6 +92,12 @@ export const navGroups: NavGroup[] = [
         icon: MessageSquare,
       },
       {
+        title: 'Hifz Card Studio',
+        href: '/hifz-studio',
+        description: 'Spaced repetition flashcards for memorization',
+        icon: BookOpen,
+      },
+      {
         title: 'Tajweed',
         href: '/tajweed',
         description: 'Rules of beautiful recitation',
