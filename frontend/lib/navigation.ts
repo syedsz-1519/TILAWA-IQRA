@@ -130,6 +130,41 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
+    label: 'Advanced Features',
+    items: [
+      {
+        title: 'Ayah to Life Counselor',
+        href: '/counselor',
+        description: 'Quranic guidance for life challenges',
+        icon: Brain,
+      },
+      {
+        title: 'Stories of Quran',
+        href: '/stories',
+        description: 'Inspiring stories of prophets & companions',
+        icon: ScrollText,
+      },
+      {
+        title: 'Sunnate-E-Rasool',
+        href: '/khaliphs',
+        description: 'The 4 Rightly Guided Caliphs',
+        icon: Landmark,
+      },
+      {
+        title: 'The Ahle Bait',
+        href: '/imams',
+        description: 'Household of Prophet - 5 Imams',
+        icon: Heart,
+      },
+      {
+        title: 'Ways of Islam',
+        href: '/islamic-schools',
+        description: 'Schools of Islamic Jurisprudence',
+        icon: BookOpen,
+      },
+    ],
+  },
+  {
     label: 'Nafs Tools',
     items: [
       {
