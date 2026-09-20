@@ -335,10 +335,17 @@ export function logError(error: unknown, context?: ErrorContext) {
 /**
  * Get stored error logs
  */
-export function getErrorLogs() {
+export function getErrorLogs(): any[] {
   if (typeof window === 'undefined') return []
-  const logs = getSafeStorageItem('tilawa_error_logs', '[]', false)
-  return safeJsonParse(logs as string, []) || []
+  try {
+    const logs = localStorage.getItem('tilawa_error_logs')
+    if (!logs) return []
+    const parsed = JSON.parse(logs)
+    return Array.isArray(parsed) ? parsed : []
+  } catch (error) {
+    console.warn('Failed to retrieve error logs:', error)
+    return []
+  }
 }
 
 /**

@@ -150,7 +150,8 @@ export function ErrorDebugPanel() {
   // Only access logs on client after mount to avoid hydration mismatch
   React.useEffect(() => {
     setMounted(true)
-    setLogs(getErrorLogs())
+    const errorLogs = getErrorLogs()
+    setLogs(Array.isArray(errorLogs) ? errorLogs : [])
   }, [])
 
   if (process.env.NODE_ENV === 'production') {
@@ -160,6 +161,9 @@ export function ErrorDebugPanel() {
   if (!mounted) {
     return null
   }
+
+  // Ensure logs is always an array
+  const safeLogsArray = Array.isArray(logs) ? logs : []
 
   return (
     <div
@@ -182,7 +186,7 @@ export function ErrorDebugPanel() {
           marginBottom: isOpen ? '10px' : '0',
         }}
       >
-        📋 Errors ({logs.length})
+        📋 Errors ({safeLogsArray.length})
       </button>
 
       {isOpen && (
@@ -200,12 +204,12 @@ export function ErrorDebugPanel() {
         >
           <h3 style={{ marginTop: 0 }}>Error Logs</h3>
 
-          {logs.length === 0 ? (
+          {safeLogsArray.length === 0 ? (
             <p style={{ color: '#666', fontSize: '14px' }}>No errors logged</p>
           ) : (
             <>
               <div style={{ fontSize: '12px', maxHeight: '350px', overflowY: 'auto' }}>
-                {logs.map((log: any, idx: number) => (
+                {safeLogsArray.map((log: any, idx: number) => (
                   <div
                     key={idx}
                     style={{
@@ -216,15 +220,16 @@ export function ErrorDebugPanel() {
                       borderLeft: '3px solid #ff9800',
                     }}
                   >
-                    <strong style={{ color: '#ff9800' }}>{log.type}</strong>
-                    <p style={{ margin: '5px 0', color: '#333' }}>{log.message}</p>
-                    <small style={{ color: '#999' }}>{log.timestamp}</small>
+                    <strong style={{ color: '#ff9800' }}>{log?.type || 'UNKNOWN'}</strong>
+                    <p style={{ margin: '5px 0', color: '#333' }}>{log?.message || 'No message'}</p>
+                    <small style={{ color: '#999' }}>{log?.timestamp || 'No timestamp'}</small>
                   </div>
                 ))}
               </div>
               <button
                 onClick={() => {
                   clearErrorLogs()
+                  setLogs([])
                   setIsOpen(false)
                 }}
                 style={{
