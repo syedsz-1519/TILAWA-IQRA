@@ -4,19 +4,21 @@ Your code is ready! Here are the exact steps to deploy TILAWA to Vercel:
 
 ---
 
-## STEP 1️⃣: Create Neon PostgreSQL Database (5 min)
+## STEP 1️⃣: Create Supabase PostgreSQL Database (5 min)
 
-1. Go to: https://neon.tech
+1. Go to: https://supabase.com
 2. Click "Sign up" → Use GitHub
 3. Create new project:
    - Name: `tilawa`
+   - Database Password: Strong password (save it!)
    - Region: Choose closest to you
 4. Click on your project
-5. Copy the connection string (looks like):
+5. Go to Settings → Database
+6. Copy the connection string (URI) that looks like:
    ```
-   postgresql://user:password@host.neon.tech:5432/database?sslmode=require
+   postgresql://postgres:password@host.supabase.co:5432/postgres?sslmode=require
    ```
-6. **Save this string - you'll need it in next step!**
+7. **Save this string - you'll need it in next step!**
 
 ---
 
