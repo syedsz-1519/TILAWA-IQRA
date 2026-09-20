@@ -63,6 +63,12 @@ export const navGroups: NavGroup[] = [
         icon: BookOpen,
       },
       {
+        title: 'Hadith Library',
+        href: '/hadith-library',
+        description: 'Authentic Hadiths from 6 major collections',
+        icon: ScrollText,
+      },
+      {
         title: 'Hadith & Dua',
         href: '/hadith-dua',
         description: 'Authentic hadith and Quranic duas',
