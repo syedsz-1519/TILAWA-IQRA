@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { AppShell } from '@/components/app-shell'
 import { ServiceWorkerRegister } from '@/components/service-worker-register'
 import { ErrorBoundary, ErrorDebugPanel } from '@/components/error-boundary'
+import { CacheClearer } from '@/components/cache-clearer'
 import { logEnvironmentValidation } from '@/lib/env.validation'
 import { MidnightRefreshInitializer } from '@/components/midnight-refresh-initializer'
 import './fonts.css'
@@ -53,6 +54,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased font-sans">
+        <CacheClearer />
         <ErrorBoundary
           context={{
             component: 'RootLayout',
