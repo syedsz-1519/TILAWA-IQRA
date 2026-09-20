@@ -69,6 +69,12 @@ export const navGroups: NavGroup[] = [
         icon: ScrollText,
       },
       {
+        title: 'Dua Library',
+        href: '/dua-library',
+        description: 'Authentic Islamic duas from Quran and Sunnah',
+        icon: Heart,
+      },
+      {
         title: 'Hadith & Dua',
         href: '/hadith-dua',
         description: 'Authentic hadith and Quranic duas',
