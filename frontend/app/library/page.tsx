@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useContext } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { Search, BookOpen, Filter, Volume2, Globe } from 'lucide-react'
 import { getAllSurahs, getQuranStats, Surah } from '@/lib/quran-data'
-import { LanguageContext } from '@/lib/language-context'
+import { useLanguage } from '@/lib/language-context'
 
 export default function QuranLibraryPage() {
-  const { currentLanguage } = useContext(LanguageContext)
+  const { currentLanguage } = useLanguage()
   const [searchQuery, setSearchQuery] = useState('')
   const [revelation, setRevelation] = useState<'all' | 'Meccan' | 'Medinan'>('all')
   const [sortBy, setSortBy] = useState<'number' | 'length'>('number')
