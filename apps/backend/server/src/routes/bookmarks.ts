@@ -45,7 +45,7 @@ router.post('/quran', async (req, res) => {
 })
 
 // Remove Quran bookmark
-router.delete('/quran/:userId/:surahNumber/:ayahNumber', async (req, res) => {
+router.delete('/quran/:userId/:surahNumber/:ayahNumber', async (_req, res) => {
   try {
     res.json({ success: true, message: 'Bookmark removed' })
   } catch (error) {
@@ -98,7 +98,7 @@ router.post('/hadith', async (req, res) => {
 })
 
 // Remove hadith favorite
-router.delete('/hadith/:userId/:hadithId', async (req, res) => {
+router.delete('/hadith/:userId/:hadithId', async (_req, res) => {
   try {
     res.json({ success: true, message: 'Favorite removed' })
   } catch (error) {
@@ -153,7 +153,7 @@ router.post('/dua', async (req, res) => {
 })
 
 // Remove dua favorite
-router.delete('/dua/:userId/:duaId', async (req, res) => {
+router.delete('/dua/:userId/:duaId', async (_req, res) => {
   try {
     res.json({ success: true, message: 'Favorite removed' })
   } catch (error) {
@@ -202,7 +202,7 @@ router.post('/stories', async (req, res) => {
 })
 
 // Remove story bookmark
-router.delete('/stories/:userId/:storyId', async (req, res) => {
+router.delete('/stories/:userId/:storyId', async (_req, res) => {
   try {
     res.json({ success: true, message: 'Bookmark removed' })
   } catch (error) {

@@ -33,7 +33,7 @@ export async function addHadithFavorite(
   }
 }
 
-export async function removeHadithFavorite(userId: string, hadithId: string) {
+export async function removeHadithFavorite(_userId: string, _hadithId: string) {
   // Mock implementation
   return [{ success: true }]
 }
@@ -76,7 +76,7 @@ export async function addDuaFavorite(
   }
 }
 
-export async function removeDuaFavorite(userId: string, duaId: string) {
+export async function removeDuaFavorite(_userId: string, _duaId: string) {
   // Mock implementation
   return [{ success: true }]
 }

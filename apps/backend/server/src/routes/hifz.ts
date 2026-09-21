@@ -130,7 +130,7 @@ router.post('/session', async (req, res) => {
 // End hifz session
 router.post('/session/:sessionId/end', async (req, res) => {
   try {
-    const { sessionId } = req.params
+    const { _sessionId } = req.params
     const { cardsReviewed, correctCount } = req.body
 
     const accuracy = cardsReviewed > 0 ? Math.round((correctCount / cardsReviewed) * 100) : 0
@@ -142,10 +142,8 @@ router.post('/session/:sessionId/end', async (req, res) => {
 })
 
 // Get user's hifz statistics
-router.get('/stats/:userId', async (req, res) => {
+router.get('/stats/:userId', async (_req, res) => {
   try {
-    const { userId } = req.params
-
     // Mock statistics
     const stats = {
       totalCards: 237,

@@ -69,18 +69,20 @@ router.get('/api/languages/:userId', async (req: Request, res: Response) => {
  * POST /api/languages/:userId
  * Update user's language settings
  */
-router.post('/api/languages/:userId', async (req: Request, res: Response) => {
+router.post('/api/languages/:userId', async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId } = req.params
     const { preferredLanguage, learningLanguages, transliterationStyle } = req.body
 
     // Validation
     if (!preferredLanguage) {
-      return res.status(400).json({ error: 'preferredLanguage is required' })
+      res.status(400).json({ error: 'preferredLanguage is required' })
+      return
     }
 
     if (!Array.isArray(learningLanguages)) {
-      return res.status(400).json({ error: 'learningLanguages must be an array' })
+      res.status(400).json({ error: 'learningLanguages must be an array' })
+      return
     }
 
     // Mock implementation - replace with actual database update
@@ -107,7 +109,7 @@ router.post('/api/languages/:userId', async (req: Request, res: Response) => {
  * GET /api/quran/translations/:surah/:ayah
  * Get Quran translation in specified language
  */
-router.get('/api/quran/translations/:surah/:ayah', async (req: Request, res: Response) => {
+router.get('/api/quran/translations/:surah/:ayah', async (req: Request, res: Response): Promise<void> => {
   try {
     const { surah, ayah } = req.params
     const language = (req.query.language as string) || 'en'
@@ -117,11 +119,13 @@ router.get('/api/quran/translations/:surah/:ayah', async (req: Request, res: Res
 
     // Validation
     if (isNaN(surahNum) || surahNum < 1 || surahNum > 114) {
-      return res.status(400).json({ error: 'Invalid surah number' })
+      res.status(400).json({ error: 'Invalid surah number' })
+      return
     }
 
     if (isNaN(ayahNum) || ayahNum < 1) {
-      return res.status(400).json({ error: 'Invalid ayah number' })
+      res.status(400).json({ error: 'Invalid ayah number' })
+      return
     }
 
     // Mock data - replace with actual database query
@@ -150,12 +154,13 @@ router.get('/api/quran/translations/:surah/:ayah', async (req: Request, res: Res
  * GET /api/quran/search
  * Search Quran in specified language
  */
-router.get('/api/quran/search', async (req: Request, res: Response) => {
+router.get('/api/quran/search', async (req: Request, res: Response): Promise<void> => {
   try {
     const { q, language } = req.query
 
     if (!q || typeof q !== 'string') {
-      return res.status(400).json({ error: 'Search query is required' })
+      res.status(400).json({ error: 'Search query is required' })
+      return
     }
 
     const lang = (language as string) || 'en'

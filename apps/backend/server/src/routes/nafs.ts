@@ -33,7 +33,7 @@ export async function updateNafsRecord(
 /**
  * Get user's nafs history (last 30 days)
  */
-export async function getNafsHistory(userId: string, days: number = 30) {
+export async function getNafsHistory(userId: string, _days: number = 30) {
   // Mock implementation
   return [
     {

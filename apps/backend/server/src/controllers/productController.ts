@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 
 // Get all products
-export const getAllProducts = async (req: Request, res: Response) => {
+export const getAllProducts = async (_req: Request, res: Response) => {
   try {
     // Mock implementation - replace with MongoDB queries when integrated
     const products = [
@@ -58,15 +58,16 @@ export const getProductById = async (req: Request, res: Response) => {
 }
 
 // Create new product
-export const createProduct = async (req: Request, res: Response) => {
+export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, description, price, category } = req.body
 
     // Validation
     if (!name || !price || !category) {
-      return res.status(400).json({
+      res.status(400).json({
         error: 'Missing required fields: name, price, category',
       })
+      return
     }
 
     // Mock implementation
@@ -132,12 +133,13 @@ export const deleteProduct = async (req: Request, res: Response) => {
 }
 
 // Search products
-export const searchProducts = async (req: Request, res: Response) => {
+export const searchProducts = async (req: Request, res: Response): Promise<void> => {
   try {
     const { q, category } = req.query
 
     if (!q || typeof q !== 'string') {
-      return res.status(400).json({ error: 'Search query is required' })
+      res.status(400).json({ error: 'Search query is required' })
+      return
     }
 
     // Mock implementation
