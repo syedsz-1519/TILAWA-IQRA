@@ -1,27 +1,10 @@
 import { Request, Response } from 'express'
+import { Product } from '../models'
 
 // Get all products
-export const getAllProducts = async (_req: Request, res: Response) => {
+export const getAllProducts = async (_req: Request, res: Response): Promise<void> => {
   try {
-    // Mock implementation - replace with MongoDB queries when integrated
-    const products = [
-      {
-        id: '1',
-        name: 'Quran Bundle',
-        description: 'Complete Quran with translations',
-        price: 29.99,
-        category: 'quran',
-        createdAt: new Date(),
-      },
-      {
-        id: '2',
-        name: 'Hadith Collection',
-        description: 'Comprehensive hadith collection',
-        price: 19.99,
-        category: 'hadith',
-        createdAt: new Date(),
-      },
-    ]
+    const products = await Product.find({ isActive: true }).sort({ createdAt: -1 })
 
     res.json({
       success: true,
@@ -29,23 +12,21 @@ export const getAllProducts = async (_req: Request, res: Response) => {
       count: products.length,
     })
   } catch (error) {
+    console.error('Error fetching products:', error)
     res.status(500).json({ error: 'Failed to fetch products' })
   }
 }
 
 // Get product by ID
-export const getProductById = async (req: Request, res: Response) => {
+export const getProductById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params
 
-    // Mock implementation
-    const product = {
-      id,
-      name: 'Quran Bundle',
-      description: 'Complete Quran with translations',
-      price: 29.99,
-      category: 'quran',
-      createdAt: new Date(),
+    const product = await Product.findById(id)
+
+    if (!product) {
+      res.status(404).json({ error: 'Product not found' })
+      return
     }
 
     res.json({
@@ -53,6 +34,7 @@ export const getProductById = async (req: Request, res: Response) => {
       data: product,
     })
   } catch (error) {
+    console.error('Error fetching product:', error)
     res.status(500).json({ error: 'Failed to fetch product' })
   }
 }
@@ -60,25 +42,34 @@ export const getProductById = async (req: Request, res: Response) => {
 // Create new product
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, description, price, category } = req.body
+    const { name, description, price, category, image } = req.body
 
     // Validation
-    if (!name || !price || !category) {
+    if (!name || price === undefined || !category) {
       res.status(400).json({
         error: 'Missing required fields: name, price, category',
       })
       return
     }
 
-    // Mock implementation
-    const product = {
-      id: Math.random().toString(36).substr(2, 9),
+    if (typeof price !== 'number' || price < 0) {
+      res.status(400).json({ error: 'Price must be a non-negative number' })
+      return
+    }
+
+    if (!['quran', 'hadith', 'dua', 'story', 'course', 'other'].includes(category)) {
+      res.status(400).json({ error: 'Invalid category' })
+      return
+    }
+
+    const product = await Product.create({
       name,
       description,
       price,
       category,
-      createdAt: new Date(),
-    }
+      image,
+      isActive: true,
+    })
 
     res.status(201).json({
       success: true,
@@ -86,48 +77,58 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
       data: product,
     })
   } catch (error) {
+    console.error('Error creating product:', error)
     res.status(500).json({ error: 'Failed to create product' })
   }
 }
 
 // Update product
-export const updateProduct = async (req: Request, res: Response) => {
+export const updateProduct = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params
-    const { name, description, price, category } = req.body
+    const { name, description, price, category, image, isActive } = req.body
 
-    // Mock implementation
-    const updatedProduct = {
+    const product = await Product.findByIdAndUpdate(
       id,
-      name,
-      description,
-      price,
-      category,
-      updatedAt: new Date(),
+      { name, description, price, category, image, isActive },
+      { new: true, runValidators: true }
+    )
+
+    if (!product) {
+      res.status(404).json({ error: 'Product not found' })
+      return
     }
 
     res.json({
       success: true,
       message: 'Product updated successfully',
-      data: updatedProduct,
+      data: product,
     })
   } catch (error) {
+    console.error('Error updating product:', error)
     res.status(500).json({ error: 'Failed to update product' })
   }
 }
 
 // Delete product
-export const deleteProduct = async (req: Request, res: Response) => {
+export const deleteProduct = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params
 
-    // Mock implementation
+    const product = await Product.findByIdAndDelete(id)
+
+    if (!product) {
+      res.status(404).json({ error: 'Product not found' })
+      return
+    }
+
     res.json({
       success: true,
       message: 'Product deleted successfully',
       deletedId: id,
     })
   } catch (error) {
+    console.error('Error deleting product:', error)
     res.status(500).json({ error: 'Failed to delete product' })
   }
 }
@@ -142,17 +143,19 @@ export const searchProducts = async (req: Request, res: Response): Promise<void>
       return
     }
 
-    // Mock implementation
-    const results = [
-      {
-        id: '1',
-        name: 'Quran Bundle',
-        description: 'Complete Quran with translations',
-        price: 29.99,
-        category: category || 'quran',
-        createdAt: new Date(),
-      },
-    ]
+    const searchQuery: any = {
+      isActive: true,
+      $or: [
+        { name: { $regex: q, $options: 'i' } },
+        { description: { $regex: q, $options: 'i' } },
+      ],
+    }
+
+    if (category && typeof category === 'string') {
+      searchQuery.category = category
+    }
+
+    const results = await Product.find(searchQuery).limit(20)
 
     res.json({
       success: true,
@@ -160,6 +163,7 @@ export const searchProducts = async (req: Request, res: Response): Promise<void>
       count: results.length,
     })
   } catch (error) {
+    console.error('Error searching products:', error)
     res.status(500).json({ error: 'Failed to search products' })
   }
 }
