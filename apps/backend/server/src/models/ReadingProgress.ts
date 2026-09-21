@@ -1,7 +1,6 @@
 import { Schema, model, Document } from 'mongoose'
 
 export interface IReadingProgress extends Document {
-  _id: string
   userId: string
   surahNumber: number
   lastAyahRead: number

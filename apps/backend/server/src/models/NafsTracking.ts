@@ -1,7 +1,6 @@
 import { Schema, model, Document } from 'mongoose'
 
 export interface INafsTracking extends Document {
-  _id: string
   userId: string
   date: Date
   habits: Record<string, boolean>

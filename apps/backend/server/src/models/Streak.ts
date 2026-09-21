@@ -1,12 +1,11 @@
 import { Schema, model, Document } from 'mongoose'
 
 export interface IStreak extends Document {
-  _id: string
   userId: string
   currentStreak: number
   longestStreak: number
   totalXP: number
-  lastActivityDate: Date
+  lastActivityDate: Date | null
   createdAt: Date
   updatedAt: Date
 }
