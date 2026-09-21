@@ -1,15 +1,19 @@
-import { db } from '../db'
-import { hadithFavorites, duaFavorites } from '../db/schema'
-import { eq, and } from 'drizzle-orm'
-
 // ========================================
 // Hadith Favorites
 // ========================================
 
 export async function getUserHadithFavorites(userId: string) {
-  return db.query.hadithFavorites.findMany({
-    where: eq(hadithFavorites.userId, userId),
-  })
+  // Mock implementation - replace with MongoDB queries when integrated
+  return [
+    {
+      id: '1',
+      userId,
+      hadithId: 'h-001',
+      hadithText: 'Mock hadith text',
+      hadithSource: 'Sahih Al-Bukhari',
+      createdAt: new Date(),
+    },
+  ]
 }
 
 export async function addHadithFavorite(
@@ -18,33 +22,20 @@ export async function addHadithFavorite(
   hadithText: string,
   hadithSource?: string
 ) {
-  // Check if already favorited
-  const existing = await db.query.hadithFavorites.findFirst({
-    where: and(eq(hadithFavorites.userId, userId), eq(hadithFavorites.hadithId, hadithId)),
-  })
-
-  if (existing) {
-    return existing
+  // Mock implementation
+  return {
+    id: Math.random().toString(36).substr(2, 9),
+    userId,
+    hadithId,
+    hadithText,
+    hadithSource,
+    createdAt: new Date(),
   }
-
-  const [favorite] = await db
-    .insert(hadithFavorites)
-    .values({
-      userId,
-      hadithId,
-      hadithText,
-      hadithSource,
-    })
-    .returning()
-
-  return favorite
 }
 
 export async function removeHadithFavorite(userId: string, hadithId: string) {
-  return db
-    .delete(hadithFavorites)
-    .where(and(eq(hadithFavorites.userId, userId), eq(hadithFavorites.hadithId, hadithId)))
-    .returning()
+  // Mock implementation
+  return [{ success: true }]
 }
 
 // ========================================
@@ -52,9 +43,18 @@ export async function removeHadithFavorite(userId: string, hadithId: string) {
 // ========================================
 
 export async function getUserDuaFavorites(userId: string) {
-  return db.query.duaFavorites.findMany({
-    where: eq(duaFavorites.userId, userId),
-  })
+  // Mock implementation
+  return [
+    {
+      id: '1',
+      userId,
+      duaId: 'd-001',
+      duaText: 'Mock dua text',
+      duaTranslation: 'Mock dua translation',
+      benefit: 'Mock benefit',
+      createdAt: new Date(),
+    },
+  ]
 }
 
 export async function addDuaFavorite(
@@ -64,32 +64,19 @@ export async function addDuaFavorite(
   duaTranslation?: string,
   benefit?: string
 ) {
-  // Check if already favorited
-  const existing = await db.query.duaFavorites.findFirst({
-    where: and(eq(duaFavorites.userId, userId), eq(duaFavorites.duaId, duaId)),
-  })
-
-  if (existing) {
-    return existing
+  // Mock implementation
+  return {
+    id: Math.random().toString(36).substr(2, 9),
+    userId,
+    duaId,
+    duaText,
+    duaTranslation,
+    benefit,
+    createdAt: new Date(),
   }
-
-  const [favorite] = await db
-    .insert(duaFavorites)
-    .values({
-      userId,
-      duaId,
-      duaText,
-      duaTranslation,
-      benefit,
-    })
-    .returning()
-
-  return favorite
 }
 
 export async function removeDuaFavorite(userId: string, duaId: string) {
-  return db
-    .delete(duaFavorites)
-    .where(and(eq(duaFavorites.userId, userId), eq(duaFavorites.duaId, duaId)))
-    .returning()
+  // Mock implementation
+  return [{ success: true }]
 }

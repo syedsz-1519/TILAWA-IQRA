@@ -1,56 +1,93 @@
-import { MongoClient, Db } from 'mongodb'
+import mongoose from 'mongoose'
+import * as dotenv from 'dotenv'
 
-let db: Db | null = null
-let mongoClient: MongoClient | null = null
+// Load environment variables
+dotenv.config()
 
-async function connectToDatabase(): Promise<Db> {
-  if (db) {
-    return db
-  }
+let isConnected = false
 
-  if (!process.env.DATABASE_URL) {
-    throw new Error(
-      '❌ DATABASE_URL environment variable is not set. ' +
-      'Please configure MongoDB connection string in your .env file.\n' +
-      'Example: mongodb+srv://username:password@cluster.mongodb.net/database_name'
-    )
+/**
+ * Connect to MongoDB
+ * @returns {Promise<typeof mongoose>}
+ */
+export async function connectToDatabase(): Promise<typeof mongoose> {
+  if (isConnected) {
+    console.log('✅ Using existing MongoDB connection')
+    return mongoose
   }
 
   try {
-    mongoClient = new MongoClient(process.env.DATABASE_URL, {
-      maxPoolSize: 10,
-      minPoolSize: 1,
+    const mongoUri = process.env.MONGODB_URI
+
+    if (!mongoUri) {
+      throw new Error(
+        '❌ MONGODB_URI environment variable is not set.\n' +
+        'Please add MONGODB_URI to your .env file.\n' +
+        'Example: mongodb+srv://username:password@cluster.mongodb.net/database_name'
+      )
+    }
+
+    console.log('🔄 Connecting to MongoDB...')
+    
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
     })
 
-    await mongoClient.connect()
-    console.log('✅ Connected to MongoDB')
+    isConnected = true
 
-    // Get the database (default to 'tilawa_dev' or extract from connection string)
-    const dbName = process.env.DATABASE_URL.split('/').pop()?.split('?')[0] || 'tilawa_dev'
-    db = mongoClient.db(dbName)
+    console.log('✅ Successfully connected to MongoDB')
+    console.log(`📊 Database: ${mongoose.connection.db?.databaseName || 'unknown'}`)
+    console.log(`🔗 Host: ${mongoose.connection.host}`)
 
-    return db
+    return mongoose
   } catch (error) {
-    console.error('❌ Failed to connect to MongoDB:', error)
+    console.error('❌ Failed to connect to MongoDB:')
+    console.error(`   Error: ${error instanceof Error ? error.message : String(error)}`)
+    isConnected = false
     throw error
   }
 }
 
-// Initialize connection immediately if DATABASE_URL is set
-if (process.env.DATABASE_URL) {
-  connectToDatabase().catch((error) => {
-    console.error('Failed to initialize database connection:', error)
-    process.exit(1)
-  })
-} else {
-  console.warn(
-    '⚠️  DATABASE_URL not configured. Database features will be unavailable.\n' +
-    'To enable database features, set DATABASE_URL in your .env file.\n' +
-    'Example: mongodb+srv://user:password@cluster.mongodb.net/tilawa_dev'
-  )
+/**
+ * Disconnect from MongoDB
+ * @returns {Promise<void>}
+ */
+export async function disconnectDatabase(): Promise<void> {
+  try {
+    if (isConnected) {
+      await mongoose.disconnect()
+      isConnected = false
+      console.log('✅ Disconnected from MongoDB')
+    }
+  } catch (error) {
+    console.error('❌ Error disconnecting from MongoDB:', error instanceof Error ? error.message : String(error))
+    throw error
+  }
 }
 
-// Export for compatibility with existing code
-export { connectToDatabase, mongoClient, db as default }
-export const getDb = (): Db | null => db
-export type Database = Db
+/**
+ * Get MongoDB connection instance
+ * @returns {mongoose.Connection}
+ */
+export function getDb(): mongoose.Connection {
+  return mongoose.connection
+}
+
+/**
+ * Check if connected to database
+ * @returns {boolean}
+ */
+export function isDbConnected(): boolean {
+  return isConnected && mongoose.connection.readyState === 1
+}
+
+/**
+ * Get Mongoose instance
+ * @returns {typeof mongoose}
+ */
+export function getMongoose(): typeof mongoose {
+  return mongoose
+}
+
+export default mongoose

@@ -1,6 +1,4 @@
 import { Router, Request, Response } from 'express'
-import { db } from '../db'
-import { sql } from 'drizzle-orm'
 
 const router = Router()
 
@@ -8,7 +6,7 @@ const router = Router()
  * GET /api/languages
  * Get all available languages
  */
-router.get('/api/languages', async (req: Request, res: Response) => {
+router.get('/api/languages', async (_req: Request, res: Response) => {
   try {
     const languages = {
       supported: [
