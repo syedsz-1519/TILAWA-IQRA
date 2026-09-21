@@ -1,35 +1,166 @@
-# v0 sandbox internal files
-__v0_runtime_loader.js
-__v0_devtools.tsx
-__v0_jsx-dev-runtime.ts
-.snowflake/
-.v0-trash/
-.vercel/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-# Environment variables (CRITICAL - NEVER COMMIT)
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Node
+node_modules/
+package-lock.json
+yarn.lock
+npm-debug.log
+yarn-error.log
+.npm
+
+# Environment
 .env
 .env.local
 .env.*.local
 .env.production.local
-.env.*.private
+.env.development.local
+.env.test.local
 
-# Database credentials (MongoDB, etc.)
-*.mongodb
-*.db
-*.sql
+# Frontend (Next.js)
+frontend/.next/
+frontend/out/
+frontend/.nuxt
+frontend/dist/
+frontend/.cache/
+frontend/.vuepress/dist
+frontend/.serverless/
+frontend/.fusebox/
+frontend/.dynamodb/
+frontend/.tern-port
+frontend/.vuepress/dist
+frontend/.expo/
+frontend/.expo-shared/
+frontend/npm-debug.*
+frontend/yarn-debug.*
+frontend/yarn-error.*
+frontend/.pnpm-debug.log*
 
-# API Keys and Secrets (if stored locally)
-*secret*
-*credentials*
-*password*
-*token*
-.aws/
-.auth/
+# Backend (Node.js)
+backend/node_modules/
+backend/dist/
+backend/build/
+backend/lib/
+backend/.env
+backend/.env.local
+backend/.pm2/
+backend/logs/
+backend/*.log
 
-# Common ignores
-node_modules
-.next/
+# Mobile (Flutter)
+apps/mobile/tilawa/.dart_tool/
+apps/mobile/tilawa/.flutter-plugins
+apps/mobile/tilawa/.flutter-plugins-dependencies
+apps/mobile/tilawa/.packages
+apps/mobile/tilawa/build/
+apps/mobile/tilawa/.pub-cache/
+apps/mobile/tilawa/.pub/
+apps/mobile/tilawa/coverage/
+apps/mobile/tilawa/lib/generated_plugin_registrant.dart
+apps/mobile/tilawa/.fvm/flutter_sdk
+apps/mobile/tilawa/ios/Flutter/Flutter.framework
+apps/mobile/tilawa/ios/Flutter/Flutter.podspec
+apps/mobile/tilawa/ios/Flutter/Generated.xcconfig
+apps/mobile/tilawa/ios/Flutter/flutter_export_environment.sh
+apps/mobile/tilawa/ios/Flutter/flutter_export_environment.sh.~
+apps/mobile/tilawa/ios/Pods/
+apps/mobile/tilawa/ios/Pods/Podfile.lock
+apps/mobile/tilawa/ios/.symlinks/
+apps/mobile/tilawa/ios/.generated/
+apps/mobile/tilawa/ios/**/GeneratedPluginRegistrant.*
+apps/mobile/tilawa/android/.gradle
+apps/mobile/tilawa/android/captures/
+apps/mobile/tilawa/android/gradlew.bat
+apps/mobile/tilawa/android/gradle-wrapper.jar
+apps/mobile/tilawa/android/gradle
+apps/mobile/tilawa/android/local.properties
+apps/mobile/tilawa/android/**/GeneratedPluginRegistrant.java
+apps/mobile/tilawa/android/.gradle/
+apps/mobile/tilawa/android/build/
+
+# Database
+*.sqlite
+*.sqlite3
+database/*.sql
+
+# OS
 .DS_Store
-dist/
-build/
-.turbo/
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Cache
+.cache/
+.eslintcache
+.stylelintcache
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+*.pem
+*.key
+*.crt
+*.p12
+.tmp/
+temp/
+
+# Documentation build
+docs/_build/
+docs/.doctrees/
+site/
+
+# Vercel
+.vercel
+out/
+
+# Railway
+.railway/
+
+# Docker
+.dockerignore
+
+# Git
+.git/
+.gitmodules

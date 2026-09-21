@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: tilawa_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: tilawa_user
+      MONGO_INITDB_ROOT_PASSWORD: tilawa_password
+      MONGO_INITDB_DATABASE: tilawa_dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - tilawa_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: tilawa_redis
+    command: redis-server --requirepass tilawa_password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - tilawa_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API Server
+  backend:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile
+    container_name: tilawa_backend
+    environment:
+      NODE_ENV: development
+      PORT: 8000
+      DATABASE_URL: mongodb://tilawa_user:tilawa_password@mongodb:27017/tilawa_dev
+      REDIS_URL: redis://tilawa_user:tilawa_password@redis:6379
+      JWT_SECRET: dev-secret-key-change-in-production
+      JWT_EXPIRE: 15m
+      REFRESH_TOKEN_EXPIRE: 7d
+      ALLOWED_ORIGINS: http://localhost:3000
+      LOG_LEVEL: debug
+    ports:
+      - "8000:8000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - tilawa_network
+    volumes:
+      - ../../apps/backend/server/src:/app/src
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: tilawa_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - backend
+    networks:
+      - tilawa_network
+
+volumes:
+  mongodb_data:
+  redis_data:
+
+networks:
+  tilawa_network:
+    driver: bridge
