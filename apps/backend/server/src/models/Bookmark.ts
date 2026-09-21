@@ -3,7 +3,6 @@ import { Schema, model, Document } from 'mongoose'
 export type BookmarkType = 'quran' | 'hadith' | 'dua' | 'story'
 
 export interface IBookmark extends Document {
-  _id: string
   userId: string
   type: BookmarkType
   itemId: string
