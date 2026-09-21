@@ -1,0 +1,163 @@
+{
+  "morning": [
+    {
+      "id": "m1",
+      "category": "General",
+      "arabic": "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، الْحَمْدُ لِلَّهِ لا إِلَهَ إِلا اللَّهُ وَحْدَهُ لا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+      "transliteration": "Asbahna wa asbaha'l-mulku lillah, alhamdu lillah la ilaha illallahu wahdahu la sharika lahu, lahu'l-mulku wa lahu'l-hamdu wa huwa 'ala kulli shay'in qadir",
+      "translation": "We have entered upon a morning and all the dominion belongs to Allah. Praise be to Allah, there is no deity except Allah alone without any partners, for Him is the dominion and for Him is all praise, and He is capable of all things",
+      "repeat": 1,
+      "category_ar": "عام"
+    },
+    {
+      "id": "m2",
+      "category": "General",
+      "arabic": "اللَّهُمَّ بِك أَصْبَحْنَا وَبِك أَمْسَيْنَا وَبِك نَحْيَا وَبِك نَمُوتُ وَإِلَيْك النُّشُورُ",
+      "transliteration": "Allahumma bika asbahna wa bika amsayna wa bika nahya wa bika namutu wa ilayka an-nushur",
+      "translation": "O Allah, by You we have entered the morning and by You we have entered the evening, by You we live and by You we die, and to You is the return",
+      "repeat": 1,
+      "category_ar": "عام"
+    },
+    {
+      "id": "m3",
+      "category": "Protection",
+      "arabic": "أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+      "transliteration": "A'udhu billahi mina'sh-shaytani'r-rajim",
+      "translation": "I seek refuge in Allah from the accursed Satan",
+      "repeat": 3,
+      "category_ar": "الحماية"
+    },
+    {
+      "id": "m4",
+      "category": "General",
+      "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ",
+      "transliteration": "Subhana'llahi wa bihamdihi, subhana'llahi'l-'azim",
+      "translation": "Glory be to Allah and in His praise, glory be to Allah the Mighty",
+      "repeat": 33,
+      "category_ar": "عام"
+    },
+    {
+      "id": "m5",
+      "category": "Protection",
+      "arabic": "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ",
+      "transliteration": "Hasbuna'llahu wa ni'ma'l-wakil",
+      "translation": "Allah is sufficient for us and what an excellent Guardian He is",
+      "repeat": 1,
+      "category_ar": "الحماية"
+    }
+  ],
+  "evening": [
+    {
+      "id": "e1",
+      "category": "General",
+      "arabic": "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، الْحَمْدُ لِلَّهِ لا إِلَهَ إِلا اللَّهُ وَحْدَهُ لا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+      "transliteration": "Amsayna wa amsa'l-mulku lillah, alhamdu lillah la ilaha illallahu wahdahu la sharika lahu, lahu'l-mulku wa lahu'l-hamdu wa huwa 'ala kulli shay'in qadir",
+      "translation": "We have entered upon an evening and all the dominion belongs to Allah. Praise be to Allah, there is no deity except Allah alone without any partners, for Him is the dominion and for Him is all praise, and He is capable of all things",
+      "repeat": 1,
+      "category_ar": "عام"
+    },
+    {
+      "id": "e2",
+      "category": "Sleep",
+      "arabic": "اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْك، وَفَوَّضْتُ أَمْرِي إِلَيْك، وَوَجَّهْتُ وَجْهِي إِلَيْك، وَأَلْجَأْتُ ظَهْرِي إِلَيْك، رَغْبَةً وَرَهْبَةً إِلَيْك، لا مَلْجَأَ وَلا مَنْجَا مِنْك إِلا إِلَيْك",
+      "transliteration": "Allahumma aslamt nafsi ilayk, wa fawwadt amri ilayk, wa wajjahtu wajhi ilayk, wa aljat zahri ilayk, raghbatan wa rahbatan ilayk, la maljaa wa la manjaa minka illa ilayk",
+      "translation": "O Allah, I have surrendered myself to You, entrusted my affairs to You, and turned my face toward You, and sought Your help relying on You. Out of hope in You and fear of You. There is no refuge nor escape from You except with You",
+      "repeat": 1,
+      "category_ar": "النوم"
+    },
+    {
+      "id": "e3",
+      "category": "Protection",
+      "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُك الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ",
+      "transliteration": "Allahumma inni as'aluka'l-'afwa wa'l-'afiyah fi'd-dunya wa'l-akhirah",
+      "translation": "O Allah, I ask You for forgiveness and wellness in this life and the hereafter",
+      "repeat": 1,
+      "category_ar": "الحماية"
+    },
+    {
+      "id": "e4",
+      "category": "General",
+      "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ",
+      "transliteration": "Subhana'llahi wa bihamdihi, subhana'llahi'l-'azim",
+      "translation": "Glory be to Allah and in His praise, glory be to Allah the Mighty",
+      "repeat": 33,
+      "category_ar": "عام"
+    },
+    {
+      "id": "e5",
+      "category": "Night",
+      "arabic": "يَا حَيُّ يَا قَيُّومُ، بِرَحْمَتِك أَسْتَغِيثُ",
+      "transliteration": "Ya Hayy ya Qayyum, bi-rahmatika astagheeth",
+      "translation": "O Living One, O Self-Sustaining One, by Your mercy I seek help",
+      "repeat": 1,
+      "category_ar": "الليل"
+    }
+  ],
+  "general": [
+    {
+      "category": "Waking Up",
+      "category_ar": "الاستيقاظ",
+      "items": [
+        {
+          "id": "g_wake_1",
+          "arabic": "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+          "transliteration": "Alhamdu lillahi'lladhi ahyana baʿda ma amātanā wa ilayhi'n-nushūr",
+          "translation": "Praise be to Allah who has given us life after death, and to Him is the return",
+          "repeat": 1
+        }
+      ]
+    },
+    {
+      "category": "Entering the Mosque",
+      "category_ar": "دخول المسجد",
+      "items": [
+        {
+          "id": "g_mosque_1",
+          "arabic": "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِك",
+          "transliteration": "Allahumma iftah li abwab rahmatika",
+          "translation": "O Allah, open for me the gates of Your mercy",
+          "repeat": 1
+        }
+      ]
+    },
+    {
+      "category": "Eating",
+      "category_ar": "الأكل",
+      "items": [
+        {
+          "id": "g_eat_1",
+          "arabic": "بِسْمِ اللَّهِ، اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ",
+          "transliteration": "Bismillah, Allahumma barik lana fima razaqtana wa qina adhab an-nar",
+          "translation": "In the name of Allah. O Allah, bless for us what You have provided us with and protect us from the punishment of the Fire",
+          "repeat": 1
+        }
+      ]
+    },
+    {
+      "category": "Travel",
+      "category_ar": "السفر",
+      "items": [
+        {
+          "id": "g_travel_1",
+          "arabic": "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَىٰ رَبِّنَا لَمُنقَلِبُونَ",
+          "transliteration": "Subhana'lladhi sakhkhara lana hadha wa ma kunna lahu muqrinīn, wa inna ilā rabbinā lamunqalibūn",
+          "translation": "Glory is to Him Who has subjugated this to us, and we ourselves would not have been capable of it, and surely to our Lord we will return",
+          "repeat": 1
+        }
+      ]
+    },
+    {
+      "category": "In Times of Distress",
+      "category_ar": "وقت الكرب",
+      "items": [
+        {
+          "id": "g_distress_1",
+          "arabic": "لَا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَك إِنِّي كُنتُ مِنَ الظَّالِمِينَ",
+          "transliteration": "La ilaha illa anta subhanaka inni kuntu mina'z-zalimin",
+          "translation": "There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers",
+          "repeat": 1
+        }
+      ]
+    }
+  ]
+}
