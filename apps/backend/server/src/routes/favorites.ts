@@ -1,19 +1,16 @@
+import { Bookmark } from '../models'
+
 // ========================================
 // Hadith Favorites
 // ========================================
 
 export async function getUserHadithFavorites(userId: string) {
-  // Mock implementation - replace with MongoDB queries when integrated
-  return [
-    {
-      id: '1',
-      userId,
-      hadithId: 'h-001',
-      hadithText: 'Mock hadith text',
-      hadithSource: 'Sahih Al-Bukhari',
-      createdAt: new Date(),
-    },
-  ]
+  try {
+    return await Bookmark.find({ userId, type: 'hadith' }).sort({ createdAt: -1 })
+  } catch (error) {
+    console.error('Error fetching hadith favorites:', error)
+    return []
+  }
 }
 
 export async function addHadithFavorite(
@@ -22,20 +19,46 @@ export async function addHadithFavorite(
   hadithText: string,
   hadithSource?: string
 ) {
-  // Mock implementation
-  return {
-    id: Math.random().toString(36).substr(2, 9),
-    userId,
-    hadithId,
-    hadithText,
-    hadithSource,
-    createdAt: new Date(),
+  try {
+    // Check if already favorited
+    const existing = await Bookmark.findOne({
+      userId,
+      type: 'hadith',
+      itemId: hadithId,
+    })
+
+    if (existing) {
+      return existing
+    }
+
+    const favorite = await Bookmark.create({
+      userId,
+      type: 'hadith',
+      itemId: hadithId,
+      hadithId,
+      hadithText,
+      hadithSource,
+    })
+
+    return favorite
+  } catch (error) {
+    console.error('Error adding hadith favorite:', error)
+    return null
   }
 }
 
 export async function removeHadithFavorite(_userId: string, _hadithId: string) {
-  // Mock implementation
-  return [{ success: true }]
+  try {
+    const result = await Bookmark.findOneAndDelete({
+      userId: _userId,
+      type: 'hadith',
+      hadithId: _hadithId,
+    })
+    return [{ success: !!result }]
+  } catch (error) {
+    console.error('Error removing hadith favorite:', error)
+    return [{ success: false }]
+  }
 }
 
 // ========================================
@@ -43,18 +66,12 @@ export async function removeHadithFavorite(_userId: string, _hadithId: string) {
 // ========================================
 
 export async function getUserDuaFavorites(userId: string) {
-  // Mock implementation
-  return [
-    {
-      id: '1',
-      userId,
-      duaId: 'd-001',
-      duaText: 'Mock dua text',
-      duaTranslation: 'Mock dua translation',
-      benefit: 'Mock benefit',
-      createdAt: new Date(),
-    },
-  ]
+  try {
+    return await Bookmark.find({ userId, type: 'dua' }).sort({ createdAt: -1 })
+  } catch (error) {
+    console.error('Error fetching dua favorites:', error)
+    return []
+  }
 }
 
 export async function addDuaFavorite(
@@ -64,19 +81,45 @@ export async function addDuaFavorite(
   duaTranslation?: string,
   benefit?: string
 ) {
-  // Mock implementation
-  return {
-    id: Math.random().toString(36).substr(2, 9),
-    userId,
-    duaId,
-    duaText,
-    duaTranslation,
-    benefit,
-    createdAt: new Date(),
+  try {
+    // Check if already favorited
+    const existing = await Bookmark.findOne({
+      userId,
+      type: 'dua',
+      itemId: duaId,
+    })
+
+    if (existing) {
+      return existing
+    }
+
+    const favorite = await Bookmark.create({
+      userId,
+      type: 'dua',
+      itemId: duaId,
+      duaId,
+      duaText,
+      duaTranslation,
+      benefit,
+    })
+
+    return favorite
+  } catch (error) {
+    console.error('Error adding dua favorite:', error)
+    return null
   }
 }
 
 export async function removeDuaFavorite(_userId: string, _duaId: string) {
-  // Mock implementation
-  return [{ success: true }]
+  try {
+    const result = await Bookmark.findOneAndDelete({
+      userId: _userId,
+      type: 'dua',
+      duaId: _duaId,
+    })
+    return [{ success: !!result }]
+  } catch (error) {
+    console.error('Error removing dua favorite:', error)
+    return [{ success: false }]
+  }
 }
