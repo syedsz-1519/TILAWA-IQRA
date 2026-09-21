@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express'
+import { Language, User } from '../models'
 
 const router = Router()
 
@@ -42,22 +43,25 @@ router.get('/api/languages', async (_req: Request, res: Response) => {
  * GET /api/languages/:userId
  * Get user's language settings
  */
-router.get('/api/languages/:userId', async (req: Request, res: Response) => {
+router.get('/api/languages/:userId', async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId } = req.params
 
-    // Mock implementation - replace with actual database query
-    const languageSettings = {
-      userId,
-      preferredLanguage: 'ur',
-      learningLanguages: ['ur', 'en', 'hi'],
-      nativeLanguage: 'ur',
-      transliterationStyle: 'roman',
+    const user = await User.findById(userId).select('preferredLanguage learningLanguages nativeLanguage')
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found' })
+      return
     }
 
     res.json({
       success: true,
-      data: languageSettings,
+      data: {
+        userId,
+        preferredLanguage: user.preferredLanguage,
+        learningLanguages: user.learningLanguages,
+        nativeLanguage: user.nativeLanguage,
+      },
     })
   } catch (error) {
     console.error('Error fetching user language settings:', error)
@@ -85,19 +89,30 @@ router.post('/api/languages/:userId', async (req: Request, res: Response): Promi
       return
     }
 
-    // Mock implementation - replace with actual database update
-    const updated = {
+    const updated = await User.findByIdAndUpdate(
       userId,
-      preferredLanguage,
-      learningLanguages,
-      transliterationStyle: transliterationStyle || 'roman',
-      updatedAt: new Date(),
+      {
+        preferredLanguage,
+        learningLanguages,
+      },
+      { new: true, runValidators: true }
+    ).select('preferredLanguage learningLanguages nativeLanguage')
+
+    if (!updated) {
+      res.status(404).json({ error: 'User not found' })
+      return
     }
 
     res.json({
       success: true,
       message: 'Language settings updated',
-      data: updated,
+      data: {
+        userId,
+        preferredLanguage: updated.preferredLanguage,
+        learningLanguages: updated.learningLanguages,
+        transliterationStyle: transliterationStyle || 'roman',
+        updatedAt: new Date(),
+      },
     })
   } catch (error) {
     console.error('Error updating language settings:', error)
@@ -109,46 +124,49 @@ router.post('/api/languages/:userId', async (req: Request, res: Response): Promi
  * GET /api/quran/translations/:surah/:ayah
  * Get Quran translation in specified language
  */
-router.get('/api/quran/translations/:surah/:ayah', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { surah, ayah } = req.params
-    const language = (req.query.language as string) || 'en'
+router.get(
+  '/api/quran/translations/:surah/:ayah',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { surah, ayah } = req.params
+      const language = (req.query.language as string) || 'en'
 
-    const surahNum = parseInt(surah)
-    const ayahNum = parseInt(ayah)
+      const surahNum = parseInt(surah)
+      const ayahNum = parseInt(ayah)
 
-    // Validation
-    if (isNaN(surahNum) || surahNum < 1 || surahNum > 114) {
-      res.status(400).json({ error: 'Invalid surah number' })
-      return
+      // Validation
+      if (isNaN(surahNum) || surahNum < 1 || surahNum > 114) {
+        res.status(400).json({ error: 'Invalid surah number' })
+        return
+      }
+
+      if (isNaN(ayahNum) || ayahNum < 1) {
+        res.status(400).json({ error: 'Invalid ayah number' })
+        return
+      }
+
+      // Mock data - can be replaced with actual Quran API or database
+      const translation = {
+        surahNumber: surahNum,
+        ayahNumber: ayahNum,
+        language,
+        arabicText: 'بسم الله الرحمن الرحيم',
+        translation: 'In the name of Allah, the Most Gracious, the Most Merciful',
+        translationAuthor: 'Pickthall',
+        transliterationRoman: 'Bismillahir-rahmanir-rahim',
+        transliterationNative: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+      }
+
+      res.json({
+        success: true,
+        data: translation,
+      })
+    } catch (error) {
+      console.error('Error fetching translation:', error)
+      res.status(500).json({ error: 'Failed to fetch translation' })
     }
-
-    if (isNaN(ayahNum) || ayahNum < 1) {
-      res.status(400).json({ error: 'Invalid ayah number' })
-      return
-    }
-
-    // Mock data - replace with actual database query
-    const translation = {
-      surahNumber: surahNum,
-      ayahNumber: ayahNum,
-      language,
-      arabicText: 'بسم الله الرحمن الرحيم',
-      translation: 'In the name of Allah, the Most Gracious, the Most Merciful',
-      translationAuthor: 'Pickthall',
-      transliterationRoman: 'Bismillahir-rahmanir-rahim',
-      transliterationNative: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
-    }
-
-    res.json({
-      success: true,
-      data: translation,
-    })
-  } catch (error) {
-    console.error('Error fetching translation:', error)
-    res.status(500).json({ error: 'Failed to fetch translation' })
   }
-})
+)
 
 /**
  * GET /api/quran/search
@@ -165,7 +183,7 @@ router.get('/api/quran/search', async (req: Request, res: Response): Promise<voi
 
     const lang = (language as string) || 'en'
 
-    // Mock search results
+    // Mock search results - can be replaced with actual Quran API or database
     const results = [
       {
         surahNumber: 1,
@@ -191,32 +209,46 @@ router.get('/api/quran/search', async (req: Request, res: Response): Promise<voi
  * GET /api/languages/:userId/progress/:language
  * Get user's progress in a specific language
  */
-router.get('/api/languages/:userId/progress/:language', async (req: Request, res: Response) => {
-  try {
-    const { userId, language } = req.params
+router.get(
+  '/api/languages/:userId/progress/:language',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId, language } = req.params
 
-    // Mock data
-    const progress = {
-      userId,
-      language,
-      totalAyahsRead: 150,
-      totalSurahsCompleted: 5,
-      lastReadSurah: 2,
-      lastReadAyah: 286,
-      masteredAyahs: 50,
-      reviewNeededAyahs: 25,
-      streakDays: 7,
-      lastActivity: new Date(),
+      const progress = await Language.findOne({
+        userId,
+        language,
+      })
+
+      if (!progress) {
+        // Return default progress if not found
+        res.json({
+          success: true,
+          data: {
+            userId,
+            language,
+            totalAyahsRead: 0,
+            totalSurahsCompleted: 0,
+            lastReadSurah: 1,
+            lastReadAyah: 0,
+            masteredAyahs: 0,
+            reviewNeededAyahs: 0,
+            streakDays: 0,
+            lastActivity: null,
+          },
+        })
+        return
+      }
+
+      res.json({
+        success: true,
+        data: progress,
+      })
+    } catch (error) {
+      console.error('Error fetching language progress:', error)
+      res.status(500).json({ error: 'Failed to fetch progress' })
     }
-
-    res.json({
-      success: true,
-      data: progress,
-    })
-  } catch (error) {
-    console.error('Error fetching language progress:', error)
-    res.status(500).json({ error: 'Failed to fetch progress' })
   }
-})
+)
 
 export default router

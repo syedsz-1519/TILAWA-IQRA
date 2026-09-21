@@ -1,13 +1,14 @@
+import { ReadingProgress } from '../models'
+
 /**
  * Get user's reading progress for a specific surah
  */
 export async function getSurahProgress(userId: string, surahNumber: number) {
-  // Mock implementation - replace with MongoDB queries when integrated
-  return {
-    id: '1',
-    userId,
-    surahNumber,
-    lastAyahRead: 1,
+  try {
+    return await ReadingProgress.findOne({ userId, surahNumber })
+  } catch (error) {
+    console.error('Error getting surah progress:', error)
+    return null
   }
 }
 
@@ -15,15 +16,12 @@ export async function getSurahProgress(userId: string, surahNumber: number) {
  * Get all reading progress for user
  */
 export async function getUserReadingProgress(userId: string) {
-  // Mock implementation
-  return [
-    {
-      id: '1',
-      userId,
-      surahNumber: 1,
-      lastAyahRead: 1,
-    },
-  ]
+  try {
+    return await ReadingProgress.find({ userId }).sort({ surahNumber: 1 })
+  } catch (error) {
+    console.error('Error getting user reading progress:', error)
+    return []
+  }
 }
 
 /**
@@ -32,15 +30,39 @@ export async function getUserReadingProgress(userId: string) {
 export async function updateReadingProgress(
   userId: string,
   surahNumber: number,
-  lastAyahRead: number
+  lastAyahRead: number,
+  totalAyahsInSurah: number = 286
 ) {
-  // Mock implementation
-  return {
-    id: Math.random().toString(36).substr(2, 9),
-    userId,
-    surahNumber,
-    lastAyahRead,
-    updatedAt: new Date(),
+  try {
+    const existing = await getSurahProgress(userId, surahNumber)
+
+    const completionPercentage = Math.round((lastAyahRead / totalAyahsInSurah) * 100)
+
+    if (existing) {
+      const updated = await ReadingProgress.findByIdAndUpdate(
+        existing._id,
+        {
+          lastAyahRead,
+          completionPercentage,
+          updatedAt: new Date(),
+        },
+        { new: true, runValidators: true }
+      )
+      return updated
+    }
+
+    // Create new progress record
+    const created = await ReadingProgress.create({
+      userId,
+      surahNumber,
+      lastAyahRead,
+      completionPercentage,
+    })
+
+    return created
+  } catch (error) {
+    console.error('Error updating reading progress:', error)
+    return null
   }
 }
 
@@ -50,10 +72,14 @@ export async function updateReadingProgress(
 export async function getSurahCompletionPercentage(
   userId: string,
   surahNumber: number,
-  totalAyahs: number
+  totalAyahs: number = 286
 ) {
-  // Mock implementation
-  const progress = await getSurahProgress(userId, surahNumber)
-  if (!progress) return 0
-  return Math.round((progress.lastAyahRead / totalAyahs) * 100)
+  try {
+    const progress = await getSurahProgress(userId, surahNumber)
+    if (!progress) return 0
+    return Math.round((progress.lastAyahRead / totalAyahs) * 100)
+  } catch (error) {
+    console.error('Error getting completion percentage:', error)
+    return 0
+  }
 }
