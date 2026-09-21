@@ -130,7 +130,6 @@ router.post('/session', async (req, res) => {
 // End hifz session
 router.post('/session/:sessionId/end', async (req, res) => {
   try {
-    const { _sessionId } = req.params
     const { cardsReviewed, correctCount } = req.body
 
     const accuracy = cardsReviewed > 0 ? Math.round((correctCount / cardsReviewed) * 100) : 0
