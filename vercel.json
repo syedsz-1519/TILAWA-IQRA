@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npm install --prefix apps/web/frontend && npm run build --prefix apps/web/frontend",
+  "outputDirectory": "apps/web/frontend/.next",
+  "framework": "nextjs",
+  "nodeVersion": "20.x"
+}
