@@ -1,0 +1,13 @@
+var R=require("../../../chunks/ssr/[turbopack]_runtime.js")("server/app/dua-library/[duaId]/page.js")
+R.c("server/chunks/ssr/[root-of-the-server]__08f2i07._.js")
+R.c("server/chunks/ssr/0iem_next_dist_esm_build_templates_app-page_01y5v1~.js")
+R.c("server/chunks/ssr/[root-of-the-server]__05vg4x-._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__01t2j8k._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0j~-0xt._.js")
+R.c("server/chunks/ssr/0iem_next_dist_client_components_0iqiwh7._.js")
+R.c("server/chunks/ssr/0iem_next_dist_client_components_builtin_forbidden_0ir0.kc.js")
+R.c("server/chunks/ssr/0iem_next_dist_client_components_builtin_unauthorized_0_2g-6e.js")
+R.c("server/chunks/ssr/0iem_next_dist_client_components_builtin_global-error_0tu6x~c.js")
+R.c("server/chunks/ssr/0ayk_web_frontend__next-internal_server_app_dua-library_[duaId]_page_actions_00xhgj6.js")
+R.m(91884)
+module.exports=R.m(91884).exports
