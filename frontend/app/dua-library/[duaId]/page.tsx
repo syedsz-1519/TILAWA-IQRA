@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { ChevronLeft, Copy, Volume2, Bookmark, Share2, Check } from 'lucide-react'
 import { getDuaById, getDuaTranslation, getDuaCategory } from '@/lib/dua-data'
 import { useLanguage } from '@/lib/language-context'
-import { useState } from 'react'
 
 interface DuaDetailPageProps {
   params: {
