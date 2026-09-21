@@ -3,7 +3,6 @@ import { Schema, model, Document } from 'mongoose'
 export type CardStatus = 'new' | 'learning' | 'review' | 'mastered'
 
 export interface IHifzProgress extends Document {
-  _id: string
   userId: string
   cardId: string
   deckId: string
@@ -13,7 +12,7 @@ export interface IHifzProgress extends Document {
   interval: number
   easeFactor: number
   nextReviewDate: Date
-  lastReviewed: Date
+  lastReviewed: Date | null
   createdAt: Date
   updatedAt: Date
 }

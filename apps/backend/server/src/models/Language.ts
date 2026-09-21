@@ -1,7 +1,6 @@
 import { Schema, model, Document } from 'mongoose'
 
 export interface ILanguage extends Document {
-  _id: string
   userId: string
   language: string
   nativeName: string
@@ -12,7 +11,7 @@ export interface ILanguage extends Document {
   masteredAyahs: number
   reviewNeededAyahs: number
   streakDays: number
-  lastActivity: Date
+  lastActivity: Date | null
   createdAt: Date
   updatedAt: Date
 }
