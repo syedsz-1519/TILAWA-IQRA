@@ -1,41 +1,47 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
+
+let isConnected = false
 
 /**
  * Connect to MongoDB
- * @returns {Promise<void>}
+ * @returns {Promise<typeof mongoose>}
  */
-async function connectToDatabase() {
+export async function connectToDatabase() {
+  if (isConnected) {
+    console.log('✅ Using existing MongoDB connection')
+    return mongoose
+  }
+
   try {
-    // Get MongoDB connection string from environment variables
-    const mongoUri = process.env.MONGODB_URI;
+    const mongoUri = process.env.MONGODB_URI
 
     if (!mongoUri) {
       throw new Error(
         '❌ MONGODB_URI environment variable is not set.\n' +
         'Please add MONGODB_URI to your .env file.\n' +
         'Example: mongodb+srv://username:password@cluster.mongodb.net/database_name'
-      );
+      )
     }
 
-    // Connect to MongoDB
+    console.log('🔄 Connecting to MongoDB...')
+
     await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
-    });
+    })
 
-    console.log('✅ Successfully connected to MongoDB');
-    console.log(`📊 Database: ${mongoose.connection.name}`);
-    console.log(`🔗 Host: ${mongoose.connection.host}`);
+    isConnected = true
 
-    return mongoose.connection;
+    console.log('✅ Successfully connected to MongoDB')
+    console.log(`📊 Database: ${mongoose.connection.db?.databaseName || 'unknown'}`)
+    console.log(`🔗 Host: ${mongoose.connection.host}`)
+
+    return mongoose
   } catch (error) {
-    console.error('❌ Failed to connect to MongoDB:');
-    console.error(`   Error: ${error.message}`);
-    
-    // Don't exit process - allow graceful handling
-    throw error;
+    console.error('❌ Failed to connect to MongoDB:')
+    console.error(`   Error: ${error instanceof Error ? error.message : String(error)}`)
+    isConnected = false
+    throw error
   }
 }
 
@@ -43,36 +49,41 @@ async function connectToDatabase() {
  * Disconnect from MongoDB
  * @returns {Promise<void>}
  */
-async function disconnectDatabase() {
+export async function disconnectDatabase() {
   try {
-    await mongoose.disconnect();
-    console.log('✅ Disconnected from MongoDB');
+    if (isConnected) {
+      await mongoose.disconnect()
+      isConnected = false
+      console.log('✅ Disconnected from MongoDB')
+    }
   } catch (error) {
-    console.error('❌ Error disconnecting from MongoDB:', error.message);
-    throw error;
+    console.error('❌ Error disconnecting from MongoDB:', error instanceof Error ? error.message : String(error))
+    throw error
   }
 }
 
 /**
  * Get MongoDB connection instance
- * @returns {import('mongoose').Connection}
+ * @returns {mongoose.Connection}
  */
-function getDatabase() {
-  return mongoose.connection;
+export function getDatabase() {
+  return mongoose.connection
 }
 
 /**
  * Get Mongoose instance
- * @returns {import('mongoose')}
+ * @returns {typeof mongoose}
  */
-function getMongoose() {
-  return mongoose;
+export function getMongoose() {
+  return mongoose
 }
 
-module.exports = {
-  connectToDatabase,
-  disconnectDatabase,
-  getDatabase,
-  getMongoose,
-  mongoose,
-};
+/**
+ * Check if connected to database
+ * @returns {boolean}
+ */
+export function isDbConnected() {
+  return isConnected && mongoose.connection.readyState === 1
+}
+
+export default mongoose
