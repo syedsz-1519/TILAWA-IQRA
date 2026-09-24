@@ -1,549 +1,372 @@
 # TILAWA Backend Deployment Guide
 
-## Overview
+## 🎯 Overview
 
-The TILAWA backend is a FastAPI application that needs to be deployed separately from the frontend. This guide covers deployment options and configuration.
+The TILAWA backend is an **Express.js + Mongoose + MongoDB** server that cannot run on Vercel (Vercel only supports frontend frameworks). Instead, we'll deploy it to **Railway.app** which supports Node.js perfectly.
 
 ---
 
-## Backend Architecture
+## 📋 Backend Stack
 
-### What the Backend Does
+- **Framework:** Express.js ^4.18.2
+- **Runtime:** Node.js (ES modules)
+- **Language:** TypeScript 5.7.3
+- **Database:** MongoDB Atlas (cloud)
+- **Port:** 8000 (configurable)
+- **Build:** TypeScript compilation to `dist/` folder
 
-The backend (`backend/main.py`) provides:
+---
 
-- **Authentication endpoints** — `/api/auth/[...all]` (handled by Better Auth)
-- **User progress tracking** — `/api/users/{user_id}/streaks`
-- **Bookmarks** — `/api/bookmarks`
-- **Recitation scoring** — `/api/recitation/submit`
-- **Real-time battles** — `/ws/battles` (WebSocket)
-- **Health checks** — `/api/health`, `/api/ping`
+## 🚀 Deployment Steps (Railway.app)
 
-### Requirements
+### **Step 1: Create Railway Account**
 
-- Python 3.9+
-- PostgreSQL database (same as frontend)
-- FastAPI framework
-- Uvicorn server
+1. Go to: https://railway.app
+2. Click **"Start New Project"**
+3. Sign up with GitHub (recommended)
 
-### Environment Variables (Backend)
+---
+
+### **Step 2: Deploy Backend from GitHub**
+
+1. Click **"Create New Project"**
+2. Select **"GitHub"**
+3. **Authorize Railway** with your GitHub account
+4. **Select Repository:** `syedsz-1519/TILAWA-IQRA`
+5. **Select Service:** Automatic detection will find Node.js
+6. Railway will auto-detect `apps/backend/server` as the backend directory
+
+---
+
+### **Step 3: Configure Build Settings**
+
+Railway should auto-detect these, but verify:
 
 ```
-# Required
-DATABASE_URL=postgresql://user:password@host:port/database
-BETTER_AUTH_SECRET=your-32-char-secret
-CORS_ORIGINS=https://your-frontend.vercel.app,https://localhost:3000
-ENVIRONMENT=production
-LOG_LEVEL=INFO
-
-# Optional (with defaults)
-WHISPER_MODEL=base
-WHISPER_DEVICE=cpu
+Build Command: npm run build
+Start Command: npm start
+Root Directory: apps/backend/server
 ```
 
 ---
 
-## Deployment Options
+### **Step 4: Add Environment Variables**
 
-### Option 1: Railway.app (Recommended - Easiest)
+In Railway Dashboard → Your Project → Variables:
 
-**Why Railway:**
-- Auto-detects Python + PostgreSQL
-- Simple GitHub integration
-- Free tier available
-- Automatic builds on push
-- Built-in PostgreSQL support
+**Click "+ Add Variable"** for each:
 
-**Steps:**
-
-1. **Go to Railway:** https://railway.app
-
-2. **Sign in with GitHub**
-
-3. **Create new project:**
-   - Click "New Project"
-   - Select "Deploy from GitHub"
-   - Select your TILAWA repository
-   - Railway auto-detects Python
-
-4. **Configure services:**
-   - Click "Add" → "PostgreSQL"
-   - Railway creates database automatically
-   - No additional setup needed
-
-5. **Add environment variables:**
-   - Click project settings
-   - Go to Variables
-   - Add:
-     ```
-     DATABASE_URL=<from PostgreSQL service>
-     BETTER_AUTH_SECRET=<your-32-char-secret>
-     CORS_ORIGINS=https://your-frontend.vercel.app
-     ENVIRONMENT=production
-     LOG_LEVEL=INFO
-     ```
-
-6. **Configure build:**
-   - Railway auto-detects Python
-   - No configuration needed
-   - Auto-builds on every push to `backend/` directory
-
-7. **Get deployment URL:**
-   - Under "Deployment"
-   - Copy the URL: `https://[project-name]-production.up.railway.app`
-   - This becomes your `NEXT_PUBLIC_API_URL` on Vercel
-
-8. **Test backend:**
-   ```bash
-   curl https://[project-name]-production.up.railway.app/api/health
-   # Should return: {"status":"ok"}
-   ```
-
-**Pricing:** Free tier includes 5 projects, $5/month per additional
+| Variable | Value | Example |
+|----------|-------|---------|
+| `MONGODB_URI` | MongoDB Atlas connection string | `mongodb+srv://syedshahnawaz_db:wzf1BGHGqvI4PrYR@cluster0.wxno2ll.mongodb.net/tilawa?retryWrites=true&w=majority` |
+| `BETTER_AUTH_SECRET` | 32+ character random secret | `abc123def456ghi789jkl012mno345pqr` |
+| `NODE_ENV` | `production` | `production` |
+| `PORT` | `8000` (or leave empty for auto) | `8000` |
+| `FRONTEND_URL` | Your Vercel frontend URL | `https://tilawa-iqra.vercel.app` |
+| `LOG_LEVEL` | `info` | `info` |
 
 ---
 
-### Option 2: Fly.io (Scalable)
+### **Step 5: Get Backend URL**
 
-**Why Fly.io:**
-- Runs anywhere (globally distributed)
-- Good performance
-- Simple CLI deployment
-- Free tier available
-
-**Steps:**
-
-1. **Install flyctl:**
-   ```bash
-   # macOS
-   brew install flyctl
-   
-   # Windows (PowerShell)
-   iwr https://fly.io/install.ps1 -useb | iex
-   
-   # Linux
-   curl -L https://fly.io/install.sh | sh
-   ```
-
-2. **Sign in:**
-   ```bash
-   flyctl auth login
-   ```
-
-3. **Create Fly app in backend directory:**
-   ```bash
-   cd backend
-   flyctl launch --name tilawa-api
-   ```
-
-4. **Configure (follow prompts):**
-   - Python 3.11
-   - No, skip Postgres (use cloud PostgreSQL)
-   - 256 MB RAM
-   - 1 shared-cpu instance
-
-5. **Add environment variables:**
-   ```bash
-   flyctl secrets set DATABASE_URL="postgresql://..."
-   flyctl secrets set BETTER_AUTH_SECRET="your-secret"
-   flyctl secrets set CORS_ORIGINS="https://your-frontend.vercel.app"
-   ```
-
-6. **Deploy:**
-   ```bash
-   flyctl deploy
-   ```
-
-7. **Get URL:**
-   ```bash
-   flyctl status
-   # Copy the URL from AppName: tilawa-api
-   ```
-
-**Pricing:** Free tier includes 3 shared-cpu-1x 256MB VMs, $1.94/month per GB RAM
+Once deployed, Railway gives you a **public URL**:
+- Example: `https://tilawa-backend-prod-production.up.railway.app`
+- This is your `NEXT_PUBLIC_API_URL` for the frontend!
 
 ---
 
-### Option 3: Vercel with Python
+### **Step 6: Update Frontend with Backend URL**
 
-**Why Vercel:**
-- Same platform as frontend
-- Easier environment variable management
-- No separate deployment needed
+After backend is live on Railway:
 
-**Steps:**
-
-1. **Create `api/index.py`:**
-   ```python
-   from fastapi import FastAPI
-   from fastapi.middleware.cors import CORSMiddleware
-   import os
-   import sys
-   
-   # Add backend to path
-   sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
-   
-   from main import app as backend_app
-   
-   # Create Vercel-compatible app
-   app = FastAPI()
-   
-   # Add CORS
-   app.add_middleware(
-       CORSMiddleware,
-       allow_origins=[os.getenv("CORS_ORIGINS", "*").split(",")],
-       allow_credentials=True,
-       allow_methods=["*"],
-       allow_headers=["*"],
-   )
-   
-   # Mount backend routes
-   app.include_router(backend_app.router)
-   
-   @app.get("/health")
-   async def health():
-       return {"status": "ok"}
-   ```
-
-2. **Update `vercel.json`:**
-   ```json
-   {
-     "functions": {
-       "api/**": {
-         "runtime": "python3.9"
-       },
-       "frontend/pages/**": {
-         "runtime": "nodejs20.x"
-       }
-     }
-   }
-   ```
-
-3. **Add environment variables to Vercel:**
-   - Same as frontend
-   - Plus `CORS_ORIGINS`
-
-4. **Deploy:** Push to GitHub, Vercel auto-deploys
-
-5. **API URL:**
-   ```
-   NEXT_PUBLIC_API_URL=https://your-vercel-project.vercel.app/api
-   ```
-
-**Pricing:** Same as frontend (free tier available)
+1. Go to **Vercel Dashboard** → Your project → **Settings** → **Environment Variables**
+2. Add/Update:
+   - **NEXT_PUBLIC_API_URL** = `https://tilawa-backend-prod-production.up.railway.app` (Railway's URL)
+   - **NEXT_PUBLIC_BETTER_AUTH_URL** = `https://tilawa-iqra.vercel.app` (Your Vercel domain)
+3. Click **Save**
+4. Vercel will automatically redeploy
 
 ---
 
-### Option 4: AWS Lambda + RDS
+## 🔧 Backend Configuration Files
 
-**Why AWS:**
-- Production-grade infrastructure
-- High availability
-- Good for scaling
+### **`package.json`** (apps/backend/server/)
 
-**Steps:**
+Key scripts:
+```json
+{
+  "scripts": {
+    "dev": "tsx src/index.ts",          // Development with hot-reload
+    "build": "tsc",                     // Compile TypeScript to dist/
+    "start": "node dist/index.js",      // Production startup
+    "db:push": "drizzle-kit push:pg",   // (Not used currently)
+    "db:migrate": "tsx src/db/migrate.ts" // (Not used currently)
+  }
+}
+```
 
-1. **Create RDS PostgreSQL:**
-   - AWS Console → RDS
-   - Create PostgreSQL database
-   - Copy endpoint
-
-2. **Create Lambda function:**
-   - AWS Console → Lambda
-   - Create function (Python 3.11)
-   - Upload `backend/` code
-
-3. **Add API Gateway:**
-   - Create REST API
-   - Connect to Lambda
-   - Configure CORS
-   - Deploy
-
-4. **Environment variables:**
-   - Lambda Configuration → Environment variables
-   - Add DATABASE_URL, BETTER_AUTH_SECRET, etc.
-
-5. **Get API endpoint:**
-   - From API Gateway deployment
-   - Use as `NEXT_PUBLIC_API_URL`
-
-**Pricing:** Pay-per-use (very cheap for low traffic)
+**Railway uses:**
+- `npm install` (automatic)
+- `npm run build` (compile TypeScript)
+- `npm start` (run compiled JavaScript)
 
 ---
 
-## Backend Configuration for Each Option
+### **`tsconfig.json`** (apps/backend/server/)
 
-### Update `backend/.env` for your deployment:
+Configured for:
+- ES modules (`"module": "esnext"`)
+- CommonJS output for Node.js
+- Strict type checking
+- Output to `dist/` folder
 
-```bash
-# Which platform you're using
-ENVIRONMENT=production
+---
 
-# Cloud database connection
-DATABASE_URL=postgresql://[user]:[password]@[host]:[port]/[database]
+### **`src/index.ts`** (Main Entry Point)
 
-# Same secret as frontend
-BETTER_AUTH_SECRET=[32-char-secret]
+The server:
+1. Loads environment variables from `.env`
+2. Connects to MongoDB
+3. Starts Express server on port 8000
+4. Exposes health check: `GET /health`
+5. Mounts all API routes
+6. Handles errors gracefully
+7. Supports graceful shutdown (SIGINT)
 
-# Frontend URL (for CORS)
-CORS_ORIGINS=https://your-frontend.vercel.app
+---
+
+## 📡 API Endpoints Available
+
+Once deployed, the backend serves these endpoints:
+
+### **Health Check**
+```
+GET /health
+Response: { status: "ok", environment: "production", database: "connected", timestamp: "..." }
+```
+
+### **Languages**
+```
+GET /api/languages                          # Get all supported languages
+GET /api/languages/:userId                  # Get user's language preferences
+POST /api/languages/:userId                 # Update user's language settings
+```
+
+### **Reading Progress**
+```
+GET /api/reading-progress/:userId
+POST /api/reading-progress/:userId
+```
+
+### **Bookmarks**
+```
+GET /api/bookmarks/:userId
+POST /api/bookmarks                         # Add bookmark
+DELETE /api/bookmarks/:bookmarkId           # Remove bookmark
+```
+
+### **Hifz (Memorization)**
+```
+GET /api/hifz/progress/:userId
+POST /api/hifz/update-progress
+POST /api/hifz/session
+POST /api/hifz/session/:sessionId/end
+GET /api/hifz/stats/:userId
+```
+
+### **Streaks & XP**
+```
+GET /api/streaks/:userId
+POST /api/streaks/:userId
+```
+
+### **Nafs Tracking**
+```
+GET /api/nafs/:userId
+POST /api/nafs/:userId
+```
+
+---
+
+## 🗄️ Database (MongoDB Atlas)
+
+### **Current Configuration**
+
+**Connection String:**
+```
+mongodb+srv://syedshahnawaz_db:wzf1BGHGqvI4PrYR@cluster0.wxno2ll.mongodb.net/tilawa?retryWrites=true&w=majority
+```
+
+**Database Name:** `tilawa`
+
+**Collections:**
+- `users` - User accounts and preferences
+- `products` - E-learning products/courses
+- `bookmarks` - User bookmarks (Quran, Hadith, Dua, Stories)
+- `reading_progress` - Surah/Ayah reading tracking
+- `streaks` - Daily streaks and XP
+- `nafs_tracking` - Self-improvement tracking
+- `hifz_progress` - Memorization progress (SM-2 algorithm)
+- `languages` - Language-specific user data
+
+### **Mongoose Models**
+
+All models defined in `apps/backend/server/src/models/`:
+- `User.ts` - User schema with language preferences
+- `Product.ts` - Product/course schema
+- `Bookmark.ts` - Bookmark schema (supports Quran/Hadith/Dua/Story)
+- `ReadingProgress.ts` - Reading progress schema
+- `Streak.ts` - Streak/XP schema
+- `NafsTracking.ts` - Self-tracking schema
+- `HifzProgress.ts` - Memorization cards with SM-2
+- `Language.ts` - Language-specific progress
+
+---
+
+## ⚙️ Environment Variables (Complete List)
+
+### **Required for Production**
+
+```
+# Database
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database
+
+# Authentication
+BETTER_AUTH_SECRET=<32+ character random hex string>
+
+# Server Configuration
+NODE_ENV=production
+PORT=8000
+FRONTEND_URL=https://tilawa-iqra.vercel.app
 
 # Logging
-LOG_LEVEL=INFO
-
-# ML Models
-WHISPER_MODEL=base
-WHISPER_DEVICE=cpu
+LOG_LEVEL=info
 ```
 
----
+### **How to Generate BETTER_AUTH_SECRET**
 
-## Database Synchronization
+**On Windows PowerShell:**
+```powershell
+$bytes = [byte[]]::new(32)
+[Security.Cryptography.RNGCryptoServiceProvider]::new().GetBytes($bytes)
+[Convert]::ToHexString($bytes).ToLower()
+```
 
-**Important:** Frontend and backend MUST use the SAME PostgreSQL database.
-
-### Recommended Setup:
-
-1. **Single cloud PostgreSQL database** (Neon, Railway, AWS RDS)
-   - Used by both frontend and backend
-   - Schema applied once
-   - Both services connect with same DATABASE_URL
-
-2. **Schema Migration:**
-   ```bash
-   # Apply schema once to cloud database
-   psql [DATABASE_URL] < database/schema.sql
-   
-   # Verify
-   psql [DATABASE_URL] -c "SELECT * FROM \"user\";"
-   ```
-
-3. **Backup configuration:**
-   - Enable automatic backups in database provider
-   - Set retention to 7-30 days
-
----
-
-## Testing Backend Deployment
-
-### After deployment, test these endpoints:
-
+**On Mac/Linux:**
 ```bash
-# Health check
-curl https://your-backend-url/api/health
-# Expected: {"status":"ok"}
-
-# Ping
-curl https://your-backend-url/api/ping
-# Expected: {"status":"pong"}
-
-# API documentation
-# Open in browser: https://your-backend-url/api/docs
-# You should see Swagger UI
-
-# CORS test
-curl -X OPTIONS https://your-backend-url/api/health \
-  -H "Origin: https://your-frontend.vercel.app" \
-  -v
-# Check response headers for Access-Control-Allow-Origin
+openssl rand -hex 32
 ```
-
-### Common issues:
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| 502 Bad Gateway | Backend not running | Check deployment logs |
-| 404 Not Found | Wrong API path | Check NEXT_PUBLIC_API_URL |
-| CORS error | CORS_ORIGINS not set | Add frontend URL to CORS_ORIGINS |
-| 500 Error | Database connection failed | Check DATABASE_URL |
-| 401 Unauthorized | Auth secret mismatch | Verify BETTER_AUTH_SECRET matches |
 
 ---
 
-## Connecting Frontend to Backend
+## 🔍 Monitoring & Logs
 
-### In Vercel dashboard environment variables:
+### **View Logs in Railway**
 
-```
-NEXT_PUBLIC_API_URL=https://your-backend-url/api
-```
+1. Go to Railway Dashboard → Your Project
+2. Click **"Logs"** tab
+3. See real-time logs of your backend
 
-### Examples:
+### **Health Check**
 
-- **Railway:** `https://tilawa-api-production.up.railway.app/api`
-- **Fly.io:** `https://tilawa-api.fly.dev/api`
-- **Vercel:** `https://your-vercel-project.vercel.app/api`
-- **AWS:** `https://[api-id].execute-api.[region].amazonaws.com/prod/api`
-
----
-
-## Monitoring Backend
-
-### Check deployment health:
-
-**Railway:**
+Test that backend is running:
 ```bash
-# View logs
-railway logs -f
-```
+curl https://your-railway-url/health
 
-**Fly.io:**
-```bash
-# View logs
-flyctl logs
-```
-
-**Vercel:**
-```bash
-# View logs
-vercel logs --tail
-```
-
-### Key metrics to monitor:
-
-- **Response time:** Should be <100ms
-- **Error rate:** Should be <1%
-- **Database connections:** Monitor connection pool
-- **Uptime:** Should be >99.9%
-
----
-
-## Scaling Backend
-
-### When backend gets busy:
-
-**Railway:**
-- Click deployment
-- Increase RAM/CPU slider
-- Auto-redeploys
-
-**Fly.io:**
-```bash
-flyctl scale vm shared-cpu-2x
-```
-
-**Vercel:**
-- Update `vercel.json` function memory
-- Redeploy
-
-**AWS:**
-- Increase Lambda concurrent executions
-- Add read replicas to RDS
-
----
-
-## Recommended Deployment Path
-
-### For best results:
-
-1. **Use Railway for backend** (easiest)
-2. **Use Vercel for frontend** (integrated)
-3. **Use Neon.tech for database** (free tier)
-
-**Why this combination:**
-- Minimal configuration
-- Auto-scaling
-- Good free tier support
-- Easy monitoring
-
-### Setup timeline:
-
-1. **Day 1 - Setup:**
-   - Create Railway account
-   - Deploy backend (5 min)
-   - Get backend URL
-
-2. **Day 1 - Connect:**
-   - Add backend URL to Vercel
-   - Redeploy frontend (2 min)
-   - Test features (10 min)
-
-3. **Day 2 - Monitor:**
-   - Check logs
-   - Monitor performance
-   - Set up alerts
-
----
-
-## Troubleshooting Deployment Failures
-
-### Backend build fails
-
-**Check:**
-1. `requirements.txt` is in `backend/` directory
-2. Python version is 3.9+
-3. No import errors in `main.py`
-
-**Fix:**
-1. Test locally: `python -m uvicorn main:app --reload`
-2. Check error logs on deployment platform
-3. Update `requirements.txt` and redeploy
-
-### Backend won't start
-
-**Check:**
-1. DATABASE_URL is set
-2. BETTER_AUTH_SECRET is set
-3. Port is correct (usually 8000)
-
-**Fix:**
-```bash
-# Test locally
-export DATABASE_URL="postgresql://..."
-export BETTER_AUTH_SECRET="secret"
-python -m uvicorn main:app --reload
-```
-
-### API returns 404
-
-**Check:**
-1. Backend is running (test /api/health)
-2. Frontend NEXT_PUBLIC_API_URL is correct
-3. Backend CORS_ORIGINS includes frontend URL
-
-**Fix:**
-1. Verify backend deployment: `curl backend-url/api/health`
-2. Update NEXT_PUBLIC_API_URL in Vercel
-3. Redeploy frontend
-
-### CORS errors in browser
-
-**Check:**
-1. Backend CORS_ORIGINS environment variable
-2. Frontend URL is in CORS_ORIGINS
-
-**Fix:**
-```bash
-# Example CORS_ORIGINS
-CORS_ORIGINS=https://your-frontend.vercel.app,https://your-frontend-preview.vercel.app
+# Response:
+# {
+#   "status": "ok",
+#   "environment": "production",
+#   "database": "connected",
+#   "timestamp": "2026-09-24T12:00:00.000Z"
+# }
 ```
 
 ---
 
-## Next Steps
+## 🆘 Troubleshooting
 
-After backend is deployed:
+### **Issue: Build fails on Railway**
 
-1. ✅ Backend running and accessible
-2. ✅ Frontend connected to backend
-3. ✅ All API endpoints working
-4. ✅ Database synchronized
-5. ✅ CORS properly configured
-6. ✅ Authentication working
-7. ✅ Features tested end-to-end
+**Error:** `npm: command not found`
+- **Fix:** Railway should auto-detect Node.js. If not, add `engines` to `package.json`:
+```json
+{
+  "engines": {
+    "node": "20.x"
+  }
+}
+```
 
-Then proceed to final testing (Task #6)
+### **Issue: Cannot connect to MongoDB**
+
+**Error:** `ECONNREFUSED` or timeout
+- **Fix:** Add Railway IP to MongoDB Atlas whitelist:
+  1. Go to MongoDB Atlas → Network Access
+  2. Add Railway IP: Get from Railway logs
+  3. Or add `0.0.0.0/0` (not recommended for production)
+
+### **Issue: CORS errors from frontend**
+
+**Error:** `Access to XMLHttpRequest blocked by CORS policy`
+- **Fix:** Verify `FRONTEND_URL` env var matches your Vercel domain exactly
+
+### **Issue: Environment variables not loading**
+
+**Error:** `undefined` values in logs
+- **Fix:** Railway loads env vars on deploy. If you add them after:
+  1. Go to Railway Dashboard → Variables
+  2. Make any small edit (like adding/removing space)
+  3. Redeploy: Click "Deploy" button
 
 ---
 
-## Support Resources
+## 📊 Deployment Checklist
 
-- **Railway Docs:** https://docs.railway.app
-- **Fly.io Docs:** https://fly.io/docs
-- **Vercel Python:** https://vercel.com/docs/functions/python
-- **FastAPI Docs:** https://fastapi.tiangolo.com
-- **PostgreSQL:** https://www.postgresql.org/docs
+- [ ] GitHub repository synced with latest code
+- [ ] `package.json` has correct scripts (dev, build, start)
+- [ ] `tsconfig.json` configured for Node.js ES modules
+- [ ] `src/index.ts` connects to MongoDB
+- [ ] `.env.example` documents all required variables
+- [ ] Railway project created
+- [ ] GitHub connected to Railway
+- [ ] `apps/backend/server` auto-detected as root directory
+- [ ] All environment variables added to Railway:
+  - [ ] MONGODB_URI
+  - [ ] BETTER_AUTH_SECRET
+  - [ ] NODE_ENV
+  - [ ] PORT
+  - [ ] FRONTEND_URL
+  - [ ] LOG_LEVEL
+- [ ] Build succeeds (check Railway Logs)
+- [ ] Service deployed and running
+- [ ] Health check responds: `GET /health`
+- [ ] Railway URL noted (e.g., `https://tilawa-backend-prod-xyz.up.railway.app`)
+- [ ] Frontend updated with backend URL as `NEXT_PUBLIC_API_URL`
+- [ ] Vercel redeployed with new env vars
 
 ---
 
-**Next:** Complete Task #6 - Test deployment and verify all features work
+## 🎉 Success!
+
+Once deployed:
+
+✅ **Frontend** running on Vercel: `https://tilawa-iqra.vercel.app`
+✅ **Backend** running on Railway: `https://tilawa-backend-prod-xyz.up.railway.app`
+✅ **Database** MongoDB Atlas: `tilawa` database with 8 collections
+✅ **API** fully functional and connecting frontend ↔ backend
+
+---
+
+## 📝 Next Steps
+
+1. **Deploy Backend to Railway** (follow steps 1-6 above)
+2. **Get Backend URL** from Railway
+3. **Update Vercel Environment Variables** with backend URL
+4. **Redeploy Frontend** on Vercel
+5. **Test:** Open frontend and try API calls (bookmarks, languages, etc.)
+
+---
+
+**Generated:** September 24, 2026
+**Status:** ✅ Ready for deployment
