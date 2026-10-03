@@ -1,11 +1,44 @@
 import { BookmarkModel, IBookmark } from './bookmarks.model'
+import { parsePagination, buildMeta } from '../../utils/pagination'
 
 export class BookmarksRepository {
-  async findByUserAndType(userId: string, type: 'quran' | 'hadith' | 'dua' | 'story'): Promise<IBookmark[]> {
-    return BookmarkModel.find({ userId, type }).sort({ createdAt: -1 }).lean()
+  async findByUserAndType(
+    userId: string,
+    type: 'quran' | 'hadith' | 'dua' | 'story',
+    options: { page?: number; limit?: number } = {}
+  ) {
+    const { page, limit, skip } = parsePagination(options)
+    const filter = { userId, type }
+
+    const [bookmarks, total] = await Promise.all([
+      BookmarkModel.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      BookmarkModel.countDocuments(filter),
+    ])
+
+    return { bookmarks, meta: buildMeta(page, limit, total) }
   }
 
-  async findExisting(userId: string, type: string, itemId: string): Promise<IBookmark | null> {
+  async findAll(userId: string, options: { page?: number; limit?: number } = {}) {
+    const { page, limit, skip } = parsePagination(options)
+    const filter = { userId }
+
+    const [bookmarks, total] = await Promise.all([
+      BookmarkModel.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      BookmarkModel.countDocuments(filter),
+    ])
+
+    return { bookmarks, meta: buildMeta(page, limit, total) }
+  }
+
+  async findExisting(userId: string, type: 'quran' | 'hadith' | 'dua' | 'story', itemId: string): Promise<IBookmark | null> {
     return BookmarkModel.findOne({ userId, type, itemId }).lean()
   }
 
@@ -13,7 +46,7 @@ export class BookmarksRepository {
     return BookmarkModel.create(data)
   }
 
-  async deleteBookmark(userId: string, type: string, itemId: string): Promise<boolean> {
+  async deleteBookmark(userId: string, type: 'quran' | 'hadith' | 'dua' | 'story', itemId: string): Promise<boolean> {
     const result = await BookmarkModel.findOneAndDelete({ userId, type, itemId })
     return !!result
   }

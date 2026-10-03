@@ -46,9 +46,11 @@ const validData = parsed.success
       JWT_SECRET: 'tilawa-super-secure-jwt-access-secret-key-32chars',
       JWT_REFRESH_SECRET: 'tilawa-super-secure-jwt-refresh-secret-key-32chars',
       JWT_ACCESS_EXPIRY: '15m',
-      JWT_REFRESH_EXPIRY: '30d',
+      JWT_REFRESH_EXPIRY: '7d',
+      COOKIE_SECRET: 'tilawa-cookie-signing-secret-dev',
       FRONTEND_URL: 'http://localhost:3000',
       CORS_ORIGINS: 'http://localhost:3000,https://tilawaa.vercel.app',
+      FLUTTER_MOBILE_ORIGINS: '',
       LOG_LEVEL: 'info',
     }
 
@@ -62,9 +64,9 @@ export const config = {
   jwtRefreshExpiry: validData.JWT_REFRESH_EXPIRY,
   cookieSecret: validData.COOKIE_SECRET,
   frontendUrl: validData.FRONTEND_URL,
-  corsOrigins: validData.CORS_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean),
+  corsOrigins: validData.CORS_ORIGINS.split(',').map((s: string) => s.trim()).filter(Boolean),
   flutterOrigins: validData.FLUTTER_MOBILE_ORIGINS
-    ? validData.FLUTTER_MOBILE_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean)
+    ? validData.FLUTTER_MOBILE_ORIGINS.split(',').map((s: string) => s.trim()).filter(Boolean)
     : [],
   logLevel: validData.LOG_LEVEL,
   isProduction: validData.NODE_ENV === 'production',

@@ -38,17 +38,23 @@ export class StreaksService {
 
     const newLongestStreak = Math.max(userStreak.longestStreak, newStreak)
 
-    const updated = await this.repo.updateStreak(userStreak._id.toString(), {
+    const updateData: any = {
       totalXP: userStreak.totalXP + xpGain,
       currentStreak: newStreak,
       longestStreak: newLongestStreak,
       lastActivityDate: new Date(),
-    })
+    }
+
+    if (minutesRead > 0) {
+      updateData.$push = { history: { date: new Date(), minutesRead } }
+    }
+
+    const updated = await this.repo.updateStreak(userStreak._id.toString(), updateData)
 
     return updated
   }
 
   async getLeaderboard(limit?: number) {
-    return this.repo.getLeaderboard(limit || 50)
+    return this.repo.getLeaderboard({ limit: limit || 50 })
   }
 }

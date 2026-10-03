@@ -15,8 +15,8 @@ export interface INafsTracking extends Document {
 
 const nafsTrackingSchema = new Schema<INafsTracking>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-    date: { type: Date, required: true, index: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    date: { type: Date, required: true },
     prayersCompleted: { type: [String], default: [] },
     fastingStatus: { type: Boolean, default: false },
     quranMinutes: { type: Number, default: 0 },
@@ -29,6 +29,9 @@ const nafsTrackingSchema = new Schema<INafsTracking>(
   }
 )
 
-nafsTrackingSchema.index({ userId: 1, date: 1 })
+// One record per user per day — unique constraint prevents duplicate entries
+nafsTrackingSchema.index({ userId: 1, date: 1 }, { unique: true })
+// History queries: fetch last N days sorted by date
+nafsTrackingSchema.index({ userId: 1, date: -1 })
 
 export const NafsTrackingModel = model<INafsTracking>('NafsTracking', nafsTrackingSchema)

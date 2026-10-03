@@ -71,3 +71,14 @@ export function requireRole(role: 'admin' | 'user') {
     next()
   }
 }
+
+/**
+ * Extract userId from req.user — throws 401 if not authenticated.
+ * Use in controllers instead of req.user?.userId to keep types clean.
+ */
+export function getUserId(req: Request): string {
+  if (!req.user?.userId) {
+    throw ApiError.unauthorized('Authentication required')
+  }
+  return req.user.userId
+}

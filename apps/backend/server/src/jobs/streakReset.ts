@@ -1,25 +1,35 @@
 import { StreakModel } from '../modules/streaks/streaks.model'
 import { logger } from '../config/logger'
 
+/**
+ * Runs nightly at 00:05 UTC.
+ * Resets currentStreak to 0 for any user whose lastActivityDate
+ * is before yesterday midnight UTC — meaning they missed a full day.
+ */
 export async function runStreakResetJob(): Promise<void> {
   try {
-    const twoDaysAgo = new Date()
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2)
-    twoDaysAgo.setHours(23, 59, 59, 999)
+    // "Yesterday midnight UTC" — any lastActivityDate before this means the user
+    // missed yesterday entirely and their streak should reset.
+    const yesterdayMidnightUTC = new Date()
+    yesterdayMidnightUTC.setUTCDate(yesterdayMidnightUTC.getUTCDate() - 1)
+    yesterdayMidnightUTC.setUTCHours(0, 0, 0, 0)
 
-    // Reset currentStreak to 0 for users who haven't logged activity in over 48 hours
     const result = await StreakModel.updateMany(
       {
-        lastActivityDate: { $lt: twoDaysAgo },
         currentStreak: { $gt: 0 },
+        $or: [
+          { lastActivityDate: { $lt: yesterdayMidnightUTC } },
+          { lastActivityDate: null },
+        ],
       },
-      {
-        $set: { currentStreak: 0 },
-      }
+      { $set: { currentStreak: 0 } }
     )
 
-    logger.info(`[Job: StreakReset] Reset ${result.modifiedCount || 0} inactive user streaks.`)
+    logger.info(
+      { modifiedCount: result.modifiedCount },
+      '[Job: StreakReset] Streak reset complete'
+    )
   } catch (error) {
-    logger.error('[Job: StreakReset] Error executing streak reset job:', error)
+    logger.error({ err: error }, '[Job: StreakReset] Failed')
   }
 }

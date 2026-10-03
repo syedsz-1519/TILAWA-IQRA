@@ -13,7 +13,7 @@ export interface IStreak extends Document {
 
 const streakSchema = new Schema<IStreak>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true, index: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
     currentStreak: { type: Number, default: 0 },
     longestStreak: { type: Number, default: 0 },
     totalXP: { type: Number, default: 0 },
@@ -24,5 +24,12 @@ const streakSchema = new Schema<IStreak>(
     timestamps: true,
   }
 )
+
+// One streak doc per user
+streakSchema.index({ userId: 1 }, { unique: true })
+// Leaderboard: sort by XP desc, then streak desc
+streakSchema.index({ totalXP: -1, currentStreak: -1 })
+// Streak-reset cron: find users who were active yesterday or earlier
+streakSchema.index({ lastActivityDate: 1 }, { sparse: true })
 
 export const StreakModel = model<IStreak>('Streak', streakSchema)
