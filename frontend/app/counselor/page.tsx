@@ -56,7 +56,7 @@ export default function CounselorPage() {
         },
       ]
       const response = responses[Math.floor(Math.random() * responses.length)]
-      setMessages((prev) => [...prev, { role: 'counselor', ...response }])
+      setMessages((prev) => [...prev, { role: 'counselor' as const, content: response.text, relatedAyah: response.ayah }])
       setIsLoading(false)
     }, 1500)
   }

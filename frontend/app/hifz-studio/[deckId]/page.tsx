@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ChevronLeft, Volume2, RotateCw, ChevronRight, X } from 'lucide-react'
 import { getHifzDeck, getCardsByDeck, calculateNextReview } from '@/lib/hifz-data'
 import { useLanguage } from '@/lib/language-context'
+import { LANGUAGES } from '@/lib/languages'
 
 interface DeckPageProps {
   params: {
@@ -216,7 +217,7 @@ export default function HifzDeckPage({ params }: DeckPageProps) {
               ) : (
                 <>
                   <div className="text-sm font-medium text-muted-foreground mb-4">
-                    Meaning ({currentLanguage.name})
+                    Meaning ({LANGUAGES[currentLanguage]?.name || currentLanguage})
                   </div>
                   <p className="text-lg text-foreground leading-relaxed">
                     {currentCard.meaning}

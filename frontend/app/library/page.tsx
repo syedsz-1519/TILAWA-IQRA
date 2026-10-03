@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Search, BookOpen, Filter, Volume2, Globe } from 'lucide-react'
 import { getAllSurahs, getQuranStats, Surah } from '@/lib/quran-data'
 import { useLanguage } from '@/lib/language-context'
+import { LANGUAGES } from '@/lib/languages'
 
 export default function QuranLibraryPage() {
   const { currentLanguage } = useLanguage()
@@ -44,7 +45,7 @@ export default function QuranLibraryPage() {
             <div>
               <h1 className="text-3xl font-bold">Quran Library</h1>
               <p className="text-muted-foreground text-sm mt-1">
-                Complete Quranic text with translations in {currentLanguage.name}
+                Complete Quranic text with translations in {LANGUAGES[currentLanguage]?.name ?? currentLanguage}
               </p>
             </div>
           </div>
@@ -131,7 +132,7 @@ export default function QuranLibraryPage() {
           {filtered.map((surah) => (
             <Link
               key={surah.number}
-              href={`/library/${surah.number}?lang=${currentLanguage.code}`}
+              href={`/library/${surah.number}?lang=${currentLanguage}`}
               className="group rounded-lg border border-border p-5 hover:border-primary hover:bg-primary/5 transition-all"
             >
               {/* Header */}

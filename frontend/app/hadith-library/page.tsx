@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Search, BookOpen, Filter } from 'lucide-react'
 import { getHadithCollections, getHadithStats, HADITH_TOPICS } from '@/lib/hadith-data'
 import { useLanguage } from '@/lib/language-context'
+import { LANGUAGES } from '@/lib/languages'
 
 export default function HadithLibraryPage() {
   const { currentLanguage } = useLanguage()
@@ -38,7 +39,7 @@ export default function HadithLibraryPage() {
             <div>
               <h1 className="text-3xl font-bold">Hadith Library</h1>
               <p className="text-muted-foreground text-sm mt-1">
-                Authentic Hadiths from 6 major collections with translations in {currentLanguage.name}
+                Authentic Hadiths from 6 major collections with translations in {LANGUAGES[currentLanguage]?.name || currentLanguage}
               </p>
             </div>
           </div>
