@@ -22,45 +22,110 @@ import nafsRoutes from './modules/nafs/nafs.routes'
 import streaksRoutes from './modules/streaks/streaks.routes'
 import settingsRoutes from './modules/settings/settings.routes'
 
+// All explicitly allowed origins: web deployments + configured flutter origins
+const ALL_ALLOWED_ORIGINS: string[] = [
+  ...config.corsOrigins,
+  ...config.flutterOrigins,
+]
+
 export function createApp(): Express {
   const app = express()
 
-  // Trust Railway proxy headers for accurate client IP detection in rate limiting
+  // Trust Railway/Vercel proxy — needed for accurate client IP in rate limiting
   app.set('trust proxy', 1)
   app.disable('x-powered-by')
 
-  // Core Security & Compression Middlewares
-  app.use(helmet())
-  app.use(compression())
-  app.use(express.json({ limit: '1mb' }))
-  app.use(express.urlencoded({ extended: true, limit: '1mb' }))
-  app.use(cookieParser())
+  // =============================================
+  // SECURITY HEADERS — Helmet (hardened)
+  // =============================================
+  app.use(
+    helmet({
+      // Strict-Transport-Security: enforce HTTPS for 1 year
+      hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+      },
+      // CSP: API-only server — no frontend assets, lock everything down
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'none'"],
+          scriptSrc: ["'none'"],
+          styleSrc: ["'none'"],
+          imgSrc: ["'none'"],
+          connectSrc: ["'self'"],
+          fontSrc: ["'none'"],
+          objectSrc: ["'none'"],
+          frameAncestors: ["'none'"],
+          formAction: ["'none'"],
+          baseUri: ["'none'"],
+        },
+      },
+      noSniff: true,
+      dnsPrefetchControl: { allow: false },
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+      frameguard: { action: 'deny' },
+      // crossOriginEmbedderPolicy disabled — breaks native mobile HTTP clients
+      crossOriginEmbedderPolicy: false,
+      crossOriginOpenerPolicy: { policy: 'same-origin' },
+      // cross-origin needed so mobile/web clients can consume this API
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+    })
+  )
 
-  // CORS Configuration
+  // =============================================
+  // CORS — strict origin whitelist in production
+  // =============================================
   app.use(
     cors({
       origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, curl, server-to-server)
+        // Allow no-origin requests: native mobile apps, curl, server-to-server
         if (!origin) return callback(null, true)
-        if (config.corsOrigins.includes(origin) || origin.endsWith('.vercel.app') || !config.isProduction) {
+
+        // In development: allow all origins for ease of local testing
+        if (!config.isProduction) return callback(null, true)
+
+        // Production: explicit whitelist + *.vercel.app for preview deployments
+        if (
+          ALL_ALLOWED_ORIGINS.includes(origin) ||
+          origin.endsWith('.vercel.app')
+        ) {
           return callback(null, true)
         }
-        return callback(new Error(`CORS policy blocks access from origin ${origin}`))
+
+        callback(new Error(`CORS: Origin '${origin}' is not allowed`))
       },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-request-id'],
+      exposedHeaders: ['X-Request-ID', 'RateLimit-Limit', 'RateLimit-Remaining'],
     })
   )
 
-  // Custom Request Id & Input Sanitization
+  // =============================================
+  // BODY PARSING & COMPRESSION
+  // =============================================
+  app.use(compression())
+  app.use(express.json({ limit: '1mb' }))
+  app.use(express.urlencoded({ extended: true, limit: '1mb' }))
+  // Signed cookies using COOKIE_SECRET from env
+  app.use(cookieParser(config.cookieSecret))
+
+  // =============================================
+  // REQUEST ID & NOSQL INJECTION SANITIZATION
+  // =============================================
   app.use(requestIdMiddleware)
   app.use(mongoSanitizeMiddleware)
 
-  // Rate Limiting
+  // =============================================
+  // GLOBAL RATE LIMITING — 100 req/min per IP
+  // Auth routes have their own stricter limiter (10/15min)
+  // =============================================
   app.use(globalLimiter)
 
-  // Health Checks
+  // =============================================
+  // HEALTH CHECKS (unauthenticated, not rate-limited individually)
+  // =============================================
   app.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({
       status: 'ok',
@@ -80,7 +145,9 @@ export function createApp(): Express {
     }
   })
 
-  // OpenAPI Specs Endpoint
+  // =============================================
+  // OPENAPI SPEC STUB
+  // =============================================
   app.get('/api/docs/openapi.json', (_req: Request, res: Response) => {
     res.json({
       openapi: '3.0.0',
@@ -102,9 +169,9 @@ export function createApp(): Express {
     })
   })
 
-  // ===============================================
-  // Versioned V1 API Routes
-  // ===============================================
+  // =============================================
+  // VERSIONED V1 API ROUTES
+  // =============================================
   app.use('/api/v1/auth', authRoutes)
   app.use('/api/v1/users', usersRoutes)
   app.use('/api/v1/hifz', hifzRoutes)
@@ -114,10 +181,11 @@ export function createApp(): Express {
   app.use('/api/v1/streaks', streaksRoutes)
   app.use('/api/v1', settingsRoutes)
 
-  // ===============================================
-  // Backward-Compatible Legacy Routes (Unversioned)
-  // Ensures existing Web (Vercel) & Mobile (Flutter) clients work without breakages
-  // ===============================================
+  // =============================================
+  // BACKWARD-COMPATIBLE LEGACY ROUTES (unversioned)
+  // Keeps existing Vercel web + Flutter mobile clients working
+  // TODO: Remove once both clients are migrated to /api/v1/
+  // =============================================
   app.use('/api/hifz', hifzRoutes)
   app.use('/api/reading-progress', progressRoutes)
   app.use('/api/bookmarks', bookmarksRoutes)
@@ -125,7 +193,7 @@ export function createApp(): Express {
   app.use('/', settingsRoutes)
   app.use('/', bookmarksRoutes)
 
-  // 404 & Global Error Handling
+  // 404 & global error handler — must be last
   app.use(notFoundHandler)
   app.use(errorHandler)
 

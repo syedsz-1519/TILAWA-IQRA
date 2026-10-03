@@ -8,12 +8,15 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   MONGODB_URI: z.string().min(1, 'MONGODB_URI is required'),
   DATABASE_URL: z.string().optional(),
-  JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 characters'),
-  JWT_REFRESH_SECRET: z.string().min(16, 'JWT_REFRESH_SECRET must be at least 16 characters'),
+  JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
+  JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters'),
   JWT_ACCESS_EXPIRY: z.string().default('15m'),
-  JWT_REFRESH_EXPIRY: z.string().default('30d'),
+  JWT_REFRESH_EXPIRY: z.string().default('7d'),
+  COOKIE_SECRET: z.string().min(16).default('tilawa-cookie-signing-secret-dev'),
   FRONTEND_URL: z.string().default('http://localhost:3000'),
   CORS_ORIGINS: z.string().default('http://localhost:3000,https://tilawaa.vercel.app'),
+  // Flutter mobile app origins (comma-separated). Empty = allow null-origin mobile apps.
+  FLUTTER_MOBILE_ORIGINS: z.string().default(''),
   LOG_LEVEL: z.string().default('info'),
 })
 
@@ -57,8 +60,12 @@ export const config = {
   jwtRefreshSecret: validData.JWT_REFRESH_SECRET,
   jwtAccessExpiry: validData.JWT_ACCESS_EXPIRY,
   jwtRefreshExpiry: validData.JWT_REFRESH_EXPIRY,
+  cookieSecret: validData.COOKIE_SECRET,
   frontendUrl: validData.FRONTEND_URL,
   corsOrigins: validData.CORS_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean),
+  flutterOrigins: validData.FLUTTER_MOBILE_ORIGINS
+    ? validData.FLUTTER_MOBILE_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean)
+    : [],
   logLevel: validData.LOG_LEVEL,
   isProduction: validData.NODE_ENV === 'production',
   isTest: validData.NODE_ENV === 'test',

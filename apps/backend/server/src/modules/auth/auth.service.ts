@@ -9,6 +9,17 @@ import {
 } from '../../utils/crypto'
 import { ApiError } from '../../utils/ApiError'
 import { SYSTEM_CONSTANTS } from '../../config/constants'
+import { config } from '../../config/env'
+
+/** Convert a JWT expiry string like '7d', '30d', '24h' into milliseconds. */
+function parseDurationMs(expiry: string): number {
+  const unit = expiry.slice(-1)
+  const value = parseInt(expiry.slice(0, -1), 10)
+  if (unit === 'd') return value * 24 * 60 * 60 * 1000
+  if (unit === 'h') return value * 60 * 60 * 1000
+  if (unit === 'm') return value * 60 * 1000
+  return 7 * 24 * 60 * 60 * 1000 // fallback: 7 days
+}
 
 export class AuthService {
   private repo = new AuthRepository()
@@ -38,8 +49,7 @@ export class AuthService {
     const rawRefreshToken = generateRandomToken(40)
     const refreshTokenHash = hashToken(rawRefreshToken)
 
-    const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + 30)
+    const expiresAt = new Date(Date.now() + parseDurationMs(config.jwtRefreshExpiry))
 
     await this.repo.saveRefreshToken({
       userId: user._id,
@@ -110,8 +120,7 @@ export class AuthService {
     const rawRefreshToken = generateRandomToken(40)
     const refreshTokenHash = hashToken(rawRefreshToken)
 
-    const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + 30)
+    const expiresAt = new Date(Date.now() + parseDurationMs(config.jwtRefreshExpiry))
 
     await this.repo.saveRefreshToken({
       userId: user._id,
@@ -163,8 +172,7 @@ export class AuthService {
 
     await this.repo.revokeRefreshToken(tokenDoc._id.toString(), newTokenHash)
 
-    const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + 30)
+    const expiresAt = new Date(Date.now() + parseDurationMs(config.jwtRefreshExpiry))
 
     await this.repo.saveRefreshToken({
       userId: user._id,
