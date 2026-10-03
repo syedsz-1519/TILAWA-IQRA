@@ -23,7 +23,7 @@ const BOTTOM_TABS = [
   { label: 'Home',   href: '/',           icon: Home        },
   { label: 'Listen', href: '/listen',     icon: Headphones  },
   { label: 'Read',   href: '/read',       icon: BookOpenText },
-  { label: 'Dua',    href: '/hadith-dua', icon: Lightbulb   },
+  { label: 'Dua',    href: '/dua-library', icon: Heart      },
   // "More" tab handled separately — opens the drawer
 ] as const
 

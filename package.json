@@ -4,14 +4,22 @@
   "private": true,
   "description": "Workspace manager for TILAWA",
   "workspaces": [
-    "frontend"
+    "apps/web/frontend",
+    "apps/backend/server",
+    "frontend",
+    "backend"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=frontend",
-    "build": "npm run build --workspace=frontend",
-    "start": "npm run start --workspace=frontend",
-    "lint": "npm run lint --workspace=frontend",
-    "typecheck": "npm run typecheck --workspace=frontend"
+    "dev:web": "npm run dev --workspace=apps/web/frontend",
+    "dev:api": "npm run dev --workspace=apps/backend/server",
+    "build:web": "npm run build --workspace=apps/web/frontend",
+    "build:api": "npm run build --workspace=apps/backend/server",
+    "build": "npm run build:web",
+    "dev": "npm run dev:web",
+    "start": "npm run start --workspace=apps/web/frontend",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
   },
   "devDependencies": {
     "typescript": "5.7.3"

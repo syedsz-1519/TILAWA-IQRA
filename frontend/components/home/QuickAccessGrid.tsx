@@ -25,7 +25,7 @@ export function QuickAccessGrid() {
       title: 'Dua & Adhkar',
       description: 'Daily supplications',
       icon: Heart,
-      href: '/dua-adhkar',
+      href: '/dua-library',
       color: 'bg-rose-500/10 hover:bg-rose-500/20',
       iconColor: 'text-rose-600',
     },
