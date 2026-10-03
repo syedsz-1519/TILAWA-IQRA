@@ -300,6 +300,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const setReciter = useCallback(
     (reciter: Reciter) => {
+      const audio = audioRef.current
+      const savedTime = audio ? audio.currentTime : 0
       currentReciterRef.current = reciter
       setCurrentReciterState(reciter)
       if (typeof window !== 'undefined') {
@@ -307,6 +309,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       }
       if (currentSurahRef.current) {
         playSurah(currentSurahRef.current, reciter)
+        if (savedTime > 0) {
+          setTimeout(() => {
+            if (audioRef.current) {
+              audioRef.current.currentTime = savedTime
+              setCurrentTime(savedTime)
+            }
+          }, 150)
+        }
       }
     },
     [playSurah],
