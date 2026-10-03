@@ -104,12 +104,6 @@ export const navGroups: NavGroup[] = [
         icon: Brain,
       },
       {
-        title: 'Hifz',
-        href: '/hifz',
-        description: 'Memorization plans and revision',
-        icon: Brain,
-      },
-      {
         title: 'History of Quran',
         href: '/history',
         description: 'Tarikh-e-Quran and Nuzool-e-Quran',
