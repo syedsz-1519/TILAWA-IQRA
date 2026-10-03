@@ -39,7 +39,7 @@ export class BookmarksRepository {
   }
 
   async findExisting(userId: string, type: 'quran' | 'hadith' | 'dua' | 'story', itemId: string): Promise<IBookmark | null> {
-    return BookmarkModel.findOne({ userId, type, itemId }).lean()
+    return BookmarkModel.findOne({ userId, type, itemId }).lean() as any
   }
 
   async createBookmark(data: Partial<IBookmark>): Promise<IBookmark> {

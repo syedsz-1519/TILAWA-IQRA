@@ -25,7 +25,7 @@ export class HifzRepository {
   }
 
   async findByCard(userId: string, cardId: string): Promise<IHifzProgress | null> {
-    return HifzProgressModel.findOne({ userId, cardId }).lean()
+    return HifzProgressModel.findOne({ userId, cardId }).lean() as any
   }
 
   async upsertProgress(userId: string, cardId: string, data: Partial<IHifzProgress>): Promise<IHifzProgress> {
@@ -33,7 +33,7 @@ export class HifzRepository {
       { userId, cardId },
       { $set: data },
       { new: true, upsert: true, runValidators: true }
-    ).lean() as Promise<IHifzProgress>
+    ).lean() as any
   }
 
   /**
@@ -57,7 +57,7 @@ export class HifzRepository {
         { new: true, upsert: true, runValidators: true, session }
       ).lean()
 
-      result = updated as IHifzProgress
+      result = updated as unknown as IHifzProgress
 
       // 2. Increment XP and update streak activity
       await StreakModel.findOneAndUpdate(

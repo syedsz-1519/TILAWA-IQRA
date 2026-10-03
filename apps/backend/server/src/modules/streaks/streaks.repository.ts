@@ -3,7 +3,7 @@ import { parsePagination, buildMeta } from '../../utils/pagination'
 
 export class StreaksRepository {
   async findByUserId(userId: string): Promise<IStreak | null> {
-    return StreakModel.findOne({ userId }).lean()
+    return StreakModel.findOne({ userId }).lean() as any
   }
 
   async upsert(userId: string, data: Partial<IStreak>): Promise<IStreak> {
@@ -11,7 +11,7 @@ export class StreaksRepository {
       { userId },
       { $set: data },
       { new: true, upsert: true, runValidators: true }
-    ).lean() as Promise<IStreak>
+    ).lean() as any
   }
 
   async createStreak(userId: string): Promise<IStreak> {
@@ -24,7 +24,7 @@ export class StreaksRepository {
   }
 
   async updateStreak(id: string, data: Partial<IStreak>): Promise<IStreak | null> {
-    return StreakModel.findByIdAndUpdate(id, data, { new: true, runValidators: true }).lean()
+    return StreakModel.findByIdAndUpdate(id, data, { new: true, runValidators: true }).lean() as any
   }
 
   /** Leaderboard: top N users by XP — uses compound (totalXP, currentStreak) index */
@@ -56,7 +56,7 @@ export class StreaksRepository {
       lastActivityDate: { $lt: yesterdayMidnight },
     })
       .select('userId currentStreak')
-      .lean()
+      .lean() as any
   }
 
   async resetStreak(userId: string): Promise<void> {

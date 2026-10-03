@@ -4,11 +4,11 @@ import { parsePagination, buildMeta } from '../../utils/pagination'
 
 export class AuthRepository {
   async findUserByEmail(email: string): Promise<IUser | null> {
-    return UserModel.findOne({ email: email.toLowerCase() }).lean()
+    return UserModel.findOne({ email: email.toLowerCase() }).lean() as any
   }
 
   async findUserById(id: string): Promise<IUser | null> {
-    return UserModel.findById(id).lean()
+    return UserModel.findById(id).lean() as any
   }
 
   async createUser(data: Partial<IUser>): Promise<IUser> {
@@ -16,7 +16,7 @@ export class AuthRepository {
   }
 
   async updateUser(id: string, update: Partial<IUser>): Promise<IUser | null> {
-    return UserModel.findByIdAndUpdate(id, update, { new: true, runValidators: true }).lean()
+    return UserModel.findByIdAndUpdate(id, update, { new: true, runValidators: true }).lean() as any
   }
 
   async saveRefreshToken(data: Partial<IRefreshToken>): Promise<IRefreshToken> {
@@ -24,7 +24,7 @@ export class AuthRepository {
   }
 
   async findRefreshTokenByHash(tokenHash: string): Promise<IRefreshToken | null> {
-    return RefreshTokenModel.findOne({ tokenHash }).lean()
+    return RefreshTokenModel.findOne({ tokenHash }).lean() as any
   }
 
   async revokeRefreshToken(id: string, replacedByToken?: string): Promise<void> {

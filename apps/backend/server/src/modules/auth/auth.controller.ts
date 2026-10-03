@@ -68,7 +68,7 @@ export const refreshTokenHandler = asyncHandler(async (req: Request, res: Respon
   res.cookie('tilawa-token', result.accessToken, accessCookieOptions())
   res.cookie('tilawa-refresh-token', result.refreshToken, refreshCookieOptions())
 
-  sendSuccess(res, result, 200)
+  return sendSuccess(res, result, 200)
 })
 
 export const logoutHandler = asyncHandler(async (req: Request, res: Response) => {

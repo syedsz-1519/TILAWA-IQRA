@@ -34,13 +34,13 @@ export interface RefreshTokenPayload {
 
 export function generateAccessToken(payload: AccessTokenPayload): string {
   return jwt.sign(payload, config.jwtSecret, {
-    expiresIn: config.jwtAccessExpiry,
+    expiresIn: config.jwtAccessExpiry as any,
   })
 }
 
 export function generateRefreshToken(payload: RefreshTokenPayload): string {
   return jwt.sign(payload, config.jwtRefreshSecret, {
-    expiresIn: config.jwtRefreshExpiry,
+    expiresIn: config.jwtRefreshExpiry as any,
   })
 }
 

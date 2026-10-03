@@ -10,6 +10,6 @@ export async function runTokenCleanupJob(): Promise<void> {
 
     logger.info(`[Job: TokenCleanup] Cleaned up ${result.deletedCount || 0} expired or revoked refresh tokens.`)
   } catch (error) {
-    logger.error('[Job: TokenCleanup] Error executing token cleanup job:', error)
+    logger.error({ error }, '[Job: TokenCleanup] Error executing token cleanup job')
   }
 }

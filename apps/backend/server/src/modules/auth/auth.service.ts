@@ -122,7 +122,7 @@ export class AuthService {
     const expiresAt = new Date(Date.now() + parseDurationMs(config.jwtRefreshExpiry))
 
     await this.repo.saveRefreshToken({
-      userId: user._id,
+      userId: user._id.toString(),
       tokenHash: refreshTokenHash,
       expiresAt,
       ipAddress: clientInfo?.ip,
@@ -174,7 +174,7 @@ export class AuthService {
     const expiresAt = new Date(Date.now() + parseDurationMs(config.jwtRefreshExpiry))
 
     await this.repo.saveRefreshToken({
-      userId: user._id,
+      userId: user._id.toString(),
       tokenHash: newTokenHash,
       expiresAt,
     })

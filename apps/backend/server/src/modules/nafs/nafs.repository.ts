@@ -10,7 +10,7 @@ export class NafsRepository {
     return NafsTrackingModel.findOne({
       userId,
       date: { $gte: today, $lt: tomorrow },
-    }).lean()
+    }).lean() as any
   }
 
   async upsertTodayRecord(userId: string, data: Partial<INafsTracking>): Promise<INafsTracking> {
@@ -23,7 +23,7 @@ export class NafsRepository {
       { userId, date: { $gte: today, $lt: tomorrow } },
       { $set: { ...data, userId, date: today } },
       { new: true, upsert: true, runValidators: true }
-    ).lean()
+    ).lean() as any
   }
 
   async findHistory(userId: string, days: number = 30): Promise<INafsTracking[]> {
@@ -34,6 +34,6 @@ export class NafsRepository {
     return NafsTrackingModel.find({
       userId,
       date: { $gte: startDate },
-    }).sort({ date: -1 }).lean()
+    }).sort({ date: -1 }).lean() as any
   }
 }

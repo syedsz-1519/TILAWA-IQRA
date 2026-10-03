@@ -20,6 +20,6 @@ export const updateXpHandler = asyncHandler(async (req: Request, res: Response) 
 })
 
 export const getLeaderboardHandler = asyncHandler(async (_req: Request, res: Response) => {
-  const leaderboard = await service.getLeaderboard({ limit: 50 })
+  const leaderboard = await service.getLeaderboard(50)
   sendSuccess(res, leaderboard)
 })

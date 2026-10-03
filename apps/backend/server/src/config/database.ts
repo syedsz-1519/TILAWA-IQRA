@@ -18,7 +18,7 @@ export async function connectDatabase(): Promise<typeof mongoose | null> {
       logger.warn('⚠️ MongoDB connection disconnected');
     });
 
-    const conn = await mongoose.connect(config.databaseUrl, {
+    const conn = await mongoose.connect(config.mongodbUri, {
       serverSelectionTimeoutMS: 5000,
       autoIndex: config.nodeEnv === 'development',
     });

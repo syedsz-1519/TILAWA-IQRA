@@ -2,11 +2,11 @@ import { UserModel, IUser } from './users.model'
 
 export class UsersRepository {
   async findById(id: string): Promise<IUser | null> {
-    return UserModel.findById(id).lean()
+    return UserModel.findById(id).lean() as any
   }
 
   async update(id: string, data: Partial<IUser>): Promise<IUser | null> {
-    return UserModel.findByIdAndUpdate(id, data, { new: true, runValidators: true }).select('-passwordHash').lean()
+    return UserModel.findByIdAndUpdate(id, data, { new: true, runValidators: true }).select('-passwordHash').lean() as any
   }
 
   async updatePassword(id: string, passwordHash: string): Promise<void> {
