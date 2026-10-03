@@ -6,6 +6,7 @@ import { ChevronLeft, Volume2, RotateCw, ChevronRight, X } from 'lucide-react'
 import { getHifzDeck, getCardsByDeck, calculateNextReview } from '@/lib/hifz-data'
 import { useLanguage } from '@/lib/language-context'
 import { LANGUAGES } from '@/lib/languages'
+import { updateHifzProgressApi } from '@/lib/api-client'
 
 interface DeckPageProps {
   params: {
@@ -49,6 +50,13 @@ export default function HifzDeckPage({ params }: DeckPageProps) {
     : 0
 
   const handleResponse = (quality: 0 | 1 | 2 | 3 | 4 | 5) => {
+    // Submit card progress to MongoDB via backend API
+    if (currentCard) {
+      updateHifzProgressApi(currentCard.id, deckId, quality).catch((err) => {
+        console.error('Failed to sync Hifz progress:', err)
+      })
+    }
+
     // Log response
     if (quality >= 3) {
       setSessionStats((prev) => ({

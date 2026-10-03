@@ -194,6 +194,36 @@ export async function updateReadingProgress(
 }
 
 // ==================
+// HIFZ SRS API
+// ==================
+
+/**
+ * Get Hifz memorization stats from backend MongoDB
+ */
+export async function getHifzStatsApi(userId?: string) {
+  const query = userId ? `?userId=${userId}` : ''
+  return apiFetch(`${API_BASE}/api/v1/hifz/stats${query}`)
+}
+
+/**
+ * Get Hifz progress cards from backend MongoDB
+ */
+export async function getHifzProgressApi(userId?: string) {
+  const query = userId ? `?userId=${userId}` : ''
+  return apiFetch(`${API_BASE}/api/v1/hifz/progress${query}`)
+}
+
+/**
+ * Update Hifz card progress in backend MongoDB (SM-2 algorithm & XP)
+ */
+export async function updateHifzProgressApi(cardId: string, deckId: string, quality: number) {
+  return apiFetch(`${API_BASE}/api/v1/hifz/update-progress`, {
+    method: 'POST',
+    body: JSON.stringify({ cardId, deckId, quality }),
+  })
+}
+
+// ==================
 // QURAN CLOUD API
 // ==================
 

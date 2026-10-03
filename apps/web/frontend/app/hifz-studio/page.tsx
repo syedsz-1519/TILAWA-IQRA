@@ -1,12 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { getHifzDecks, getHifzStats, getDifficultyColor, HIFZ_DECKS } from '@/lib/hifz-data'
-import { Flame, BookOpen, Target, Trophy, Play, Plus } from 'lucide-react'
+import { getHifzDecks, getDifficultyColor } from '@/lib/hifz-data'
+import { getHifzStatsApi } from '@/lib/api-client'
+import { Flame, BookOpen, Target, Trophy, Play } from 'lucide-react'
 
 export default function HifzStudioPage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced' | 'master'>('all')
+  const [userStats, setUserStats] = useState({
+    totalCards: 0,
+    masteredCards: 0,
+    learningCards: 0,
+    reviewCards: 0,
+    newCards: 0,
+    streak: 0,
+  })
+
+  useEffect(() => {
+    getHifzStatsApi().then(({ data }) => {
+      if (data?.stats) {
+        setUserStats((prev) => ({
+          ...prev,
+          ...data.stats,
+        }))
+      }
+    }).catch(() => {})
+  }, [])
 
   const decks = getHifzDecks()
 
@@ -14,15 +34,6 @@ export default function HifzStudioPage() {
   let filtered = decks
   if (selectedDifficulty !== 'all') {
     filtered = filtered.filter((d) => d.difficulty === selectedDifficulty)
-  }
-
-  // Mock progress data for stats
-  const mockProgress = {
-    totalCards: 145,
-    masteredCards: 32,
-    learningCards: 28,
-    newCards: 85,
-    streak: 7,
   }
 
   return (
@@ -47,7 +58,7 @@ export default function HifzStudioPage() {
                 <Flame className="h-4 w-4 text-orange-500" />
                 <span className="text-xs text-muted-foreground">Streak</span>
               </div>
-              <div className="text-2xl font-bold">{mockProgress.streak}</div>
+              <div className="text-2xl font-bold">{userStats.streak}</div>
               <div className="text-xs text-muted-foreground">days</div>
             </div>
 
@@ -56,7 +67,7 @@ export default function HifzStudioPage() {
                 <Trophy className="h-4 w-4 text-green-600" />
                 <span className="text-xs text-green-600">Mastered</span>
               </div>
-              <div className="text-2xl font-bold text-green-700">{mockProgress.masteredCards}</div>
+              <div className="text-2xl font-bold text-green-700">{userStats.masteredCards}</div>
             </div>
 
             <div className="rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-950/20 dark:border-blue-900/30 p-4">
@@ -64,14 +75,14 @@ export default function HifzStudioPage() {
                 <BookOpen className="h-4 w-4 text-blue-600" />
                 <span className="text-xs text-blue-600">Learning</span>
               </div>
-              <div className="text-2xl font-bold text-blue-700">{mockProgress.learningCards}</div>
+              <div className="text-2xl font-bold text-blue-700">{userStats.learningCards}</div>
             </div>
 
             <div className="rounded-lg bg-card border border-border p-4">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs text-muted-foreground">New</span>
               </div>
-              <div className="text-2xl font-bold">{mockProgress.newCards}</div>
+              <div className="text-2xl font-bold">{userStats.newCards}</div>
             </div>
 
             <div className="rounded-lg bg-primary/10 border border-primary/20 p-4">
@@ -79,7 +90,7 @@ export default function HifzStudioPage() {
                 <Target className="h-4 w-4 text-primary" />
                 <span className="text-xs text-primary">Total</span>
               </div>
-              <div className="text-2xl font-bold text-primary">{mockProgress.totalCards}</div>
+              <div className="text-2xl font-bold text-primary">{userStats.totalCards}</div>
             </div>
           </div>
         </div>
