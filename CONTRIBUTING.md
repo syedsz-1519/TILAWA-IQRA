@@ -269,6 +269,7 @@ Closes #123
 
 ## Checklist
 - [ ] Code follows style guidelines
+- [ ] Updated `/memory.md` if architecture, env vars, endpoints, schemas, or decisions changed
 - [ ] Documentation updated
 - [ ] Tests pass
 - [ ] No linting errors

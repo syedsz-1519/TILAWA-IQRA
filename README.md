@@ -1,117 +1,55 @@
 # TILAWA (تلاوة)
 
-An authentic, premium, multilingual Quran learning and spiritual development platform.
+An authentic, premium, production-grade multilingual Quranic learning & Islamic knowledge ecosystem.
 
-**Repository:** [https://github.com/syedsz-1519/TILAWA-IQRA.git](https://github.com/syedsz-1519/TILAWA-IQRA.git)  
-**Live Application:** [https://tilawaa.vercel.app](https://tilawaa.vercel.app)
-
----
-
-## 📖 Overview
-
-TILAWA is designed to bring a calm, sacred, mushaf-inspired Quran recitation and learning experience to web and mobile. Featuring verified Arabic text, verse-by-verse audio playback, word-by-word translations across 15+ languages, authentic Hadith collections, curated Duas, and a spaced-repetition Hifz memorization system.
-
-## 🛠️ Technology Stack
-
-- **Web Frontend (`apps/web/frontend`)**:
-  - Next.js 16 (React 19, TypeScript, App Router)
-  - Tailwind CSS (Light-only Mushaf theme tokens)
-  - TanStack Query (Server state management) & Zustand (Reader preferences)
-  - Lucide Icons, Framer Motion
-- **Backend API (`apps/backend/server`)**:
-  - Node.js & Express.js with TypeScript
-  - MongoDB Atlas with Mongoose ODM
-  - Argon2id / bcrypt password hashing & rotating httpOnly refresh tokens
-  - Zod request validation, Pino structured logging, Helmet, Rate Limiting
-- **Mobile Client (`apps/mobile/tilawa`)**:
-  - Flutter & Dart with Riverpod state management
-- **Deployment & Hosting**:
-  - Web: Vercel (`https://tilawaa.vercel.app`)
-  - API: Railway (`https://api.tilawa.app`)
-  - Database: MongoDB Atlas
+- **Web Application:** [https://tilawaa.vercel.app](https://tilawaa.vercel.app)
+- **API Backend:** [https://tilawa-production.up.railway.app](https://tilawa-production.up.railway.app)
+- **Repository:** [https://github.com/syedsz-1519/TILAWA-IQRA.git](https://github.com/syedsz-1519/TILAWA-IQRA.git)
 
 ---
 
-## 🚀 Getting Started
+## 📌 Single Source of Truth
 
-### Prerequisites
-- Node.js >= 20.x
-- npm >= 10.x
-- MongoDB instance (local or MongoDB Atlas)
+> [!IMPORTANT]
+> Everything known about the TILAWA project — including architecture, tech stack, data schemas, API references, design system tokens, deployment instructions, decision logs, roadmap, and setup steps — is consolidated in **[`/memory.md`](memory.md)**.  
+> Engineers and AI agents should refer directly to [`/memory.md`](memory.md) before making changes.
 
-### 1. Clone & Install Dependencies
+---
+
+## 📖 Quick Overview
+
+TILAWA brings an authentic, Madani Mushaf-inspired Quran recitation and learning experience across Web, iOS, and Android:
+- **604-Page Madani Mushaf Reader:** 15 lines per page with precise typesetting, page jump navigation, and custom light paper theme.
+- **Audio Recitations & Audio Sync:** Multi-reciter playback, verse synchronization, and interleaved Urdu translation audio.
+- **Multi-lingual Support:** Verses and word-by-word translations in 15+ languages.
+- **Islamic Knowledge Suite:** Hadith collection library, Dua & Adhkar tracker, Hifz memorization studio, Nafs habit tracker, Tajweed practice modules, and Zaid AI learning assistant.
+
+---
+
+## 🛠️ Quick Start
+
 ```bash
+# 1. Clone the repository
 git clone https://github.com/syedsz-1519/TILAWA-IQRA.git
 cd TILAWA-IQRA
+
+# 2. Install workspace dependencies
 npm install
+
+# 3. Configure environment
+cp .env.example .env
+
+# 4. Start local development
+npm run dev:web   # Web Frontend (http://localhost:3000)
+npm run dev:api   # API Backend (http://localhost:8000)
 ```
 
-### 2. Configure Environment Variables
-Copy `.env.example` to respective app directories:
-```bash
-# Frontend
-cp .env.example apps/web/frontend/.env.local
-
-# Backend
-cp .env.example apps/backend/server/.env
-```
-
-### 3. Run Development Servers
-```bash
-# Run Web Frontend (http://localhost:3000)
-npm run dev:web
-
-# Run Backend API (http://localhost:8000)
-npm run dev:api
-```
-
-### 4. Build and Test
-```bash
-# Build Frontend
-npm run build:web
-
-# Build Backend
-npm run build:api
-
-# Lint and Typecheck
-npm run lint
-npm run typecheck
-```
+For complete deployment guides, database schemas, and architectural reference, read **[`/memory.md`](memory.md)**.
 
 ---
 
-## 📁 Repository Structure
+## 📄 License & Contributing
 
-```
-TILAWA-IQRA/
-├── apps/
-│   ├── web/frontend/         # Next.js 16 Web Application
-│   ├── backend/server/       # Express + MongoDB API Server
-│   └── mobile/tilawa/        # Flutter Mobile Application
-├── packages/
-│   ├── shared/               # Shared constants & helpers
-│   ├── api-client/           # Typed API Client
-│   └── types/                # Shared TypeScript models
-├── infrastructure/
-│   └── docker/               # Container configurations
-├── docs/                     # Documentation & architecture guides
-├── .env.example              # Environment variables template
-├── package.json              # Monorepo root workspace configuration
-└── vercel.json               # Vercel deployment configuration
-```
-
----
-
-## 📜 Documentation
-
-- [Architecture & System Design](docs/architecture/ARCHITECTURE.md)
-- [Deployment Guide (Vercel & Railway)](docs/deployment/DEPLOYMENT.md)
-- [API Reference](docs/api/API_REFERENCE.md)
-- [Authentication & Security](docs/auth/AUTHENTICATION.md)
 - [Contributing Guidelines](CONTRIBUTING.md)
-
----
-
-## 📄 License
-
-This project is open-source under the [MIT License](LICENSE).
+- Project Memory: [`/memory.md`](memory.md)
+- Released under the [MIT License](LICENSE).

@@ -16,8 +16,8 @@ The `--legacy-peer-deps` flag is used due to peer dependency conflicts with `bet
 The `.env` file contains the MongoDB connection string:
 
 ```
-MONGODB_URI=mongodb+srv://syedshahnawaz_db:wzf1BGHGqvI4PrYR@cluster0.wxno2ll.mongodb.net/tilawa?retryWrites=true&w=majority
-DATABASE_URL=mongodb+srv://syedshahnawaz_db:wzf1BGHGqvI4PrYR@cluster0.wxno2ll.mongodb.net/tilawa?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://<REDACTED_USER>:<REDACTED_PASSWORD>@cluster0.wxno2ll.mongodb.net/tilawa?retryWrites=true&w=majority
+DATABASE_URL=mongodb+srv://<REDACTED_USER>:<REDACTED_PASSWORD>@cluster0.wxno2ll.mongodb.net/tilawa?retryWrites=true&w=majority
 ```
 
 **Note:** This file is in `.gitignore` and should NOT be committed to version control.
