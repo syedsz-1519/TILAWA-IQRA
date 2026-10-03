@@ -223,6 +223,16 @@ export async function updateHifzProgressApi(cardId: string, deckId: string, qual
   })
 }
 
+/**
+ * Get weekly reading activity (last 7 days) from backend MongoDB
+ */
+export async function getWeeklyActivityApi(userId?: string) {
+  const query = userId ? `/${userId}` : ''
+  return apiFetch<{ activity: { date: string; ayahCount: number }[] }>(
+    `${API_BASE}/api/v1/progress/weekly-activity${query}`
+  )
+}
+
 // ==================
 // QURAN CLOUD API
 // ==================

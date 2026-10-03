@@ -30,3 +30,9 @@ export const batchSyncHandler = asyncHandler(async (req: Request, res: Response)
   const synced = await progressService.batchSync(userId, req.body.items)
   sendSuccess(res, synced)
 })
+
+export const getWeeklyActivityHandler = asyncHandler(async (req: Request, res: Response) => {
+  const userId = (req.params['userId'] as string | undefined) || getUserId(req)
+  const activity = await progressService.getWeeklyActivity(userId)
+  sendSuccess(res, { activity })
+})
