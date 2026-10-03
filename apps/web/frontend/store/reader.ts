@@ -33,10 +33,10 @@ const DEFAULT_SETTINGS: ReaderSettings = {
 
 export const useReaderSettings = create<ReaderSettingsStore>()(
   persist(
-    (set) => ({
+    (set: any) => ({
       settings: DEFAULT_SETTINGS,
-      updateSettings: (patch) =>
-        set((s) => ({ settings: { ...s.settings, ...patch } })),
+      updateSettings: (patch: Partial<ReaderSettings>) =>
+        set((s: ReaderSettingsStore) => ({ settings: { ...s.settings, ...patch } })),
       resetSettings: () => set({ settings: DEFAULT_SETTINGS }),
     }),
     { name: 'tilawa-reader-settings' }
@@ -52,9 +52,9 @@ interface ReadingPositionStore {
 
 export const useReadingPosition = create<ReadingPositionStore>()(
   persist(
-    (set) => ({
+    (set: any) => ({
       position: { page: 1, surahId: 1, ayahNumber: 1 },
-      setPosition: (position) => set({ position }),
+      setPosition: (position: ReadingPosition) => set({ position }),
     }),
     { name: 'tilawa-reading-position' }
   )
@@ -85,19 +85,19 @@ const DEFAULT_AUDIO: AudioPlayerState = {
 
 export const useAudioPlayer = create<AudioPlayerStore>()(
   persist(
-    (set) => ({
+    (set: any) => ({
       state: DEFAULT_AUDIO,
-      setPlaying: (isPlaying) => set((s) => ({ state: { ...s.state, isPlaying } })),
-      setCurrentVerse: (currentVerseKey) => set((s) => ({ state: { ...s.state, currentVerseKey } })),
-      setProgress: (progress) => set((s) => ({ state: { ...s.state, progress } })),
-      setDuration: (duration) => set((s) => ({ state: { ...s.state, duration } })),
-      setSpeed: (speed) => set((s) => ({ state: { ...s.state, speed } })),
-      setRepeatMode: (repeatMode) => set((s) => ({ state: { ...s.state, repeatMode } })),
-      setReciter: (reciterId) => set((s) => ({ state: { ...s.state, reciterId, currentVerseKey: null, isPlaying: false } })),
+      setPlaying: (isPlaying: boolean) => set((s: AudioPlayerStore) => ({ state: { ...s.state, isPlaying } })),
+      setCurrentVerse: (currentVerseKey: string | null) => set((s: AudioPlayerStore) => ({ state: { ...s.state, currentVerseKey } })),
+      setProgress: (progress: number) => set((s: AudioPlayerStore) => ({ state: { ...s.state, progress } })),
+      setDuration: (duration: number) => set((s: AudioPlayerStore) => ({ state: { ...s.state, duration } })),
+      setSpeed: (speed: number) => set((s: AudioPlayerStore) => ({ state: { ...s.state, speed } })),
+      setRepeatMode: (repeatMode: AudioPlayerState['repeatMode']) => set((s: AudioPlayerStore) => ({ state: { ...s.state, repeatMode } })),
+      setReciter: (reciterId: string) => set((s: AudioPlayerStore) => ({ state: { ...s.state, reciterId, currentVerseKey: null, isPlaying: false } })),
     }),
     {
       name: 'tilawa-audio-player',
-      partialize: (s) => ({ state: { reciterId: s.state.reciterId, speed: s.state.speed, repeatMode: s.state.repeatMode } }),
+      partialize: (s: AudioPlayerStore) => ({ state: { reciterId: s.state.reciterId, speed: s.state.speed, repeatMode: s.state.repeatMode } }),
     }
   )
 );
@@ -119,18 +119,18 @@ interface BookmarksStore {
 
 export const useBookmarks = create<BookmarksStore>()(
   persist(
-    (set, get) => ({
+    (set: any, get: any) => ({
       bookmarks: {},
-      addBookmark: (verseKey, note) =>
-        set((s) => ({
+      addBookmark: (verseKey: string, note?: string) =>
+        set((s: BookmarksStore) => ({
           bookmarks: { ...s.bookmarks, [verseKey]: { verseKey, timestamp: Date.now(), note } },
         })),
-      removeBookmark: (verseKey) =>
-        set((s) => {
+      removeBookmark: (verseKey: string) =>
+        set((s: BookmarksStore) => {
           const { [verseKey]: _, ...rest } = s.bookmarks;
           return { bookmarks: rest };
         }),
-      isBookmarked: (verseKey) => !!get().bookmarks[verseKey],
+      isBookmarked: (verseKey: string) => !!get().bookmarks[verseKey],
     }),
     { name: 'tilawa-bookmarks' }
   )
@@ -143,7 +143,7 @@ interface SelectedAyahStore {
   selectVerse: (verseKey: string | null) => void;
 }
 
-export const useSelectedAyah = create<SelectedAyahStore>()((set) => ({
+export const useSelectedAyah = create<SelectedAyahStore>()((set: any) => ({
   selectedVerseKey: null,
-  selectVerse: (selectedVerseKey) => set({ selectedVerseKey }),
+  selectVerse: (selectedVerseKey: string | null) => set({ selectedVerseKey }),
 }));

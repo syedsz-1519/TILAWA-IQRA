@@ -295,106 +295,111 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
   return (
     <div className="mx-auto w-full max-w-3xl px-4 pb-32">
       {/* Controls */}
-      <div className="sticky top-16 z-10 -mx-4 mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
-        <div className="flex items-center gap-2">
+      <div className="sticky top-14 z-10 -mx-4 mb-6 border-b border-border bg-background/95 px-3 py-2 backdrop-blur sm:top-16 sm:px-4 sm:py-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Play/Pause */}
           <button
             type="button"
             onClick={() => (isPlaying ? stop() : playAyah(1, true))}
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 active:scale-95 sm:px-3.5 sm:py-2"
           >
             {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-            {isPlaying ? 'Pause' : 'Play & follow'}
+            <span className="hidden xs:inline">{isPlaying ? 'Pause' : 'Play'}</span>
           </button>
           {isPlaying && (
             <button
               type="button"
               onClick={stop}
-              className="inline-flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground active:scale-95"
-              title="Stop recitation completely (روکیں)"
+              className="inline-flex items-center gap-1.5 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground active:scale-95"
+              title="Stop"
             >
               <Square className="h-4 w-4 fill-current" />
-              <span>Stop</span>
+              <span className="sr-only">Stop</span>
             </button>
           )}
           <button
             type="button"
             onClick={() => playSurah(surah)}
-            className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3.5 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/50 hover:bg-muted"
-            title="Listen to full surah recitation"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary/50 hover:bg-muted"
+            title="Full Surah audio"
           >
             <Headphones className="h-4 w-4 text-primary" />
             <span className="hidden sm:inline">Full Surah</span>
           </button>
-        </div>
 
-        {/* Reading mode toggle */}
-        <div
-          role="tablist"
-          aria-label="Reading mode"
-          className="inline-flex items-center rounded-md border border-border bg-card p-0.5"
-        >
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'translation'}
-            onClick={() => changeMode('translation')}
-            className={`inline-flex items-center gap-1.5 rounded-[calc(var(--radius)*0.6)] px-3 py-1.5 text-sm transition-colors ${
-              mode === 'translation'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <Languages className="h-4 w-4" aria-hidden="true" />
-            Translation
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'arabic'}
-            onClick={() => changeMode('arabic')}
-            className={`inline-flex items-center gap-1.5 rounded-[calc(var(--radius)*0.6)] px-3 py-1.5 text-sm transition-colors ${
-              mode === 'arabic'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <BookOpen className="h-4 w-4" aria-hidden="true" />
-            Arabic only
-          </button>
-        </div>
+          {/* Spacer */}
+          <div className="flex-1" />
 
-        {mode === 'translation' && (
-          <button
-            type="button"
-            onClick={() => setTranslationAudio((v) => !v)}
-            aria-pressed={translationAudio}
-            className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
-              translationAudio
-                ? 'border-primary/40 bg-primary/10 text-primary'
-                : 'border-border text-muted-foreground hover:bg-muted'
-            }`}
+          {/* Reading mode toggle */}
+          <div
+            role="tablist"
+            aria-label="Reading mode"
+            className="inline-flex items-center rounded-md border border-border bg-card p-0.5"
           >
-            <Volume2 className="h-4 w-4" aria-hidden="true" />
-            <span>Translation audio: {translationAudio ? 'ON' : 'OFF'}</span>
-          </button>
-        )}
-
-        {mode === 'translation' && (
-          <label className="flex items-center gap-2 text-sm">
-            <Languages className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-            <span className="sr-only">Translation language</span>
-            <select
-              value={langCode}
-              onChange={(e) => changeLanguage(e.target.value)}
-              className="rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === 'translation'}
+              onClick={() => changeMode('translation')}
+              className={`inline-flex items-center gap-1 rounded-[calc(var(--radius)*0.6)] px-2 py-1.5 text-xs sm:px-3 sm:text-sm transition-colors ${
+                mode === 'translation'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
-              {QURAN_LANGUAGES.map((l) => (
-                <option key={l.code} value={l.code}>
-                  {l.label === l.nativeLabel ? l.label : `${l.label} — ${l.nativeLabel}`}
-                </option>
-              ))}
-            </select>
-          </label>
+              <Languages className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden xs:inline">Translation</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === 'arabic'}
+              onClick={() => changeMode('arabic')}
+              className={`inline-flex items-center gap-1 rounded-[calc(var(--radius)*0.6)] px-2 py-1.5 text-xs sm:px-3 sm:text-sm transition-colors ${
+                mode === 'arabic'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden xs:inline">Arabic</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Secondary row — only in translation mode */}
+        {mode === 'translation' && (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setTranslationAudio((v) => !v)}
+              aria-pressed={translationAudio}
+              className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs transition-colors ${
+                translationAudio
+                  ? 'border-primary/40 bg-primary/10 text-primary'
+                  : 'border-border text-muted-foreground hover:bg-muted'
+              }`}
+            >
+              <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>Audio {translationAudio ? 'ON' : 'OFF'}</span>
+            </button>
+
+            <label className="flex items-center gap-1.5 text-xs">
+              <Type className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+              <span className="sr-only">Translation language</span>
+              <select
+                value={langCode}
+                onChange={(e) => changeLanguage(e.target.value)}
+                className="rounded-md border border-border bg-card px-2 py-1.5 text-xs text-foreground"
+              >
+                {QURAN_LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code}>
+                    {l.label === l.nativeLabel ? l.label : `${l.label} — ${l.nativeLabel}`}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
         )}
       </div>
 
