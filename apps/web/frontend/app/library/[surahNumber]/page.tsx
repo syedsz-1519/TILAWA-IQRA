@@ -226,7 +226,7 @@ export default function SurahPage({ params }: SurahPageProps) {
                   <p>
                     In the name of Allah, the Most Gracious, the Most Merciful {/* Sample translation */}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-2">Translated to: {currentLanguage.name}</p>
+                  <p className="text-xs text-muted-foreground mt-2">Translated to: {LANGUAGES[currentLanguage]?.name || currentLanguage}</p>
                 </div>
               )}
             </div>

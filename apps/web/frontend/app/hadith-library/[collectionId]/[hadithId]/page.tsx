@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ChevronLeft, Share2, Bookmark, Copy } from 'lucide-react'
 import { getHadithById, getHadithTranslation, getCollection } from '@/lib/hadith-data'
 import { useLanguage } from '@/lib/language-context'
+import { LANGUAGES } from '@/lib/languages'
 
 interface HadithDetailPageProps {
   params: {
@@ -18,7 +19,7 @@ export default function HadithDetailPage({ params }: HadithDetailPageProps) {
 
   const hadith = getHadithById(hadithId)
   const collection = getCollection(collectionId as any)
-  const translation = hadith ? getHadithTranslation(hadith.id, currentLanguage.code) : undefined
+  const translation = hadith ? getHadithTranslation(hadith.id, currentLanguage) : undefined
 
   if (!hadith || !collection) {
     return (
@@ -113,7 +114,7 @@ export default function HadithDetailPage({ params }: HadithDetailPageProps) {
         {translation && (
           <div className="mb-8 p-6 rounded-lg border border-border bg-card">
             <h2 className="text-sm font-semibold text-muted-foreground mb-3">
-              Translation ({currentLanguage.name})
+              Translation ({LANGUAGES[currentLanguage]?.name || currentLanguage})
             </h2>
             <p className="text-lg leading-relaxed text-foreground mb-4">{translation.text}</p>
 

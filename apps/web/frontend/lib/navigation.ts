@@ -74,12 +74,6 @@ export const navGroups: NavGroup[] = [
         description: 'Authentic Islamic duas from Quran and Sunnah',
         icon: Heart,
       },
-      {
-        title: 'Hadith & Dua',
-        href: '/hadith-dua',
-        description: 'Authentic hadith and Quranic duas',
-        icon: Lightbulb,
-      },
     ],
   },
   {
@@ -122,9 +116,9 @@ export const navGroups: NavGroup[] = [
         icon: Landmark,
       },
       {
-        title: 'Stories',
+        title: 'Stories of the Prophets',
         href: '/stories',
-        description: 'Stories of the Prophets',
+        description: 'Inspiring stories of prophets & companions',
         icon: ScrollText,
       },
     ],
@@ -137,12 +131,6 @@ export const navGroups: NavGroup[] = [
         href: '/counselor',
         description: 'Quranic guidance for life challenges',
         icon: Brain,
-      },
-      {
-        title: 'Stories of Quran',
-        href: '/stories',
-        description: 'Inspiring stories of prophets & companions',
-        icon: ScrollText,
       },
       {
         title: 'Sunnate-E-Rasool',

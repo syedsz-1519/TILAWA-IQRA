@@ -15,7 +15,6 @@ import {
   X,
 } from 'lucide-react'
 import { navGroups, settingsItem } from '@/lib/navigation'
-import { ThemeToggle } from '@/components/theme-toggle'
 
 // ---------------------------------------------------------------------------
 // Mobile bottom-nav tabs — icon only with label underneath
@@ -24,7 +23,7 @@ const BOTTOM_TABS = [
   { label: 'Home',   href: '/',           icon: Home        },
   { label: 'Listen', href: '/listen',     icon: Headphones  },
   { label: 'Read',   href: '/read',       icon: BookOpenText },
-  { label: 'Dua',    href: '/hadith-dua', icon: Lightbulb   },
+  { label: 'Dua',    href: '/dua-library', icon: Heart      },
   // "More" tab handled separately — opens the drawer
 ] as const
 
@@ -107,22 +106,19 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      {/* Settings + theme toggle */}
+      {/* Settings */}
       <div className="border-t border-border p-3">
         <Link
           href={settingsItem.href}
           onClick={onNavigate}
-          className={`flex items-center justify-between rounded-lg border px-3 py-2.5 text-sm transition-colors ${
+          className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors ${
             isActive(settingsItem.href)
               ? 'border-primary/40 bg-primary/10 font-medium text-primary'
               : 'border-border text-foreground/80 hover:bg-muted hover:text-foreground'
           }`}
         >
-          <span className="flex items-center gap-3">
-            <settingsItem.icon className="size-4" aria-hidden="true" />
-            Settings
-          </span>
-          <ThemeToggle />
+          <settingsItem.icon className="size-4" aria-hidden="true" />
+          <span>Settings</span>
         </Link>
       </div>
     </div>

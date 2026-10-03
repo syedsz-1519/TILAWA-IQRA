@@ -6,17 +6,13 @@ import {
   Globe,
   Headphones,
   Mic,
-  Monitor,
-  Moon,
   Search,
   Settings,
   Sparkles,
-  Sun,
   Type,
   Volume2,
   VolumeX,
 } from 'lucide-react'
-import { useTheme } from 'next-themes'
 import { useEffect, useMemo, useState } from 'react'
 import { usePlayer } from '@/components/player/player-provider'
 import { DEFAULT_RECITER, RECITERS } from '@/lib/quran'
@@ -30,11 +26,7 @@ import {
 import { KEYS, EVENTS, getFontSize, setFontSize, applyFontSize, type FontSize } from '@/lib/prefs'
 import { cn } from '@/lib/utils'
 
-const themeOptions = [
-  { value: 'light', label: 'Light', icon: Sun, hint: 'Warm parchment tones for daytime reading' },
-  { value: 'dark', label: 'Dark', icon: Moon, hint: 'Deep forest palette, easy on the eyes at night' },
-  { value: 'system', label: 'System', icon: Monitor, hint: 'Follows your device preference automatically' },
-]
+
 
 const speedOptions = [0.75, 1, 1.25, 1.5]
 
@@ -45,7 +37,6 @@ const fontSizeOptions: { value: FontSize; label: string; hint: string; arabicPre
 ]
 
 export function SettingsPanel() {
-  const { theme, setTheme } = useTheme()
   const { playbackRate, setPlaybackRate, repeat, toggleRepeat, currentReciter, setReciter } = usePlayer()
 
   const [mounted, setMounted] = useState(false)
@@ -467,47 +458,7 @@ export function SettingsPanel() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Appearance                                                         */}
-      {/* ------------------------------------------------------------------ */}
-      <section aria-labelledby="theme-heading" className="rounded-xl border border-border bg-card p-5 sm:p-6">
-        <h2 id="theme-heading" className="text-base font-semibold sm:text-lg">Appearance & Theme</h2>
-        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-          Choose your visual theme. Saved directly on your device.
-        </p>
-        <div role="radiogroup" aria-label="Theme" className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
-          {themeOptions.map((option) => {
-            const Icon = option.icon
-            const active = mounted && theme === option.value
-            return (
-              <button
-                key={option.value}
-                type="button"
-                role="radio"
-                aria-checked={active}
-                onClick={() => setTheme(option.value)}
-                className={cn(
-                  'flex flex-col items-start gap-2 rounded-lg border p-3 text-start transition-colors sm:p-4',
-                  active ? 'border-primary bg-primary/5' : 'border-border bg-background hover:border-primary/40',
-                )}
-              >
-                <span
-                  className={cn(
-                    'flex size-8 items-center justify-center rounded-md sm:size-9',
-                    active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
-                  )}
-                >
-                  <Icon className="size-4" aria-hidden="true" />
-                </span>
-                <span className="text-xs font-medium sm:text-sm">{option.label}</span>
-                <span className="hidden text-xs leading-relaxed text-muted-foreground sm:block">
-                  {option.hint}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-      </section>
+
 
       {/* ------------------------------------------------------------------ */}
       {/* Font Size                                                          */}

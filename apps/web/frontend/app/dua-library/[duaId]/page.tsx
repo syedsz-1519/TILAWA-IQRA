@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ChevronLeft, Copy, Volume2, Bookmark, Share2, Check } from 'lucide-react'
 import { getDuaById, getDuaTranslation, getDuaCategory } from '@/lib/dua-data'
 import { useLanguage } from '@/lib/language-context'
+import { LANGUAGES } from '@/lib/languages'
 
 interface DuaDetailPageProps {
   params: {
@@ -20,7 +21,7 @@ export default function DuaDetailPage({ params }: DuaDetailPageProps) {
 
   const dua = getDuaById(duaId)
   const category = dua ? getDuaCategory(dua.category) : undefined
-  const translation = dua ? getDuaTranslation(dua.id, currentLanguage.code) : undefined
+  const translation = dua ? getDuaTranslation(dua.id, currentLanguage) : undefined
 
   if (!dua || !category) {
     return (
@@ -127,7 +128,7 @@ export default function DuaDetailPage({ params }: DuaDetailPageProps) {
         {translation && (
           <div className="mb-8 p-6 rounded-lg border border-border bg-card">
             <h2 className="text-sm font-semibold text-muted-foreground mb-2">
-              Meaning ({currentLanguage.name})
+              Meaning ({LANGUAGES[currentLanguage]?.name ?? currentLanguage})
             </h2>
             <p className="text-lg leading-relaxed text-foreground mb-4">{translation.meaning}</p>
 

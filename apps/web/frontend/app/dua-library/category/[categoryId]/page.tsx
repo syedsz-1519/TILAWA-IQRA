@@ -65,7 +65,7 @@ export default function DuaCategoryPage({ params }: CategoryPageProps) {
         {/* Duas List */}
         <div className="space-y-4">
           {duas.map((dua) => {
-            const translation = getDuaTranslation(dua.id, currentLanguage.code)
+            const translation = getDuaTranslation(dua.id, currentLanguage)
             return (
               <Link
                 key={dua.id}

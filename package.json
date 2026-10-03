@@ -2,12 +2,10 @@
   "name": "tilawa-workspace",
   "version": "1.0.0",
   "private": true,
-  "description": "Workspace manager for TILAWA",
+  "description": "Monorepo workspace for TILAWA",
   "workspaces": [
     "apps/web/frontend",
-    "apps/backend/server",
-    "frontend",
-    "backend"
+    "apps/backend/server"
   ],
   "scripts": {
     "dev:web": "npm run dev --workspace=apps/web/frontend",

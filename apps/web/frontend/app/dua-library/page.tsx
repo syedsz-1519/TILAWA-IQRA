@@ -10,6 +10,7 @@ import {
   getDuaTranslation,
 } from '@/lib/dua-data'
 import { useLanguage } from '@/lib/language-context'
+import { LANGUAGES } from '@/lib/languages'
 
 export default function DuaLibraryPage() {
   const { currentLanguage } = useLanguage()
@@ -30,7 +31,7 @@ export default function DuaLibraryPage() {
             <div>
               <h1 className="text-3xl font-bold">Dua Library</h1>
               <p className="text-muted-foreground text-sm mt-1">
-                Authentic Islamic Duas from Quran and Sunnah in {currentLanguage.name}
+                Authentic Islamic Duas from Quran and Sunnah in {LANGUAGES[currentLanguage]?.name ?? currentLanguage}
               </p>
             </div>
           </div>
@@ -101,7 +102,7 @@ export default function DuaLibraryPage() {
             <h2 className="text-2xl font-bold mb-6">Featured & Most Used Duas</h2>
             <div className="space-y-4">
               {featuredDuas.map((dua) => {
-                const translation = getDuaTranslation(dua.id, currentLanguage.code)
+                const translation = getDuaTranslation(dua.id, currentLanguage)
                 return (
                   <Link
                     key={dua.id}
