@@ -1,47 +1,57 @@
-import { Response } from 'express';
+import { Response } from 'express'
+
+export interface ApiResponseMeta {
+  page?: number
+  limit?: number
+  total?: number
+  totalPages?: number
+  hasMore?: boolean
+  timestamp?: string
+  [key: string]: any
+}
 
 export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
+  success: boolean
+  data?: T
+  meta?: ApiResponseMeta
   error?: {
-    code: string;
-    message: string;
-    details?: any;
-  };
-  meta?: Record<string, any>;
+    code: string
+    message: string
+    details?: any
+  }
 }
 
 export function sendSuccess<T>(
   res: Response,
   data: T,
-  message?: string,
-  statusCode = 200,
-  meta?: Record<string, any>
+  statusCode: number = 200,
+  meta?: ApiResponseMeta
 ): Response {
-  const responseBody: ApiResponse<T> = {
+  const response: ApiResponse<T> = {
     success: true,
     data,
-    message,
-    meta,
-  };
-  return res.status(statusCode).json(responseBody);
+    meta: {
+      ...meta,
+      timestamp: new Date().toISOString(),
+    },
+  }
+  return res.status(statusCode).json(response)
 }
 
 export function sendError(
   res: Response,
-  message: string,
-  code = 'INTERNAL_ERROR',
-  statusCode = 500,
+  statusCode: number = 500,
+  message: string = 'Internal Server Error',
+  code: string = 'INTERNAL_ERROR',
   details?: any
 ): Response {
-  const responseBody: ApiResponse = {
+  const response: ApiResponse = {
     success: false,
     error: {
       code,
       message,
-      details,
+      ...(details ? { details } : {}),
     },
-  };
-  return res.status(statusCode).json(responseBody);
+  }
+  return res.status(statusCode).json(response)
 }

@@ -33,7 +33,8 @@
 18. [Changelog](#18-changelog)
 19. [Glossary](#19-glossary)
 20. [How to Update This File](#20-how-to-update-this-file)
-21. [Open Questions](#21-open-questions)
+21. [Documentation](#21-documentation)
+22. [Open Questions](#22-open-questions)
 
 ---
 
@@ -544,7 +545,13 @@ When making architectural, schema, endpoint, or environment variable changes to 
 
 ---
 
-## 21. Open Questions
+## 21. Documentation
+
+- **Prompt Registry:** All AI development prompts are catalogued verbatim in [`/docs/PROMPTS.md`](./docs/PROMPTS.md).
+
+---
+
+## 22. Open Questions
 
 1. **Production Mobile Build CI/CD:** Mobile build pipeline for Google Play Store and Apple App Store requires automated GitHub Action configuration.
 2. **Tafsir Data Endpoint:** Evaluation ongoing for self-hosting Tafsir JSON datasets vs querying Quran.com v4 Tafsir API.
