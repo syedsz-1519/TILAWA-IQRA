@@ -1,0 +1,3 @@
+module.exports=[1359,a=>{"use strict";var b=a.i(98172);a.s(["default",0,function(){return(0,b.jsxs)("div",{className:"mx-auto max-w-7xl px-4 py-8 animate-pulse space-y-6",children:[(0,b.jsx)("div",{className:"h-10 w-64 bg-muted rounded-md"}),(0,b.jsx)("div",{className:"grid grid-cols-2 md:grid-cols-5 gap-3",children:[1,2,3,4,5].map(a=>(0,b.jsx)("div",{className:"h-20 bg-muted/70 rounded-lg"},a))}),(0,b.jsx)("div",{className:"grid grid-cols-1 md:grid-cols-3 gap-4 pt-6",children:[1,2,3,4,5,6].map(a=>(0,b.jsx)("div",{className:"h-44 bg-card border border-border rounded-xl"},a))})]})}])},15174,a=>{a.n(a.i(1359))}];
+
+//# sourceMappingURL=0amv_tilawa-iqra_TILAWA-IQRA_apps_web_frontend_app_hifz-studio_loading_tsx_0m2h_5b._.js.map
