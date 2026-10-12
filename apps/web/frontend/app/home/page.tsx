@@ -84,10 +84,10 @@ export default function HomePage() {
   }, [])
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-dvh bg-background page-bottom-safe">
       <HeaderBar hijriDate={hijriDate} loading={loading} />
 
-      <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
+      <div className="page-container py-6 md:py-8">
         {/* Next Salah (Hero) */}
         <section className="mb-8">
           <NextSalahCard prayerTimes={prayerTimes} loading={loading} />

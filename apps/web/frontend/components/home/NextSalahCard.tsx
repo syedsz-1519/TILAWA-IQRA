@@ -89,68 +89,61 @@ export function NextSalahCard({ prayerTimes, loading }: NextSalahCardProps) {
 
   if (loading) {
     return (
-      <div className="animate-pulse">
-        <div className="h-32 rounded-2xl bg-muted" />
-      </div>
+      <div className="skeleton h-32 w-full rounded-2xl" aria-label="Loading prayer times" aria-busy="true" />
     )
   }
 
   if (!prayerTimes) {
     return (
-      <div className="rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center text-sm text-muted-foreground">
+      <div className="card-sacred p-6 text-center text-sm text-muted-foreground">
         Enable location to see prayer times
       </div>
     )
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-gradient-to-br from-primary/5 to-primary/10 p-6">
+    <div className="card-sacred p-6"
+      style={{ background: 'linear-gradient(135deg, oklch(from var(--primary) l c h / 0.06), oklch(from var(--primary) l c h / 0.12))' }}>
       {/* Next Prayer + Countdown */}
-      <div className="mb-6 flex items-end justify-between">
+      <div className="mb-5 flex items-end justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Next Prayer
           </p>
-          <p className="mt-2 text-4xl font-bold text-foreground">{nextPrayer}</p>
+          <p className="mt-2 text-fluid-3xl font-bold text-foreground">{nextPrayer}</p>
         </div>
         <div className="text-right">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Time Remaining
           </p>
-          <p className="mt-2 font-mono text-3xl font-bold text-primary">{countdown}</p>
+          <p className="mt-2 font-mono text-fluid-2xl font-bold text-primary">{countdown}</p>
         </div>
       </div>
 
-      {/* Progress ring */}
-      <div className="mb-6 h-1.5 overflow-hidden rounded-full bg-muted">
+      {/* Progress bar */}
+      <div className="mb-5 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Time until next prayer">
         <div
           className="h-full bg-primary transition-all duration-1000"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      {/* Prayer times row */}
-      <div className="flex justify-between gap-2 text-center text-sm">
-        <div className={nextPrayer === 'Fajr' ? 'rounded-lg bg-primary/20 p-2 font-semibold text-primary' : 'p-2 text-muted-foreground'}>
-          <p className="text-xs font-semibold uppercase">Fajr</p>
-          <p className="text-sm font-mono">{prayerTimes.Fajr}</p>
-        </div>
-        <div className={nextPrayer === 'Dhuhr' ? 'rounded-lg bg-primary/20 p-2 font-semibold text-primary' : 'p-2 text-muted-foreground'}>
-          <p className="text-xs font-semibold uppercase">Dhuhr</p>
-          <p className="text-sm font-mono">{prayerTimes.Dhuhr}</p>
-        </div>
-        <div className={nextPrayer === 'Asr' ? 'rounded-lg bg-primary/20 p-2 font-semibold text-primary' : 'p-2 text-muted-foreground'}>
-          <p className="text-xs font-semibold uppercase">Asr</p>
-          <p className="text-sm font-mono">{prayerTimes.Asr}</p>
-        </div>
-        <div className={nextPrayer === 'Maghrib' ? 'rounded-lg bg-primary/20 p-2 font-semibold text-primary' : 'p-2 text-muted-foreground'}>
-          <p className="text-xs font-semibold uppercase">Maghrib</p>
-          <p className="text-sm font-mono">{prayerTimes.Maghrib}</p>
-        </div>
-        <div className={nextPrayer === 'Isha' ? 'rounded-lg bg-primary/20 p-2 font-semibold text-primary' : 'p-2 text-muted-foreground'}>
-          <p className="text-xs font-semibold uppercase">Isha</p>
-          <p className="text-sm font-mono">{prayerTimes.Isha}</p>
-        </div>
+      {/* Prayer times row — scrollable on very small screens */}
+      <div className="flex min-w-0 gap-2 overflow-x-auto pb-1 text-center text-sm" role="list" aria-label="Prayer times">
+        {(['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const).map((name) => (
+          <div
+            key={name}
+            role="listitem"
+            className={`flex-1 min-w-[3.5rem] shrink-0 rounded-lg px-2 py-1.5 ${
+              nextPrayer === name
+                ? 'bg-primary/20 font-semibold text-primary'
+                : 'text-muted-foreground'
+            }`}
+          >
+            <p className="text-[10px] font-semibold uppercase tracking-wide">{name}</p>
+            <p className="mt-0.5 font-mono text-xs">{prayerTimes[name]}</p>
+          </div>
+        ))}
       </div>
     </div>
   )

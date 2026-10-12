@@ -1,61 +1,68 @@
 'use client'
 
 import Link from 'next/link'
-import { BookOpen, Brain, Heart, Compass } from 'lucide-react'
+import { BookOpenText, Brain, Heart, Compass } from 'lucide-react'
+
+const tiles = [
+  {
+    title: 'Read Quran',
+    description: 'Arabic text & translations',
+    icon: BookOpenText,
+    href: '/read',
+    tileClass: 'tile-quran',
+    iconClass: 'text-primary',
+  },
+  {
+    title: 'Tajweed',
+    description: 'Learn recitation rules',
+    icon: Brain,
+    href: '/tajweed',
+    tileClass: 'tile-tajweed',
+    iconClass: 'text-purple-500 dark:text-purple-400',
+  },
+  {
+    title: 'Dua & Adhkar',
+    description: 'Daily supplications',
+    icon: Heart,
+    href: '/dua-library',
+    tileClass: 'tile-dua',
+    iconClass: 'text-accent',
+  },
+  {
+    title: 'Qibla',
+    description: 'Prayer direction finder',
+    icon: Compass,
+    href: '/qibla',
+    tileClass: 'tile-qibla',
+    iconClass: 'text-teal-600 dark:text-teal-400',
+  },
+]
 
 export function QuickAccessGrid() {
-  const tiles = [
-    {
-      title: 'Read Quran',
-      description: 'Arabic only, distraction-free',
-      icon: BookOpen,
-      href: '/read-quran',
-      color: 'bg-blue-500/10 hover:bg-blue-500/20',
-      iconColor: 'text-blue-600',
-    },
-    {
-      title: 'Tajweed',
-      description: 'Learn recitation rules',
-      icon: Brain,
-      href: '/tajweed',
-      color: 'bg-purple-500/10 hover:bg-purple-500/20',
-      iconColor: 'text-purple-600',
-    },
-    {
-      title: 'Dua & Adhkar',
-      description: 'Daily supplications',
-      icon: Heart,
-      href: '/dua-library',
-      color: 'bg-rose-500/10 hover:bg-rose-500/20',
-      iconColor: 'text-rose-600',
-    },
-    {
-      title: 'Qibla',
-      description: 'Prayer direction finder',
-      icon: Compass,
-      href: '/qibla',
-      color: 'bg-green-500/10 hover:bg-green-500/20',
-      iconColor: 'text-green-600',
-    },
-  ]
-
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
       {tiles.map((tile) => {
         const Icon = tile.icon
         return (
           <Link
             key={tile.href}
             href={tile.href}
-            className={`group flex flex-col items-start justify-between gap-4 rounded-xl border border-border p-6 transition-all ${tile.color}`}
+            className={`
+              group card-sacred press-effect
+              flex flex-col justify-between gap-6 p-5
+              ${tile.tileClass}
+              border-transparent
+              hover:border-primary/20
+            `}
           >
-            <div className="flex items-start justify-between w-full">
-              <div>
-                <h3 className="font-semibold text-foreground">{tile.title}</h3>
-                <p className="text-xs text-muted-foreground">{tile.description}</p>
-              </div>
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">{tile.title}</h3>
+              <p className="mt-0.5 text-xs text-muted-foreground">{tile.description}</p>
             </div>
-            <Icon className={`size-6 ${tile.iconColor} transition-transform group-hover:scale-110`} />
+            <Icon
+              className={`size-7 ${tile.iconClass} transition-transform duration-[var(--duration-base)] group-hover:scale-110`}
+              aria-hidden="true"
+            />
           </Link>
         )
       })}

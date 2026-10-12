@@ -114,20 +114,18 @@ export function StudyTipsCarousel() {
 
       {/* Tip Card */}
       <div
-        className={cn(
-          'relative overflow-hidden rounded-lg border border-border bg-gradient-to-br p-6 transition-all duration-300 md:min-h-48',
-          `from-${getDifficultyColor(tip.difficulty).split(' ')[1]} to-${getDifficultyColor(tip.difficulty).split(' ')[3]}`
-        )}
+        className="relative overflow-hidden rounded-xl border border-border p-6 transition-all duration-300 md:min-h-48"
+        style={{
+          background:
+            tip.difficulty === 'beginner'    ? 'linear-gradient(135deg, oklch(0.91 0.07 160), oklch(0.94 0.04 185))' :
+            tip.difficulty === 'intermediate' ? 'linear-gradient(135deg, oklch(0.93 0.08 50), oklch(0.96 0.05 38))'  :
+            /* advanced */                      'linear-gradient(135deg, oklch(0.92 0.07 300), oklch(0.95 0.04 285))',
+        }}
         onMouseEnter={() => setAutoPlay(false)}
         onMouseLeave={() => setAutoPlay(true)}
       >
         {/* Gradient Overlay */}
-        <div
-          className={cn(
-            'absolute inset-0 opacity-10',
-            `bg-gradient-to-br ${getDifficultyColor(tip.difficulty)}`
-          )}
-        />
+        <div className="absolute inset-0 opacity-10 bg-white" />
 
         {/* Content */}
         <div className="relative z-10">

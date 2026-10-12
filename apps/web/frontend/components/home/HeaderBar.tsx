@@ -31,28 +31,28 @@ export function HeaderBar({ hijriDate, loading }: HeaderBarProps) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto max-w-6xl px-4 py-4 md:px-8">
+      <div className="page-container py-4">
         {/* Greeting + dates */}
-        <div className="mb-2">
-          <h1 className="text-2xl font-bold text-foreground">As-salāmu ʿalaikum</h1>
+        <div className="mb-1">
+          <h1 className="text-fluid-xl font-bold text-foreground">As-salāmu ʿalaikum</h1>
         </div>
 
-        <div className={`flex flex-wrap items-center gap-4 text-sm ${loadingClass}`}>
+        <div className={`flex flex-wrap items-center gap-3 text-sm ${loadingClass}`}>
           {hijriDate ? (
             <div className="text-muted-foreground">
               <span className="font-semibold text-foreground">
                 {hijriDate.day} {hijriDate.monthAr}
               </span>
-              <span className="mx-2 text-border">·</span>
+              <span className="mx-2 text-border" aria-hidden="true">·</span>
               <span>{hijriDate.year} AH</span>
             </div>
           ) : (
-            <div className="h-4 w-32 rounded bg-muted" />
+            <div className="skeleton h-4 w-32" aria-label="Loading date" />
           )}
 
           {gregorianDate && (
             <>
-              <span className="text-border">·</span>
+              <span className="text-border" aria-hidden="true">·</span>
               <span className="text-muted-foreground">{gregorianDate}</span>
             </>
           )}

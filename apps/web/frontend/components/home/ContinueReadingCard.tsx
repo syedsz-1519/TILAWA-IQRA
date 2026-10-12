@@ -14,12 +14,12 @@ interface ContinueReadingCardProps {
 
 export function ContinueReadingCard({ progress, loading }: ContinueReadingCardProps) {
   if (loading) {
-    return <div className="h-16 animate-pulse rounded-xl bg-muted" />
+    return <div className="skeleton h-16 w-full" aria-label="Loading reading progress" aria-busy="true" />
   }
 
   if (!progress) {
     return (
-      <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
+      <div className="card-sacred p-5 text-center text-sm text-muted-foreground">
         Start reading to track your progress
       </div>
     )
@@ -28,10 +28,10 @@ export function ContinueReadingCard({ progress, loading }: ContinueReadingCardPr
   return (
     <Link
       href={`/read-quran?surah=${progress.surahNumber}&ayah=${progress.ayahNumber}`}
-      className="group flex items-center justify-between gap-4 rounded-xl border border-border bg-card p-6 transition-all hover:bg-muted"
+      className="group card-sacred press-effect flex items-center justify-between gap-4 p-5"
     >
       <div className="flex items-center gap-3">
-        <BookMarked className="size-5 text-primary" />
+        <BookMarked className="size-5 shrink-0 text-primary" aria-hidden="true" />
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Continue Reading
@@ -41,7 +41,10 @@ export function ContinueReadingCard({ progress, loading }: ContinueReadingCardPr
           </p>
         </div>
       </div>
-      <ChevronRight className="size-5 text-muted-foreground transition-transform group-hover:translate-x-1" />
+      <ChevronRight
+        className="size-5 shrink-0 text-muted-foreground transition-transform duration-[var(--duration-base)] group-hover:translate-x-1"
+        aria-hidden="true"
+      />
     </Link>
   )
 }

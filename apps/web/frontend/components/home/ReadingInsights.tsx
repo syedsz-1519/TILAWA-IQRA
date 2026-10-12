@@ -116,18 +116,19 @@ export function ReadingInsights() {
 
       {/* Insight Card */}
       <div
-        className={cn(
-          'relative overflow-hidden rounded-lg border border-border bg-gradient-to-br p-4 md:p-6 transition-all duration-300',
-          `from-${current.color.split(' ')[1]} to-${current.color.split(' ')[3]}`
-        )}
+        className="relative overflow-hidden rounded-xl border border-border p-4 transition-all duration-300 md:p-6"
+        style={{
+          background:
+            current.color === 'from-amber-500 to-orange-500'   ? 'linear-gradient(135deg, oklch(0.93 0.08 50), oklch(0.96 0.04 38))' :
+            current.color === 'from-yellow-500 to-amber-500'   ? 'linear-gradient(135deg, oklch(0.95 0.10 85), oklch(0.93 0.08 65))' :
+            current.color === 'from-purple-500 to-indigo-500'  ? 'linear-gradient(135deg, oklch(0.92 0.07 300), oklch(0.94 0.05 280))' :
+            current.color === 'from-emerald-500 to-teal-500'   ? 'linear-gradient(135deg, oklch(0.91 0.07 160), oklch(0.93 0.05 185))' :
+            current.color === 'from-cyan-500 to-blue-500'      ? 'linear-gradient(135deg, oklch(0.92 0.07 215), oklch(0.94 0.05 235))' :
+            'linear-gradient(135deg, oklch(0.92 0.05 265), oklch(0.94 0.03 250))',
+        }}
       >
-        {/* Gradient Overlay */}
-        <div
-          className={cn(
-            'absolute inset-0 opacity-10 transition-opacity',
-            `bg-gradient-to-br ${current.color}`
-          )}
-        />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 opacity-10 bg-white" />
 
         {/* Content */}
         <div className="relative z-10">

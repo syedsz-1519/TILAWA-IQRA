@@ -36,25 +36,31 @@ export function AdhkarStrip({ prayerTimes, loading }: AdhkarStripProps) {
   }, [prayerTimes])
 
   if (loading) {
-    return <div className="h-20 animate-pulse rounded-xl bg-muted" />
+    return <div className="skeleton h-20 w-full" aria-label="Loading adhkar" aria-busy="true" />
   }
 
   return (
     <Link
       href="/dua-adhkar"
-      className="group flex items-center justify-between gap-4 rounded-xl border border-border bg-gradient-to-r from-rose-50 to-pink-50 p-6 transition-all hover:shadow-md dark:from-rose-950/20 dark:to-pink-950/20"
+      className="group card-sacred press-effect flex items-center justify-between gap-4 p-5"
     >
       <div>
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
           {adhkarType === 'morning' ? 'Morning' : 'Evening'} Adhkar
         </p>
-        <p className="mt-2 max-w-sm text-sm leading-relaxed text-foreground">
+        <p className="mt-2 max-w-xs text-sm leading-relaxed text-foreground arabic-ui" lang="ar" dir="rtl">
+          {adhkarType === 'morning' ? 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ' : 'الْحَمْدُ لِلَّهِ'}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
           {adhkarType === 'morning'
-            ? "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ · Start your day with morning remembrance"
-            : "الْحَمْدُ لِلَّهِ · Reflect with evening adhkar before Isha"}
+            ? 'Start your day with morning remembrance'
+            : 'Reflect with evening adhkar before Isha'}
         </p>
       </div>
-      <ChevronRight className="size-5 flex-shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" />
+      <ChevronRight
+        className="size-5 shrink-0 text-muted-foreground transition-transform duration-[var(--duration-base)] group-hover:translate-x-1"
+        aria-hidden="true"
+      />
     </Link>
   )
 }
