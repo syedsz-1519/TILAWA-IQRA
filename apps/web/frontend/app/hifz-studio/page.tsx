@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { getHifzDecks, getDifficultyColor } from '@/lib/hifz-data'
 import { getHifzStatsApi } from '@/lib/api-client'
-import { Flame, BookOpen, Target, Trophy, Play } from 'lucide-react'
+import { Flame, BookOpen, Target, Trophy, Play, Plus } from 'lucide-react'
 
 export default function HifzStudioPage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced' | 'master'>('all')
