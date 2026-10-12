@@ -5,7 +5,7 @@ type AppRoutes = "/" | "/battles" | "/counselor" | "/dashboard" | "/dua-adhkar" 
 type AppRouteHandlerRoutes = "/api/auth/[...all]" | "/api/bookmarks" | "/api/reading-progress" | "/api/streaks"
 type PageRoutes = never
 type LayoutRoutes = "/"
-type RedirectRoutes = never
+type RedirectRoutes = "/"
 type RewriteRoutes = never
 type Routes = AppRoutes | PageRoutes | LayoutRoutes | RedirectRoutes | RewriteRoutes | AppRouteHandlerRoutes
 
