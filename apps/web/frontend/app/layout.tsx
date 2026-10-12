@@ -16,33 +16,83 @@ import './globals.css'
 // Validate environment variables on app startup
 logEnvironmentValidation()
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
+/* ── Web-safe font loading via next/font/google ─────────────────────────── */
+const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist',
+  display: 'swap',
+})
+
 const amiri = Amiri({
   subsets: ['arabic'],
   weight: ['400', '700'],
   variable: '--font-amiri',
+  display: 'swap',
 })
 
-export const metadata: Metadata = {
-  title: 'TILAWA - Quranic Recitation & Learning',
-  description:
-    'AI-powered Quranic recitation learning, tajweed rules, hadith library, and memorization companion.',
-  manifest: '/manifest.webmanifest',
-  generator: 'v0.app',
-  icons: {
-    icon: '/images/tilawa-logo.jpeg',
-    apple: '/images/tilawa-logo.jpeg',
-  },
-}
+/* ── App-wide metadata ──────────────────────────────────────────────────── */
+const APP_URL = 'https://tilawaa.vercel.app'
 
-export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#faf9f6' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0f0d' },
+export const metadata: Metadata = {
+  title: {
+    default: 'TILAWA — Quranic Recitation & Learning',
+    template: '%s | TILAWA',
+  },
+  description:
+    'Read, listen, and learn the Holy Quran. Tajweed rules, Dua & Adhkar, Hadith library, Qibla finder — all in one beautiful app.',
+  metadataBase: new URL(APP_URL),
+  manifest: '/manifest.webmanifest',
+  icons: {
+    icon: [
+      { url: '/icon-light-32x32.png', type: 'image/png', sizes: '32x32', media: '(prefers-color-scheme: light)' },
+      { url: '/icon-dark-32x32.png',  type: 'image/png', sizes: '32x32', media: '(prefers-color-scheme: dark)'  },
+    ],
+    apple: '/apple-icon.png',
+  },
+  openGraph: {
+    type: 'website',
+    url: APP_URL,
+    title: 'TILAWA — Quranic Recitation & Learning',
+    description:
+      'Read, listen, and learn the Holy Quran. Tajweed rules, Dua & Adhkar, Hadith library, Qibla finder — all in one beautiful app.',
+    siteName: 'TILAWA',
+    locale: 'en_US',
+    /* TODO: Replace with a proper 1200×630 OG image in /public/og-image.png */
+    images: [
+      {
+        url: '/images/tilawa-logo.jpeg',
+        width: 512,
+        height: 512,
+        alt: 'TILAWA — From Iqra to Tilawa',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TILAWA — Quranic Recitation & Learning',
+    description:
+      'Read, listen, and learn the Holy Quran. Tajweed rules, Dua & Adhkar, Hadith library, Qibla finder.',
+    images: ['/images/tilawa-logo.jpeg'],
+  },
+  keywords: [
+    'Quran', 'Quranic recitation', 'Tajweed', 'Islamic app',
+    'Dua', 'Adhkar', 'Hadith', 'Qibla', 'learn Quran', 'TILAWA',
   ],
 }
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  minimumScale: 1,
+  viewportFit: 'cover',   /* enables env(safe-area-inset-*) on iOS */
+  colorScheme: 'light dark',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f8f7fb' },
+    { media: '(prefers-color-scheme: dark)',  color: '#0d0b1a' },
+  ],
+}
+
+/* ── Root layout ────────────────────────────────────────────────────────── */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -51,10 +101,26 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`bg-background ${geist.variable} ${amiri.variable}`}
+      className={`${geist.variable} ${amiri.variable}`}
       suppressHydrationWarning
     >
-      <body className="antialiased font-sans">
+      <head>
+        {/*
+          Preload the Amiri Quran woff2 — it's the largest, most critical
+          Arabic font. The browser will start fetching it before CSS is parsed.
+        */}
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          href="https://cdn.jsdelivr.net/npm/amiri-quran@0.4/data/fonts/Amiri%20Quran.woff2"
+          crossOrigin="anonymous"
+        />
+        {/* DNS prefetch for external font CDNs */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+      </head>
+      <body className="antialiased font-sans bg-background text-foreground">
         <CacheClearer />
         <ErrorBoundary
           context={{
