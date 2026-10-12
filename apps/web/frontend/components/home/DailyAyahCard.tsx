@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Volume2, Share2, BookmarkPlus, BookOpen, ChevronDown } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { RotateCw, Volume2, Share2, BookmarkPlus, BookOpen } from 'lucide-react'
 
 interface DailyAyahCardProps {
   ayah?: {
@@ -20,146 +20,114 @@ export function DailyAyahCard({ ayah, loading, onAyahTap }: DailyAyahCardProps) 
 
   if (loading) {
     return (
-      <div className="animate-pulse space-y-3" aria-busy="true" aria-label="Loading daily ayah">
-        <div className="h-6 w-32 rounded-full bg-muted" />
-        <div className="h-20 rounded-2xl bg-muted" />
-        <div className="h-4 w-48 rounded-full bg-muted" />
+      <div className="animate-pulse">
+        <div className="h-40 rounded-2xl bg-muted" />
       </div>
     )
   }
 
   if (!ayah) {
     return (
-      <div className="rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center text-fluid-sm text-muted-foreground">
-        Failed to load today's ayah. Check your connection.
+      <div className="rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center text-sm text-muted-foreground">
+        Failed to load daily ayah
       </div>
     )
   }
 
   return (
-    <article
-      className="
-        group rounded-2xl border-2 border-primary/20 bg-card
-        shadow-token-md
-        transition-all duration-200
-        dark:border-primary/15
-        dark:bg-card
-      "
-      aria-label={`Daily Ayah: ${ayah.surahName} ${ayah.surahNumber}:${ayah.ayahNumber}`}
+    <div
+      onClick={onAyahTap}
+      className="group cursor-pointer rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-amber-50 to-orange-50 p-8 transition-all hover:border-primary/60 hover:shadow-lg dark:from-amber-950/20 dark:to-orange-950/20"
     >
-      {/* Amber-tinted header band */}
-      <div className="flex items-center justify-between rounded-t-2xl bg-primary/8 px-5 py-3 dark:bg-primary/10">
-        <p className="text-fluid-xs font-semibold uppercase tracking-widest text-primary">
+      {/* Label */}
+      <div className="mb-4 flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">
           Ayah of the Day
         </p>
-        <p className="text-fluid-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           {ayah.surahName} {ayah.surahNumber}:{ayah.ayahNumber}
         </p>
       </div>
 
       {/* Arabic text */}
-      <div className="px-5 py-6">
-        <p
-          className="quran-text quran-text--hero text-center text-foreground"
-          lang="ar"
-          dir="rtl"
-        >
-          {ayah.arabic}
-        </p>
+      <div
+        lang="ar"
+        dir="rtl"
+        className="mb-6 text-center text-3xl leading-relaxed text-foreground font-serif"
+        style={{ fontFamily: "'Amiri Quran', 'KFGQPC Uthmanic Script HAFS', serif" }}
+      >
+        {ayah.arabic}
       </div>
 
-      {/* Translation toggle + content */}
-      <div className="border-t border-border/60 px-5 pb-5 pt-3">
+      {/* Translation toggle */}
+      {showTranslation && (
+        <div className="mb-6 rounded-lg border border-border bg-card/50 p-4">
+          <p className="text-sm leading-relaxed text-foreground italic">{ayah.translation}</p>
+        </div>
+      )}
+
+      {/* Action buttons */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <button
-          onClick={() => setShowTranslation(!showTranslation)}
-          className="
-            flex w-full items-center justify-between gap-2
-            text-fluid-xs font-semibold uppercase tracking-wider text-muted-foreground
-            transition-colors hover:text-foreground
-            py-1
-          "
-          aria-expanded={showTranslation}
-          aria-controls="daily-ayah-translation"
+          onClick={(e) => {
+            e.stopPropagation()
+            setShowTranslation(!showTranslation)
+          }}
+          className="text-xs font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
         >
-          <span>{showTranslation ? 'Hide' : 'Show'} Translation</span>
-          <ChevronDown
-            className={`size-4 transition-transform duration-200 ${showTranslation ? 'rotate-180' : ''}`}
-            aria-hidden="true"
-          />
+          {showTranslation ? 'Hide' : 'Show'} Translation
         </button>
 
-        {showTranslation && (
-          <div
-            id="daily-ayah-translation"
-            className="mt-3 rounded-xl bg-muted/50 px-4 py-3 text-fluid-sm leading-relaxed text-foreground italic"
-          >
-            {ayah.translation}
-          </div>
-        )}
-
-        {/* Action row — icon+label buttons, 44px minimum tap target */}
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          {/* Listen */}
+        <div className="flex gap-2">
           <button
-            onClick={onAyahTap}
-            className="
-              touch-target flex items-center gap-1.5 rounded-xl
-              border border-border bg-background px-3
-              text-fluid-xs font-medium text-foreground
-              transition-colors hover:bg-muted press
-            "
-            aria-label="Listen to this ayah"
+            onClick={(e) => {
+              e.stopPropagation()
+              onAyahTap?.()
+            }}
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold transition-colors hover:bg-muted"
+            title="Listen to this ayah"
           >
-            <Volume2 className="size-4 text-primary" aria-hidden="true" />
+            <Volume2 className="size-4" />
             Listen
           </button>
 
-          {/* Share */}
           <button
-            onClick={onAyahTap}
-            className="
-              touch-target flex items-center gap-1.5 rounded-xl
-              border border-border bg-background px-3
-              text-fluid-xs font-medium text-foreground
-              transition-colors hover:bg-muted press
-            "
-            aria-label="Share this ayah"
+            onClick={(e) => {
+              e.stopPropagation()
+              onAyahTap?.()
+            }}
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold transition-colors hover:bg-muted"
+            title="Share this ayah"
           >
-            <Share2 className="size-4 text-primary" aria-hidden="true" />
+            <Share2 className="size-4" />
             Share
           </button>
 
-          {/* Save */}
           <button
-            onClick={onAyahTap}
-            className="
-              touch-target flex items-center gap-1.5 rounded-xl
-              border border-border bg-background px-3
-              text-fluid-xs font-medium text-foreground
-              transition-colors hover:bg-muted press
-            "
-            aria-label="Bookmark this ayah"
+            onClick={(e) => {
+              e.stopPropagation()
+              onAyahTap?.()
+            }}
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold transition-colors hover:bg-muted"
+            title="Save this ayah"
           >
-            <BookmarkPlus className="size-4 text-primary" aria-hidden="true" />
+            <BookmarkPlus className="size-4" />
             Save
           </button>
 
-          {/* Tafseer */}
           <button
-            onClick={onAyahTap}
-            className="
-              touch-target flex items-center gap-1.5 rounded-xl
-              border border-border bg-background px-3
-              text-fluid-xs font-medium text-foreground
-              transition-colors hover:bg-muted press
-            "
-            aria-label="Read tafseer for this ayah"
+            onClick={(e) => {
+              e.stopPropagation()
+              onAyahTap?.()
+            }}
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold transition-colors hover:bg-muted"
+            title="Read tafseer"
           >
-            <BookOpen className="size-4 text-primary" aria-hidden="true" />
+            <BookOpen className="size-4" />
             Tafseer
           </button>
         </div>
       </div>
-    </article>
+    </div>
   )
 }

@@ -4,41 +4,14 @@ import { useEffect, useState } from 'react'
 import { Brain, TrendingUp, Clock, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   ReadingInsights — auto-rotating insight carousel.
-   All colour classes are static strings — no dynamic Tailwind interpolation.
-───────────────────────────────────────────────────────────────────────────── */
-
-const INSIGHT_THEMES = {
-  morning:
-    'bg-amber-50 border-amber-200/60 dark:bg-amber-950/30 dark:border-amber-800/40',
-  afternoon:
-    'bg-yellow-50 border-yellow-200/60 dark:bg-yellow-950/30 dark:border-yellow-800/40',
-  evening:
-    'bg-violet-50 border-violet-200/60 dark:bg-violet-950/30 dark:border-violet-800/40',
-  'xp-boost':
-    'bg-emerald-50 border-emerald-200/60 dark:bg-emerald-950/30 dark:border-emerald-800/40',
-  tajweed:
-    'bg-sky-50 border-sky-200/60 dark:bg-sky-950/30 dark:border-sky-800/40',
-  streak:
-    'bg-rose-50 border-rose-200/60 dark:bg-rose-950/30 dark:border-rose-800/40',
-} as const
-
-type InsightId = keyof typeof INSIGHT_THEMES
-
 interface Insight {
-  id: InsightId
+  id: string
   type: 'tip' | 'achievement' | 'reminder' | 'info'
   title: string
   description: string
   icon: React.ReactNode
-}
-
-const TYPE_BADGE: Record<Insight['type'], string> = {
-  tip:         'bg-sky-100      text-sky-700      dark:bg-sky-900/40   dark:text-sky-300',
-  reminder:    'bg-amber-100    text-amber-700    dark:bg-amber-900/40 dark:text-amber-300',
-  info:        'bg-emerald-100  text-emerald-700  dark:bg-emerald-900/40 dark:text-emerald-300',
-  achievement: 'bg-violet-100   text-violet-700   dark:bg-violet-900/40 dark:text-violet-300',
+  action?: string
+  color: string
 }
 
 export function ReadingInsights() {
@@ -46,80 +19,94 @@ export function ReadingInsights() {
   const [activeInsight, setActiveInsight] = useState(0)
 
   useEffect(() => {
-    const hour = new Date().getHours()
-    const list: Insight[] = []
+    const generateInsights = (): Insight[] => {
+      const hour = new Date().getHours()
+      const insightsList: Insight[] = []
 
-    if (hour < 12) {
-      list.push({
-        id: 'morning',
-        type: 'tip',
-        title: '🌅 Morning Read',
-        description: 'Start your day with mindful Quranic reading. Morning reading improves focus and retention.',
-        icon: <Clock className="size-5" />,
+      // Time-based greeting
+      if (hour < 12) {
+        insightsList.push({
+          id: 'morning',
+          type: 'tip',
+          title: '🌅 Morning Read',
+          description: 'Start your day with mindful Quranic reading. Studies show morning reading improves focus.',
+          icon: <Clock className="size-5" />,
+          color: 'from-amber-500 to-orange-500',
+        })
+      } else if (hour < 17) {
+        insightsList.push({
+          id: 'afternoon',
+          type: 'tip',
+          title: '☀️ Afternoon Session',
+          description: 'Mid-day reading helps maintain momentum. Try reading 5-10 ayahs.',
+          icon: <TrendingUp className="size-5" />,
+          color: 'from-yellow-500 to-amber-500',
+        })
+      } else {
+        insightsList.push({
+          id: 'evening',
+          type: 'tip',
+          title: '🌙 Evening Reflection',
+          description: 'Reflect on today\'s reading before evening prayer. This deepens comprehension.',
+          icon: <Brain className="size-5" />,
+          color: 'from-purple-500 to-indigo-500',
+        })
+      }
+
+      // XP reminder
+      insightsList.push({
+        id: 'xp-boost',
+        type: 'reminder',
+        title: '⚡ XP Boost Ready',
+        description: 'Daily reading gives you 10 XP points. Don\'t miss out on your rewards!',
+        icon: <Zap className="size-5" />,
+        color: 'from-emerald-500 to-teal-500',
       })
-    } else if (hour < 17) {
-      list.push({
-        id: 'afternoon',
-        type: 'tip',
-        title: '☀️ Afternoon Session',
-        description: 'Mid-day reading helps maintain momentum. Try 5–10 ayahs.',
-        icon: <TrendingUp className="size-5" />,
-      })
-    } else {
-      list.push({
-        id: 'evening',
-        type: 'tip',
-        title: '🌙 Evening Reflection',
-        description: "Reflect on today's reading before evening prayer — it deepens comprehension.",
+
+      // Tajweed tip
+      insightsList.push({
+        id: 'tajweed',
+        type: 'info',
+        title: '🎵 Tajweed Tip',
+        description: 'Remember: Proper pronunciation enhances understanding and spiritual benefit.',
         icon: <Brain className="size-5" />,
+        color: 'from-cyan-500 to-blue-500',
       })
+
+      // Streak motivation
+      insightsList.push({
+        id: 'streak',
+        type: 'achievement',
+        title: '🔥 Streak Milestone',
+        description: 'Keep reading daily to build a strong habit and unlock more badges!',
+        icon: <TrendingUp className="size-5" />,
+        color: 'from-red-500 to-pink-500',
+      })
+
+      return insightsList
     }
 
-    list.push({
-      id: 'xp-boost',
-      type: 'reminder',
-      title: '⚡ XP Boost Ready',
-      description: "Daily reading gives you 10 XP points. Don't miss your streak reward!",
-      icon: <Zap className="size-5" />,
-    })
-
-    list.push({
-      id: 'tajweed',
-      type: 'info',
-      title: '🎵 Tajweed Tip',
-      description: 'Proper pronunciation enhances understanding and spiritual benefit of recitation.',
-      icon: <Brain className="size-5" />,
-    })
-
-    list.push({
-      id: 'streak',
-      type: 'achievement',
-      title: '🔥 Build Your Streak',
-      description: 'Read daily to build a strong habit and unlock achievement badges.',
-      icon: <TrendingUp className="size-5" />,
-    })
-
-    setInsights(list)
+    setInsights(generateInsights())
   }, [])
 
-  if (insights.length === 0) return null
+  if (insights.length === 0) {
+    return null
+  }
 
   const current = insights[activeInsight]
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 shadow-token-sm md:p-6">
+    <div className="rounded-xl border border-border bg-card p-4 md:p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-fluid-lg font-semibold text-foreground">Today's Insights</h3>
-        <div className="flex gap-1" role="tablist" aria-label="Insight navigation">
-          {insights.map((ins, idx) => (
+        <h3 className="text-lg font-semibold">Today's Insights</h3>
+        <div className="flex gap-1">
+          {insights.map((_, idx) => (
             <button
-              key={ins.id}
-              role="tab"
-              aria-selected={idx === activeInsight}
+              key={idx}
               onClick={() => setActiveInsight(idx)}
               className={cn(
-                'h-1.5 rounded-full transition-all duration-200',
-                idx === activeInsight ? 'w-4 bg-primary' : 'w-1.5 bg-muted-foreground/30'
+                'h-1.5 w-1.5 rounded-full transition-all',
+                idx === activeInsight ? 'w-4 bg-primary' : 'bg-muted-foreground/30'
               )}
               aria-label={`Insight ${idx + 1}`}
             />
@@ -127,36 +114,59 @@ export function ReadingInsights() {
         </div>
       </div>
 
+      {/* Insight Card */}
       <div
         className={cn(
-          'relative overflow-hidden rounded-xl border p-4 transition-all duration-200 md:p-5',
-          INSIGHT_THEMES[current.id]
+          'relative overflow-hidden rounded-lg border border-border bg-gradient-to-br p-4 md:p-6 transition-all duration-300',
+          `from-${current.color.split(' ')[1]} to-${current.color.split(' ')[3]}`
         )}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-background/40 p-2 text-foreground backdrop-blur-sm">
-              {current.icon}
-            </div>
-            <h4 className="text-fluid-base font-semibold text-foreground leading-tight">
-              {current.title}
-            </h4>
-          </div>
-          <span className={cn('shrink-0 rounded px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wide', TYPE_BADGE[current.type])}>
-            {current.type}
-          </span>
-        </div>
+        {/* Gradient Overlay */}
+        <div
+          className={cn(
+            'absolute inset-0 opacity-10 transition-opacity',
+            `bg-gradient-to-br ${current.color}`
+          )}
+        />
 
-        <p className="mt-3 text-fluid-sm leading-relaxed text-foreground/80">
-          {current.description}
-        </p>
+        {/* Content */}
+        <div className="relative z-10">
+          <div className="mb-3 flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-background/20 p-2 backdrop-blur-sm">
+                {current.icon}
+              </div>
+              <h4 className="text-lg font-semibold leading-tight">{current.title}</h4>
+            </div>
+
+            {/* Type Badge */}
+            <span className={cn(
+              'text-xs font-semibold uppercase rounded px-2 py-1',
+              {
+                'bg-blue-500/20 text-blue-700 dark:text-blue-200': current.type === 'tip',
+                'bg-amber-500/20 text-amber-700 dark:text-amber-200': current.type === 'reminder',
+                'bg-emerald-500/20 text-emerald-700 dark:text-emerald-200': current.type === 'info',
+                'bg-purple-500/20 text-purple-700 dark:text-purple-200': current.type === 'achievement',
+              }
+            )}>
+              {current.type}
+            </span>
+          </div>
+
+          <p className="mb-4 text-sm leading-relaxed">{current.description}</p>
+
+          {current.action && (
+            <button className="rounded-lg bg-background/40 px-3 py-1.5 text-sm font-semibold transition-colors hover:bg-background/60 backdrop-blur-sm">
+              {current.action}
+            </button>
+          )}
+        </div>
       </div>
 
-      {insights.length > 1 && (
-        <p className="mt-2 text-center text-[0.6875rem] text-muted-foreground">
-          {activeInsight + 1} of {insights.length}
-        </p>
-      )}
+      {/* Navigation Hint */}
+      <p className="mt-3 text-center text-xs text-muted-foreground">
+        {insights.length > 1 && `${activeInsight + 1} of ${insights.length} insights`}
+      </p>
     </div>
   )
 }

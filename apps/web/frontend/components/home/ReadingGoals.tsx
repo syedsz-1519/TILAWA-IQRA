@@ -66,20 +66,14 @@ export function ReadingGoals() {
   }, [])
 
   if (loading) {
-    return (
-      <div
-        className="h-32 animate-pulse rounded-2xl bg-muted"
-        aria-busy="true"
-        aria-label="Loading reading goals"
-      />
-    )
+    return <div className="h-32 animate-pulse rounded-lg bg-muted" />
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 shadow-token-sm md:p-6">
+    <div className="rounded-xl border border-border bg-gradient-to-br from-primary/5 to-transparent p-4 md:p-6">
       <div className="mb-4 flex items-center gap-2">
-        <Target className="size-5 text-primary" aria-hidden="true" />
-        <h3 className="text-fluid-lg font-semibold text-foreground">Today's Reading Goals</h3>
+        <Target className="size-5 text-primary" />
+        <h3 className="text-lg font-semibold">Today's Reading Goals</h3>
       </div>
 
       <div className="space-y-4">

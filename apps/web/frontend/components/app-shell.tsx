@@ -150,9 +150,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Mobile top bar — logo only + hamburger (no lang picker)             */}
+      {/* Mobile top bar — logo + hamburger                                   */}
       {/* ------------------------------------------------------------------ */}
-      <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur lg:hidden">
+      <div
+        className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur lg:hidden"
+        style={{
+          height: 'calc(var(--header-h) + env(safe-area-inset-top, 0px))',
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+        }}
+      >
         <Link href="/" className="flex items-center gap-2.5">
           <Image
             src="/images/tilawa-logo.jpeg"
@@ -164,13 +170,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <span className="font-serif text-lg font-bold tracking-[0.2em] text-primary">TILAWA</span>
         </Link>
 
-        {/* Hamburger — only for the full drawer (all sections) */}
         <button
           type="button"
           onClick={() => setDrawerOpen((v) => !v)}
           aria-expanded={drawerOpen}
           aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
-          className="flex size-9 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:bg-muted"
+          className="tap-target rounded-md border border-border text-foreground transition-colors hover:bg-muted press-effect"
         >
           {drawerOpen ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
@@ -184,24 +189,39 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             aria-hidden="true"
             onClick={() => setDrawerOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-72 max-w-[85vw] border-r border-border bg-card pt-14 shadow-xl">
+          <div
+            className="absolute inset-y-0 left-0 w-72 max-w-[85vw] border-r border-border bg-card shadow-xl"
+            style={{ paddingTop: 'calc(var(--header-h) + env(safe-area-inset-top, 0px))' }}
+          >
             <SidebarContent onNavigate={() => setDrawerOpen(false)} />
           </div>
         </div>
       )}
 
-      {/* Main content — extra bottom padding on mobile for top bar + bottom nav + player bar */}
-      <main className="min-w-0 flex-1 pt-14 pb-28 lg:pb-0 lg:pt-0">{children}</main>
+      {/*
+        Main content area:
+        - Mobile: top padding = header height + safe-area-inset-top
+        - Mobile: bottom padding managed by page-bottom-safe utility class on each page
+        - Desktop: no extra padding needed (sidebar handles layout)
+      */}
+      <main
+        className="min-w-0 flex-1 lg:pt-0"
+        style={{
+          paddingTop: 'calc(var(--header-h) + env(safe-area-inset-top, 0px))',
+        }}
+      >
+        {children}
+      </main>
 
       {/* ================================================================== */}
       {/* Mobile bottom navigation bar                                        */}
       {/* ================================================================== */}
       <nav
         aria-label="Quick navigation"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur lg:hidden"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/97 backdrop-blur lg:hidden"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
-        <ul className="flex items-stretch">
+        <ul className="flex items-stretch" style={{ height: 'var(--bottom-nav-h)' }}>
           {/* Regular tabs */}
           {BOTTOM_TABS.map((tab) => {
             const Icon = tab.icon
@@ -214,46 +234,52 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Link
                   href={tab.href}
                   aria-current={active ? 'page' : undefined}
-                  className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 text-[10px] font-medium transition-colors ${
+                  className={`relative flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors press-effect ${
                     active
                       ? 'text-primary'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
+                  {/* Active pill background */}
+                  {active && (
+                    <span
+                      className="absolute inset-x-2 top-1 h-1 rounded-full bg-primary"
+                      aria-hidden="true"
+                    />
+                  )}
                   <Icon
                     className={`size-5 transition-transform ${active ? 'scale-110' : ''}`}
                     aria-hidden="true"
                     strokeWidth={active ? 2.5 : 1.75}
                   />
                   {tab.label}
-                  {/* Active dot indicator */}
-                  {active && (
-                    <span className="mt-0.5 h-1 w-1 rounded-full bg-primary" aria-hidden="true" />
-                  )}
                 </Link>
               </li>
             )
           })}
 
-          {/* "More" tab — opens the full drawer */}
+          {/* "More" tab */}
           <li className="flex flex-1">
             <button
               type="button"
               onClick={() => setDrawerOpen((v) => !v)}
               aria-label="Open full navigation menu"
-              className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 text-[10px] font-medium transition-colors ${
+              className={`relative flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors press-effect ${
                 drawerOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
+              {drawerOpen && (
+                <span
+                  className="absolute inset-x-2 top-1 h-1 rounded-full bg-primary"
+                  aria-hidden="true"
+                />
+              )}
               <Grid2x2
                 className={`size-5 transition-transform ${drawerOpen ? 'scale-110' : ''}`}
                 aria-hidden="true"
                 strokeWidth={drawerOpen ? 2.5 : 1.75}
               />
               More
-              {drawerOpen && (
-                <span className="mt-0.5 h-1 w-1 rounded-full bg-primary" aria-hidden="true" />
-              )}
             </button>
           </li>
         </ul>

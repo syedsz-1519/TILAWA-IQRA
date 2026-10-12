@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { formatArabicDate } from '@/lib/hijri'
 
 interface HeaderBarProps {
   hijriDate?: {
@@ -26,43 +27,32 @@ export function HeaderBar({ hijriDate, loading }: HeaderBarProps) {
     setGregorianDate(today.toLocaleDateString('en-US', options))
   }, [])
 
+  const loadingClass = loading ? 'animate-pulse opacity-60' : ''
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-sm">
-      <div
-        className="container-page py-3 md:py-4"
-        style={{
-          paddingTop: `max(0.75rem, calc(env(safe-area-inset-top, 0px) + 0.5rem))`,
-        }}
-      >
-        {/* Greeting */}
-        <h1 className="text-fluid-2xl font-bold text-foreground tracking-tight">
-          As-salāmu ʿalaikum
-        </h1>
+      <div className="mx-auto max-w-6xl px-4 py-4 md:px-8">
+        {/* Greeting + dates */}
+        <div className="mb-2">
+          <h1 className="text-2xl font-bold text-foreground">As-salāmu ʿalaikum</h1>
+        </div>
 
-        {/* Date row */}
-        <div
-          className={`mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-fluid-xs ${
-            loading ? 'animate-pulse opacity-60' : ''
-          }`}
-          aria-live="polite"
-          aria-busy={loading}
-        >
-          {/* Hijri date */}
+        <div className={`flex flex-wrap items-center gap-4 text-sm ${loadingClass}`}>
           {hijriDate ? (
-            <span className="text-muted-foreground">
-              <span className="font-semibold text-foreground" lang="ar" dir="rtl">
+            <div className="text-muted-foreground">
+              <span className="font-semibold text-foreground">
                 {hijriDate.day} {hijriDate.monthAr}
               </span>
-              {' '}
-              <span className="opacity-60">{hijriDate.year} AH</span>
-            </span>
+              <span className="mx-2 text-border">·</span>
+              <span>{hijriDate.year} AH</span>
+            </div>
           ) : (
-            <span className="inline-block h-3.5 w-28 rounded-full bg-muted" aria-hidden="true" />
+            <div className="h-4 w-32 rounded bg-muted" />
           )}
 
           {gregorianDate && (
             <>
-              <span className="text-border" aria-hidden="true">·</span>
+              <span className="text-border">·</span>
               <span className="text-muted-foreground">{gregorianDate}</span>
             </>
           )}
