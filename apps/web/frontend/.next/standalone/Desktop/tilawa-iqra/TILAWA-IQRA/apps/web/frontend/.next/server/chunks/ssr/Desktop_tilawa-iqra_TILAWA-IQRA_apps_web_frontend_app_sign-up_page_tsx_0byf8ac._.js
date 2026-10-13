@@ -1,0 +1,3 @@
+module.exports=[51851,a=>{"use strict";var b=a.i(45900),c=a.i(41184),d=a.i(22774),e=a.i(45720),f=a.i(41997);a.s(["default",0,function(){let a=(0,d.useRouter)();return(0,c.useEffect)(()=>{(async()=>{try{let b=await (0,f.getSession)();b?.user&&a.replace("/")}catch{}})()},[a]),(0,b.jsx)(e.AuthForm,{mode:"sign-up"})}])}];
+
+//# sourceMappingURL=Desktop_tilawa-iqra_TILAWA-IQRA_apps_web_frontend_app_sign-up_page_tsx_0byf8ac._.js.map
