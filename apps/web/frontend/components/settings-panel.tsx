@@ -6,9 +6,11 @@ import {
   Globe,
   Headphones,
   Mic,
+  Moon,
   Search,
   Settings,
   Sparkles,
+  Sun,
   Type,
   Volume2,
   VolumeX,
@@ -25,6 +27,7 @@ import {
 } from '@/lib/quran-languages'
 import { KEYS, EVENTS, getFontSize, setFontSize, applyFontSize, type FontSize } from '@/lib/prefs'
 import { cn } from '@/lib/utils'
+import { useTheme } from '@/components/theme-provider'
 
 
 
@@ -38,6 +41,7 @@ const fontSizeOptions: { value: FontSize; label: string; hint: string; arabicPre
 
 export function SettingsPanel() {
   const { playbackRate, setPlaybackRate, repeat, toggleRepeat, currentReciter, setReciter } = usePlayer()
+  const { isDark, toggle: toggleTheme } = useTheme()
 
   const [mounted, setMounted] = useState(false)
   const [activeLangCode, setActiveLangCode] = useState<string>('')
@@ -106,6 +110,94 @@ export function SettingsPanel() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* ------------------------------------------------------------------ */}
+      {/* Appearance — Theme                                                  */}
+      {/* ------------------------------------------------------------------ */}
+      <section aria-labelledby="theme-heading" className="rounded-xl border border-border bg-card p-5 sm:p-6">
+        <div className="flex items-center gap-2 mb-1">
+          <Sun className="size-4 text-muted-foreground" aria-hidden="true" />
+          <h2 id="theme-heading" className="text-base font-semibold sm:text-lg">Appearance</h2>
+        </div>
+        <p className="text-sm leading-relaxed text-muted-foreground mb-5">
+          TILAWA defaults to a clean light theme. Switch to dark mode for nighttime reading.
+        </p>
+
+        {/* Theme cards */}
+        <div role="radiogroup" aria-label="App theme" className="grid grid-cols-2 gap-3">
+          {/* Light */}
+          <button
+            type="button"
+            role="radio"
+            aria-checked={!isDark}
+            onClick={() => isDark && toggleTheme()}
+            className={cn(
+              'flex flex-col items-start gap-3 rounded-xl border p-4 text-start transition-all',
+              !isDark
+                ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40',
+            )}
+          >
+            {/* Mini preview */}
+            <div className="flex w-full flex-col gap-1.5 rounded-lg border border-border bg-white p-2.5 shadow-sm">
+              <div className="h-1.5 w-3/4 rounded bg-slate-200" />
+              <div className="h-1.5 w-1/2 rounded bg-slate-100" />
+              <div className="mt-1 flex gap-1">
+                <div className="h-5 w-5 rounded bg-indigo-100" />
+                <div className="h-5 flex-1 rounded bg-slate-100" />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Sun className="size-4 text-amber-500" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-semibold text-foreground">Light</p>
+                <p className="text-xs text-muted-foreground">Default · Calm parchment</p>
+              </div>
+            </div>
+            {!isDark && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                <Check className="size-3" aria-hidden="true" /> Active
+              </span>
+            )}
+          </button>
+
+          {/* Dark */}
+          <button
+            type="button"
+            role="radio"
+            aria-checked={isDark}
+            onClick={() => !isDark && toggleTheme()}
+            className={cn(
+              'flex flex-col items-start gap-3 rounded-xl border p-4 text-start transition-all',
+              isDark
+                ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40',
+            )}
+          >
+            {/* Mini preview */}
+            <div className="flex w-full flex-col gap-1.5 rounded-lg border border-slate-700 bg-slate-900 p-2.5 shadow-sm">
+              <div className="h-1.5 w-3/4 rounded bg-slate-700" />
+              <div className="h-1.5 w-1/2 rounded bg-slate-800" />
+              <div className="mt-1 flex gap-1">
+                <div className="h-5 w-5 rounded bg-indigo-900" />
+                <div className="h-5 flex-1 rounded bg-slate-800" />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Moon className="size-4 text-indigo-400" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-semibold text-foreground">Dark</p>
+                <p className="text-xs text-muted-foreground">Night sky · Easy on eyes</p>
+              </div>
+            </div>
+            {isDark && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                <Check className="size-3" aria-hidden="true" /> Active
+              </span>
+            )}
+          </button>
+        </div>
+      </section>
+
       {/* ------------------------------------------------------------------ */}
       {/* Unified Audio Section: Reciters & Translators                       */}
       {/* ------------------------------------------------------------------ */}
