@@ -25,7 +25,7 @@ export default function DuaLibraryPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-gradient-to-r from-primary/5 via-primary/2 to-transparent">
-        <div className="mx-auto max-w-7xl px-4 py-8 md:px-8">
+        <div className="mx-auto max-w-4xl px-4 py-6 md:px-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="text-4xl">🤲</div>
             <div>

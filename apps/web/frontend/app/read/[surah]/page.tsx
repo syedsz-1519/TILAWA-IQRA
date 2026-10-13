@@ -26,7 +26,7 @@ export default async function SurahReaderPage({ params }: Props) {
 
   return (
     <>
-      <main className="pb-16 pt-8">
+      <main className="page-bottom-safe pt-8">
         <header className="mx-auto mb-6 w-full max-w-3xl px-4 text-center">
           <p className="text-sm font-medium text-primary">
             Surah {s.number} &middot; {s.revelationPlace} &middot; {s.ayahCount} ayahs

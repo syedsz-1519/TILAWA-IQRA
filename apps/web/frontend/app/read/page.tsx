@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function ReadQuranPage() {
   return (
     <>
-      <main className="pb-32">
+      <main className="page-bottom-safe">
         <PageHero
           icon={BookOpenText}
           eyebrow="Read Quran"

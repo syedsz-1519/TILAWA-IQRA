@@ -9,7 +9,7 @@ export default function TajweedPage() {
   const [activeTab, setActiveTab] = useState<'learn' | 'practice'>('learn')
 
   return (
-    <main className="min-h-screen bg-background pb-16">
+    <main className="min-h-screen bg-background page-bottom-safe">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 py-6">

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function SettingsPage() {
   return (
     <>
-      <main className="pb-32">
+      <main className="page-bottom-safe">
         <PageHero
           icon={Settings}
           eyebrow="Settings"
