@@ -1,5 +1,6 @@
 var R=require("../../chunks/ssr/[turbopack]_runtime.js")("server/app/hadith-dua/page.js")
-R.c("server/chunks/ssr/[root-of-the-server]__0ta5zyh._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0fqo7-m._.js")
+R.c("server/chunks/ssr/0iem_next_dist_0q1wq7l._.js")
 R.c("server/chunks/ssr/0iem_next_dist_esm_build_templates_app-page_13axf95.js")
 R.c("server/chunks/ssr/[root-of-the-server]__05vg4x-._.js")
 R.c("server/chunks/ssr/[root-of-the-server]__01t2j8k._.js")
