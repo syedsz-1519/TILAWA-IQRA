@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     siteName: 'TILAWA',
     images: [
       {
-        url: '/images/og-image.png',
+        url: '/images/og-image.svg',
         width: 1200,
         height: 630,
         alt: 'TILAWA – From Iqra to Tilawa',
@@ -96,6 +96,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased font-sans overflow-x-hidden">
+        {/* Skip-to-content — keyboard accessibility */}
+        <a href="#main-content" className="skip-link">Skip to main content</a>
         <CacheClearer />
         <ErrorBoundary
           context={{

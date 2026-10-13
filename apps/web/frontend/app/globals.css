@@ -661,3 +661,75 @@ main > section {
     translate: none !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   CLUSTER 5 — ACCESSIBILITY & COMPAT
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/*
+ * font-arabic — legacy utility class used across many pages.
+ * Maps to our font-serif (Amiri/Noto Naskh Arabic) so Arabic text renders
+ * correctly everywhere without touching every file.
+ */
+.font-arabic {
+  font-family: var(--font-serif);
+  line-height: 1.9;
+}
+
+/* ── High-contrast focus ring for keyboard navigation ── */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Suppress focus ring for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── Skip-to-content link (accessibility) ── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: top 0.1s;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* ── Improved color contrast for muted text on light bg ── */
+:root .text-muted-foreground {
+  color: oklch(0.42 0.015 265);   /* ≥ 4.5:1 on white */
+}
+
+.dark .text-muted-foreground {
+  color: oklch(0.68 0.018 265);   /* ≥ 4.5:1 on dark bg */
+}
+
+/* ── Smooth scrolling (off when reduced motion) ── */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ── Print styles ── */
+@media print {
+  .fixed, nav, aside, [role="navigation"] { display: none !important; }
+  .page-bottom-safe { padding-bottom: 0 !important; }
+}

@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0e0c1a"/>
+
+  <!-- Subtle geometric pattern top-right -->
+  <g opacity="0.06" stroke="#c9a227" stroke-width="1" fill="none">
+    <!-- 8-pointed star grid (3x2 cells, 200px unit) -->
+    <rect x="700" y="-50" width="140" height="140"/>
+    <rect x="770" y="-50" width="140" height="140" transform="rotate(45 840 20)"/>
+    <rect x="900" y="-50" width="140" height="140"/>
+    <rect x="970" y="-50" width="140" height="140" transform="rotate(45 1040 20)"/>
+    <rect x="1100" y="-50" width="140" height="140"/>
+    <rect x="700" y="130" width="140" height="140"/>
+    <rect x="900" y="130" width="140" height="140"/>
+    <rect x="1100" y="130" width="140" height="140"/>
+  </g>
+
+  <!-- Left accent bar -->
+  <rect x="80" y="180" width="4" height="270" rx="2" fill="#c9a227"/>
+
+  <!-- Arabic Bismillah display text -->
+  <text
+    x="600" y="140"
+    text-anchor="middle"
+    font-family="serif"
+    font-size="42"
+    fill="#c9a227"
+    opacity="0.7"
+  >بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</text>
+
+  <!-- Brand name -->
+  <text
+    x="120" y="290"
+    font-family="serif"
+    font-weight="700"
+    font-size="96"
+    letter-spacing="16"
+    fill="#f0ede8"
+  >TILAWA</text>
+
+  <!-- Tagline -->
+  <text
+    x="120" y="355"
+    font-family="sans-serif"
+    font-size="28"
+    fill="#8a8099"
+    letter-spacing="4"
+  >FROM IQRA TO TILAWA</text>
+
+  <!-- Description -->
+  <text
+    x="120" y="420"
+    font-family="sans-serif"
+    font-size="22"
+    fill="#c0bbd0"
+  >Read · Listen · Tajweed · Dua · Hadith · Qibla</text>
+
+  <!-- Bottom gradient line -->
+  <defs>
+    <linearGradient id="gl" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%"   stop-color="#4a3a8a"/>
+      <stop offset="50%"  stop-color="#c9a227"/>
+      <stop offset="100%" stop-color="#4a3a8a"/>
+    </linearGradient>
+  </defs>
+  <rect x="80" y="510" width="1040" height="2" fill="url(#gl)" rx="1"/>
+
+  <!-- URL -->
+  <text
+    x="120" y="555"
+    font-family="sans-serif"
+    font-size="18"
+    fill="#5a5470"
+  >tilawaa.vercel.app</text>
+</svg>

@@ -205,6 +205,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         - Desktop: no extra padding needed (sidebar handles layout)
       */}
       <main
+        id="main-content"
         className="min-w-0 flex-1 lg:pt-0"
         style={{
           paddingTop: 'calc(var(--header-h) + env(safe-area-inset-top, 0px))',
