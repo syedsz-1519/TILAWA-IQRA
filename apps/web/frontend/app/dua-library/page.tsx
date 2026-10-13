@@ -94,8 +94,7 @@ export default function DuaLibraryPage() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="mx-auto max-w-7xl px-4 py-8 md:px-8">
+      <div className="mx-auto max-w-4xl px-4 py-6 page-bottom-safe md:px-6">
         {/* Featured Tab */}
         {activeTab === 'featured' && (
           <div>
@@ -179,7 +178,7 @@ export default function DuaLibraryPage() {
                   <h3 className="font-semibold mb-1 group-hover:text-primary transition-colors">
                     {category.name}
                   </h3>
-                  <p className="text-xs font-arabic text-muted-foreground mb-2">{category.arabicName}</p>
+                  <p className="arabic-ui text-muted-foreground mb-2" lang="ar" dir="rtl">{category.arabicName}</p>
                   <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{category.description}</p>
                   <div className="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                     Explore →

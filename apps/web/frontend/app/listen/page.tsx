@@ -100,7 +100,7 @@ export default function ListenPage() {
   const progressPercent = duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 pb-36">
+    <div className="page-container py-6 page-bottom-safe">
       {/* Top Header */}
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6">
         <div>
@@ -186,7 +186,7 @@ export default function ListenPage() {
               <span
                 lang="ar"
                 dir="rtl"
-                className="block font-serif text-5xl font-bold tracking-wide text-primary sm:text-6xl drop-shadow-xs"
+                className="surah-arabic-title block text-primary drop-shadow-xs"
               >
                 {activeSurah.nameArabic}
               </span>
@@ -243,14 +243,15 @@ export default function ListenPage() {
               </div>
             </div>
 
-            {/* Primary Audio Player Controls */}
-            <div className="mt-6 flex items-center justify-center gap-3 sm:gap-5">
+            {/* Primary Audio Player Controls — flex-wrap to handle 360px */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
               {/* Loop button */}
               <button
                 type="button"
                 onClick={toggleRepeat}
                 title={repeat ? 'Surah repeat: ON' : 'Surah repeat: OFF'}
-                className={`flex size-10 items-center justify-center rounded-full border transition-colors ${
+                aria-pressed={repeat}
+                className={`tap-target rounded-full border transition-colors ${
                   repeat
                     ? 'border-primary bg-primary/15 text-primary'
                     : 'border-border text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -264,7 +265,7 @@ export default function ListenPage() {
                 type="button"
                 onClick={previous}
                 title="Previous Surah"
-                className="flex size-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95"
+                className="tap-target rounded-full border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95"
               >
                 <ChevronLeft className="size-5" />
               </button>
@@ -274,7 +275,7 @@ export default function ListenPage() {
                 type="button"
                 onClick={() => seek(Math.max(0, currentTime - 10))}
                 title="Rewind 10 seconds"
-                className="flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                className="tap-target rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
               >
                 <RotateCcw className="size-4" />
               </button>
@@ -284,7 +285,7 @@ export default function ListenPage() {
                 type="button"
                 onClick={togglePlay}
                 aria-label={isPlaying ? 'Pause recitation' : 'Play recitation'}
-                className="flex size-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95"
+                className="flex size-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95 press-effect"
               >
                 {isLoading ? (
                   <Loader2 className="size-7 animate-spin" />
@@ -299,8 +300,8 @@ export default function ListenPage() {
               <button
                 type="button"
                 onClick={stop}
-                title="Stop audio completely (روکیں)"
-                className="flex size-10 items-center justify-center rounded-full border border-destructive/40 bg-destructive/10 text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground active:scale-95"
+                title="Stop audio completely"
+                className="tap-target rounded-full border border-destructive/40 bg-destructive/10 text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground active:scale-95"
               >
                 <Square className="size-4 fill-current" />
               </button>
@@ -310,7 +311,7 @@ export default function ListenPage() {
                 type="button"
                 onClick={() => seek(Math.min(duration || Infinity, currentTime + 10))}
                 title="Fast forward 10 seconds"
-                className="flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                className="tap-target rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
               >
                 <RotateCw className="size-4" />
               </button>
@@ -320,7 +321,7 @@ export default function ListenPage() {
                 type="button"
                 onClick={next}
                 title="Next Surah"
-                className="flex size-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95"
+                className="tap-target rounded-full border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95"
               >
                 <ChevronRight className="size-5" />
               </button>
@@ -334,7 +335,7 @@ export default function ListenPage() {
                   setPlaybackRate(nextRate)
                 }}
                 title="Playback speed"
-                className="flex size-10 items-center justify-center rounded-full border border-border text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="tap-target min-w-[3rem] rounded-full border border-border text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
                 {playbackRate}x
               </button>

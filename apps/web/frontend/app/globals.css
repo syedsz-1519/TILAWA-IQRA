@@ -488,3 +488,83 @@
 [lang="ar"].quran-text {
   font-family: var(--font-quran);
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   GLOBAL MOBILE OVERFLOW GUARD
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Prevent any direct child from breaking out horizontally */
+#__next,
+[data-nextjs-scroll-focus-boundary] {
+  overflow-x: hidden;
+}
+
+/* Ensure images never overflow their containers */
+img,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Arabic text in cards — prevent very long words from breaking layout */
+[lang="ar"],
+[dir="rtl"] {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Tables — make them scrollable on small screens */
+table {
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+/* Scrubber / range inputs — better mobile touch */
+input[type="range"] {
+  touch-action: none;
+  cursor: pointer;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   LISTEN PAGE — deck card Arabic title responsive clamp
+   ══════════════════════════════════════════════════════════════════════════════ */
+.surah-arabic-title {
+  font-size: clamp(2.5rem, 10vw, 4rem);
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PAGE HERO — responsive padding
+   ══════════════════════════════════════════════════════════════════════════════ */
+.page-hero-inner {
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 5vw, 4rem) max(1rem, env(safe-area-inset-left, 0px) + 1rem);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   GLOBAL PAGE ROOT FIXES
+   Applied so we don't have to edit every page individually.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/*
+ * Any element with min-h-screen inside the app shell gets upgraded to dvh.
+ * The [data-nextjs-scroll-focus-boundary] selector targets Next.js page roots.
+ */
+[data-nextjs-scroll-focus-boundary] > * {
+  min-height: 100dvh;
+}
+
+/*
+ * Ensure pages (direct children of main that are div wrappers common in this
+ * codebase) never overflow horizontally.
+ */
+main > div,
+main > section {
+  overflow-x: hidden;
+}

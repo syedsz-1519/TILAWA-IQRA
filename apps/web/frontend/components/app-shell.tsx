@@ -89,7 +89,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                       href={item.href}
                       onClick={onNavigate}
                       aria-current={active ? 'page' : undefined}
-                      className={`flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition-colors ${
+                      className={`flex min-h-[44px] items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition-colors ${
                         active
                           ? 'border border-primary/40 bg-primary/10 font-medium text-primary'
                           : 'border border-transparent text-foreground/80 hover:bg-muted hover:text-foreground'
@@ -111,7 +111,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         <Link
           href={settingsItem.href}
           onClick={onNavigate}
-          className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors ${
+          className={`flex min-h-[44px] items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors ${
             isActive(settingsItem.href)
               ? 'border-primary/40 bg-primary/10 font-medium text-primary'
               : 'border-border text-foreground/80 hover:bg-muted hover:text-foreground'

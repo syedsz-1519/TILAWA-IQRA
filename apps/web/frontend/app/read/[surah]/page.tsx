@@ -28,13 +28,13 @@ export default async function SurahReaderPage({ params }: Props) {
     <>
       <main className="page-bottom-safe pt-8">
         <header className="mx-auto mb-6 w-full max-w-3xl px-4 text-center">
-          <p className="text-sm font-medium text-primary">
+          <p className="text-xs font-medium text-primary uppercase tracking-widest">
             Surah {s.number} &middot; {s.revelationPlace} &middot; {s.ayahCount} ayahs
           </p>
-          <h1 className="mt-1 text-3xl font-semibold text-foreground text-balance">
+          <h1 className="mt-1 text-fluid-2xl font-semibold text-foreground text-balance">
             {s.nameTransliterated}
           </h1>
-          <p lang="ar" dir="rtl" className="mt-2 text-4xl text-primary">
+          <p lang="ar" dir="rtl" className="mt-2 text-fluid-3xl text-primary font-serif">
             {s.nameArabic}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">{s.nameTranslated}</p>

@@ -136,9 +136,13 @@ export default function HomePage() {
         <div
           className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
           onClick={() => setShowAyahPopup(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Ayah actions"
         >
           <div
-            className="absolute bottom-0 left-0 right-0 max-h-[80vh] overflow-y-auto rounded-t-2xl border-t border-border bg-background p-6 md:left-auto md:right-auto md:top-1/2 md:max-w-2xl md:-translate-y-1/2 md:rounded-2xl md:border"
+            className="absolute bottom-0 left-0 right-0 max-h-[80dvh] overflow-y-auto rounded-t-2xl border-t border-border bg-background p-6 md:left-auto md:right-auto md:top-1/2 md:max-w-2xl md:-translate-y-1/2 md:rounded-2xl md:border"
+            style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-6">
@@ -148,28 +152,27 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Placeholder for ayah actions */}
-            <div className="space-y-4">
-              <button className="w-full rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-muted">
-                🔊 Listen
-              </button>
-              <button className="w-full rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-muted">
-                📖 Translation
-              </button>
-              <button className="w-full rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-muted">
-                📚 Tafseer
-              </button>
-              <button className="w-full rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-muted">
-                📤 Share
-              </button>
-              <button className="w-full rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-muted">
-                💾 Save
-              </button>
+            <div className="space-y-3">
+              {[
+                { emoji: '🔊', label: 'Listen' },
+                { emoji: '📖', label: 'Translation' },
+                { emoji: '📚', label: 'Tafseer' },
+                { emoji: '📤', label: 'Share' },
+                { emoji: '💾', label: 'Save' },
+              ].map(({ emoji, label }) => (
+                <button
+                  key={label}
+                  className="flex min-h-[52px] w-full items-center gap-3 rounded-xl border border-border bg-card px-4 text-left transition-colors hover:bg-muted press-effect"
+                >
+                  <span className="text-xl" aria-hidden="true">{emoji}</span>
+                  <span className="font-medium">{label}</span>
+                </button>
+              ))}
             </div>
 
             <button
               onClick={() => setShowAyahPopup(false)}
-              className="mt-6 w-full rounded-lg border border-border bg-muted px-4 py-3 font-semibold transition-colors hover:bg-muted/80"
+              className="mt-5 flex min-h-[52px] w-full items-center justify-center rounded-xl border border-border bg-muted px-4 font-semibold transition-colors hover:bg-muted/80 press-effect"
             >
               Close
             </button>
