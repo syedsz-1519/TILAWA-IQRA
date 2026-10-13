@@ -1,200 +1,209 @@
-// TILAWA Service Worker for Offline Quran Reading
-const CACHE_VERSION = 'tilawa-quran-v2'
-const RUNTIME_CACHE = 'tilawa-runtime-v2'
-const API_CACHE = 'tilawa-quran-api-v2'
+/**
+ * TILAWA Service Worker — v3
+ *
+ * Strategy overview:
+ * ─────────────────────────────────────────────────────────────────────────────
+ *  /_next/static/**  → Cache-first (immutable hashed assets, long-lived)
+ *  /*.woff2 / fonts  → Cache-first (fonts never change)
+ *  quran API (CDN)   → Stale-while-revalidate (serve cache, update in bg)
+ *  Navigation (.html)→ Network-first, fall back to /offline if network fails
+ *  Everything else   → Network-first, no cache
+ *
+ * We do NOT precache HTML pages — they reference hashed JS chunks that change
+ * on every deploy. Caching stale HTML causes blank screens offline.
+ * Instead we cache API data and static assets so Quran text works offline.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
 
-// Core surah pages & essential assets to precache for offline reading
-const PRECACHE_URLS = [
-  '/',
-  '/read',
-  '/read/1',   // Al-Fatihah
-  '/read/36',  // Ya-Sin
-  '/read/55',  // Ar-Rahman
-  '/read/67',  // Al-Mulk
-  '/read/112', // Al-Ikhlas
-  '/read/113', // Al-Falaq
-  '/read/114', // An-Nas
-  '/icon.svg',
-  '/apple-icon.png',
-  '/manifest.webmanifest',
-]
+const SW_VERSION   = 'tilawa-v3'
+const ASSET_CACHE  = `${SW_VERSION}-assets`   // _next/static + fonts
+const API_CACHE    = `${SW_VERSION}-quran-api` // Quran text CDN
+const OFFLINE_URL  = '/offline'
 
-// Precache essential Quran text API data for core surahs
-const CORE_QURAN_API_URLS = [
-  'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quranuthmanihaf/1.json',
-  'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-abdullahyusufal/1.json',
-  'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/urd-abulaalamaududi/1.json',
-  'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quranuthmanihaf/112.json',
-  'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-abdullahyusufal/112.json',
-  'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quranuthmanihaf/113.json',
-  'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quranuthmanihaf/114.json',
-]
-
-// Install event: cache core surah pages safely
+// ---------------------------------------------------------------------------
+// INSTALL — skip waiting, let the new SW activate immediately
+// ---------------------------------------------------------------------------
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    (async () => {
-      const cache = await caches.open(CACHE_VERSION)
-      const apiCache = await caches.open(API_CACHE)
-
-      // Fetch and cache core pages using allSettled to ensure installation succeeds
-      // even if an individual route is unavailable during build
-      await Promise.allSettled(
-        PRECACHE_URLS.map(async (url) => {
-          try {
-            const response = await fetch(url, { cache: 'no-cache' })
-            if (response && response.ok) {
-              await cache.put(url, response)
-            }
-          } catch (err) {
-            console.warn(`[SW] Precache skipped for ${url}:`, err)
-          }
-        }),
-      )
-
-      // Precache core Quran text APIs
-      await Promise.allSettled(
-        CORE_QURAN_API_URLS.map(async (url) => {
-          try {
-            const response = await fetch(url, { mode: 'cors' })
-            if (response && response.ok) {
-              await apiCache.put(url, response)
-            }
-          } catch (err) {
-            console.warn(`[SW] Quran API precache skipped for ${url}:`, err)
-          }
-        }),
-      )
-
-      await self.skipWaiting()
-    })(),
+    caches.open(ASSET_CACHE).then(async (cache) => {
+      // Pre-cache only static assets we know exist
+      await cache.addAll([
+        '/offline',          // our offline fallback page
+        '/icon.svg',
+        '/apple-icon.png',
+        '/manifest.webmanifest',
+        '/images/tilawa-logo.jpeg',
+      ]).catch(() => {
+        // If any static asset 404s (e.g. during CI), don't block installation
+      })
+    })
   )
+  self.skipWaiting()
 })
 
-// Activate event: purge outdated caches and take control
+// ---------------------------------------------------------------------------
+// ACTIVATE — purge old caches, claim all clients
+// ---------------------------------------------------------------------------
 self.addEventListener('activate', (event) => {
-  const currentCaches = [CACHE_VERSION, RUNTIME_CACHE, API_CACHE]
   event.waitUntil(
-    (async () => {
-      const keys = await caches.keys()
-      await Promise.all(
-        keys.map((key) => {
-          if (!currentCaches.includes(key)) {
-            return caches.delete(key)
-          }
-        }),
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter((k) => k !== ASSET_CACHE && k !== API_CACHE)
+          .map((k) => caches.delete(k))
       )
-      await self.clients.claim()
-    })(),
+    ).then(() => self.clients.claim())
   )
 })
 
-// Fetch event: handle offline reading and intelligent caching
+// ---------------------------------------------------------------------------
+// FETCH — request routing
+// ---------------------------------------------------------------------------
 self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
 
-  // Only handle GET requests
-  if (request.method !== 'GET') {
+  // Only handle GET
+  if (request.method !== 'GET') return
+
+  // ── 1. Hashed Next.js static assets → Cache-first (immutable) ────────────
+  if (url.pathname.startsWith('/_next/static/')) {
+    event.respondWith(cacheFirst(request, ASSET_CACHE))
     return
   }
 
-  // 1. Quran Translation & Arabic text API requests (jsdelivr CDN)
-  // Use Stale-While-Revalidate: return cache instantly for offline reading, update in background
-  if (url.hostname.includes('jsdelivr.net') && url.pathname.includes('/editions/')) {
-    event.respondWith(
-      (async () => {
-        const apiCache = await caches.open(API_CACHE)
-        const cachedResponse = await apiCache.match(request)
-
-        const networkFetch = fetch(request)
-          .then(async (networkResponse) => {
-            if (networkResponse && networkResponse.ok) {
-              await apiCache.put(request, networkResponse.clone())
-            }
-            return networkResponse
-          })
-          .catch(() => null)
-
-        return cachedResponse || (await networkFetch) || new Response(
-          JSON.stringify({ error: 'Offline - content not yet cached' }),
-          { status: 503, headers: { 'Content-Type': 'application/json' } },
-        )
-      })(),
-    )
-    return
-  }
-
-  // 2. Navigation requests for HTML pages (including /read and /read/*)
-  // Use Network-First with Cache fallback for real-time updates while online,
-  // falling back cleanly to cached surah pages when offline
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      (async () => {
-        try {
-          const networkResponse = await fetch(request)
-          if (networkResponse && networkResponse.ok) {
-            const cache = await caches.open(RUNTIME_CACHE)
-            // Cache the visited surah page for future offline reading
-            cache.put(request, networkResponse.clone())
-          }
-          return networkResponse
-        } catch (error) {
-          // Network failed: attempt to match exact page from caches
-          const cachedResponse =
-            (await caches.match(request)) ||
-            (await caches.match(url.pathname))
-
-          if (cachedResponse) {
-            return cachedResponse
-          }
-
-          // Fallback to cached Surah directory or root
-          const fallback =
-            (await caches.match('/read')) ||
-            (await caches.match('/'))
-
-          if (fallback) {
-            return fallback
-          }
-
-          return new Response(
-            '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Offline - TILAWA</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;"><h1>You are currently offline</h1><p>Please connect to the internet to browse new Surahs, or return to <a href="/read">cached surahs</a>.</p></body></html>',
-            { headers: { 'Content-Type': 'text/html' } },
-          )
-        }
-      })(),
-    )
-    return
-  }
-
-  // 3. Static assets: _next/static, css, fonts, images
-  // Cache-First strategy
+  // ── 2. Fonts (woff2 / ttf / Google Fonts) → Cache-first ─────────────────
   if (
-    url.pathname.startsWith('/_next/static/') ||
     url.pathname.endsWith('.woff2') ||
-    url.pathname.endsWith('.png') ||
-    url.pathname.endsWith('.svg') ||
-    url.pathname.endsWith('.ico')
+    url.pathname.endsWith('.woff') ||
+    url.hostname === 'fonts.gstatic.com' ||
+    url.hostname === 'fonts.googleapis.com'
   ) {
-    event.respondWith(
-      (async () => {
-        const cached = await caches.match(request)
-        if (cached) {
-          return cached
-        }
-        try {
-          const networkResponse = await fetch(request)
-          if (networkResponse && networkResponse.ok) {
-            const cache = await caches.open(RUNTIME_CACHE)
-            cache.put(request, networkResponse.clone())
-          }
-          return networkResponse
-        } catch {
-          return cached || new Response('', { status: 404 })
-        }
-      })(),
-    )
+    event.respondWith(cacheFirst(request, ASSET_CACHE))
     return
+  }
+
+  // ── 3. Local static files (icons, images, manifest) → Cache-first ────────
+  if (
+    url.origin === self.location.origin && (
+      url.pathname.endsWith('.png') ||
+      url.pathname.endsWith('.svg') ||
+      url.pathname.endsWith('.ico') ||
+      url.pathname.endsWith('.jpeg') ||
+      url.pathname.endsWith('.jpg') ||
+      url.pathname === '/manifest.webmanifest'
+    )
+  ) {
+    event.respondWith(cacheFirst(request, ASSET_CACHE))
+    return
+  }
+
+  // ── 4. Quran text API (jsdelivr / alquran.cloud) → Stale-while-revalidate ─
+  if (
+    url.hostname.includes('jsdelivr.net') ||
+    url.hostname.includes('alquran.cloud')
+  ) {
+    event.respondWith(staleWhileRevalidate(request, API_CACHE))
+    return
+  }
+
+  // ── 5. Navigation requests (HTML pages) → Network-first, offline fallback ─
+  if (request.mode === 'navigate') {
+    event.respondWith(networkFirstNavigate(request))
+    return
+  }
+
+  // ── 6. Everything else → pass through ─────────────────────────────────────
+})
+
+// ---------------------------------------------------------------------------
+// Strategies
+// ---------------------------------------------------------------------------
+
+/** Cache-first: return from cache immediately; only hit network if not cached. */
+async function cacheFirst(request, cacheName) {
+  const cache  = await caches.open(cacheName)
+  const cached = await cache.match(request)
+  if (cached) return cached
+
+  try {
+    const fresh = await fetch(request)
+    if (fresh && fresh.ok) cache.put(request, fresh.clone())
+    return fresh
+  } catch {
+    return new Response('', { status: 504 })
+  }
+}
+
+/** Stale-while-revalidate: serve from cache instantly, update in background. */
+async function staleWhileRevalidate(request, cacheName) {
+  const cache  = await caches.open(cacheName)
+  const cached = await cache.match(request)
+
+  const networkFetch = fetch(request).then((fresh) => {
+    if (fresh && fresh.ok) cache.put(request, fresh.clone())
+    return fresh
+  }).catch(() => null)
+
+  return cached || await networkFetch || new Response(
+    JSON.stringify({ error: 'Offline — Quran data not yet cached' }),
+    { status: 503, headers: { 'Content-Type': 'application/json' } }
+  )
+}
+
+/** Network-first for navigation: try network, fall back to /offline page. */
+async function networkFirstNavigate(request) {
+  try {
+    const fresh = await fetch(request)
+    // Cache successful navigation responses in asset cache
+    if (fresh && fresh.ok) {
+      const cache = await caches.open(ASSET_CACHE)
+      cache.put(request, fresh.clone())
+    }
+    return fresh
+  } catch {
+    // Network failed — try exact match, then the offline page
+    const cached = await caches.match(request)
+    if (cached) return cached
+
+    const offline = await caches.match(OFFLINE_URL)
+    if (offline) return offline
+
+    // Last resort inline fallback
+    return new Response(
+      `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0e0c1a">
+  <title>TILAWA — Offline</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,sans-serif;background:#0e0c1a;color:#f0ede8;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;gap:1.5rem}
+    h1{font-size:clamp(1.5rem,5vw,2rem);font-weight:700}
+    p{color:#8a8099;max-width:320px;line-height:1.6;font-size:.9rem}
+    a{display:inline-block;margin-top:.5rem;padding:.75rem 2rem;background:#c9a227;color:#0e0c1a;border-radius:.75rem;text-decoration:none;font-weight:600;font-size:.875rem}
+    .arabic{font-size:2rem;opacity:.5;margin-bottom:.5rem}
+  </style>
+</head>
+<body>
+  <p class="arabic" lang="ar">بِسْمِ اللَّهِ</p>
+  <h1>You're offline</h1>
+  <p>Connect to the internet to read and listen to the Quran. Previously visited pages and Quran API responses are available below.</p>
+  <a href="/read">Open Cached Surahs</a>
+</body>
+</html>`,
+      { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+    )
+  }
+}
+
+// ---------------------------------------------------------------------------
+// MESSAGE — handle skipWaiting from update banner
+// ---------------------------------------------------------------------------
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting()
   }
 })
