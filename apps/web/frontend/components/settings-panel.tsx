@@ -18,9 +18,9 @@ import { usePlayer } from '@/components/player/player-provider'
 import { DEFAULT_RECITER, RECITERS } from '@/lib/quran'
 import {
   FEATURED_TRANSLATORS,
-  QURAN_LANGUAGES,
+  ENABLED_EDITIONS,
   UPCOMING_LANGUAGES,
-  type QuranLanguage,
+  type TranslationEdition,
   type UpcomingLanguage,
 } from '@/lib/quran-languages'
 import { KEYS, EVENTS, getFontSize, setFontSize, applyFontSize, type FontSize } from '@/lib/prefs'
@@ -55,7 +55,7 @@ export function SettingsPanel() {
 
     // Load saved translation
     const savedLang = window.localStorage.getItem(KEYS.LANG)
-    if (savedLang && QURAN_LANGUAGES.some((l) => l.code === savedLang)) {
+    if (savedLang && ENABLED_EDITIONS.some((l) => l.id === savedLang)) {
       setActiveLangCode(savedLang)
     } else {
       setActiveLangCode(FEATURED_TRANSLATORS[0].code)
@@ -80,14 +80,15 @@ export function SettingsPanel() {
 
   // Filter working languages by search query
   const filteredWorkingLanguages = useMemo(() => {
-    if (!searchQuery.trim()) return QURAN_LANGUAGES
+    if (!searchQuery.trim()) return ENABLED_EDITIONS
     const q = searchQuery.toLowerCase().trim()
-    return QURAN_LANGUAGES.filter(
-      (lang) =>
-        lang.label.toLowerCase().includes(q) ||
-        lang.nativeLabel.toLowerCase().includes(q) ||
-        lang.translator.toLowerCase().includes(q) ||
-        (lang.note && lang.note.toLowerCase().includes(q)),
+    return ENABLED_EDITIONS.filter(
+      (e) =>
+        e.label.toLowerCase().includes(q) ||
+        e.nativeLabel.toLowerCase().includes(q) ||
+        e.translator.toLowerCase().includes(q) ||
+        e.langName.toLowerCase().includes(q) ||
+        (e.note && e.note.toLowerCase().includes(q)),
     )
   }, [searchQuery])
 
@@ -237,7 +238,7 @@ export function SettingsPanel() {
                   )}
                 >
                   <Sparkles className="size-3" />
-                  <span>Active & Verified ({QURAN_LANGUAGES.length})</span>
+                  <span>Active & Verified ({ENABLED_EDITIONS.length})</span>
                 </button>
                 <button
                   type="button"
@@ -275,15 +276,15 @@ export function SettingsPanel() {
                 </p>
 
                 <ul className="flex flex-col gap-2">
-                  {filteredWorkingLanguages.map((t) => {
-                    const isSelected = activeLangCode === t.code
+                  {filteredWorkingLanguages.map((t: TranslationEdition) => {
+                    const isSelected = activeLangCode === t.id
                     return (
-                      <li key={t.code}>
+                      <li key={t.id}>
                         <button
                           type="button"
                           role="radio"
                           aria-checked={isSelected}
-                          onClick={() => selectTranslator(t.code)}
+                          onClick={() => selectTranslator(t.id)}
                           className={cn(
                             'flex w-full items-center justify-between gap-3 rounded-lg border p-3.5 text-start transition-colors sm:p-4',
                             isSelected
@@ -295,7 +296,7 @@ export function SettingsPanel() {
                           <div className="flex min-w-0 flex-col gap-0.5">
                             <div className="flex items-center gap-2">
                               <span className="truncate text-sm font-semibold text-foreground">
-                                {t.label}
+                                {t.langName} — {t.label}
                               </span>
                               {t.note && (
                                 <span className="hidden rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground sm:inline-block">
@@ -320,12 +321,11 @@ export function SettingsPanel() {
                               {t.translationAudioFolder ? (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
                                   <Volume2 className="size-3" aria-hidden="true" />
-                                  <span>Audio Studio</span>
+                                  <span>Audio</span>
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium text-blue-600 dark:text-blue-400">
-                                  <Volume2 className="size-3" aria-hidden="true" />
-                                  <span>Voice Ready</span>
+                                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                                  <span>Text</span>
                                 </span>
                               )}
                               {isSelected ? (
@@ -356,7 +356,7 @@ export function SettingsPanel() {
                 </div>
 
                 <ul className="flex flex-col gap-2">
-                  {filteredUpcomingLanguages.map((item) => (
+                  {filteredUpcomingLanguages.map((item: UpcomingLanguage) => (
                     <li
                       key={item.code}
                       className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background/60 p-3.5 sm:p-4"

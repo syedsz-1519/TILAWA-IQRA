@@ -76,7 +76,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background pb-32">
+    <main className="min-h-dvh bg-background page-bottom-safe">
       <div className="mx-auto max-w-6xl px-4 py-10 md:px-8">
         {/* Heading */}
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">

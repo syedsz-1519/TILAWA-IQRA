@@ -59,8 +59,8 @@ export default function DuaLibraryPage() {
       </div>
 
       {/* Tabs & Search */}
-      <div className="border-b border-border sticky top-0 z-30 bg-background/95 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 md:px-8">
+      <div className="border-b border-border sticky bg-background/95 backdrop-blur z-30" style={{ top: 'calc(var(--header-h) + env(safe-area-inset-top, 0px))' }}>
+        <div className="page-container">
           <div className="flex gap-4 mb-4">
             {(['featured', 'categories'] as const).map((tab) => (
               <button

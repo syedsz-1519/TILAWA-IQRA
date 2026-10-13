@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function MoodPage() {
   return (
     <>
-      <main className="pb-32">
+      <main className="page-bottom-safe">
         <PageHero
           icon={HeartHandshake}
           eyebrow="Mood Verses"

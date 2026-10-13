@@ -16,7 +16,7 @@ export default function TajweedQuizPage() {
 
   return (
     <>
-      <main className="min-h-screen bg-background">
+      <main className="page-bottom-safe">
         <PageHero
           icon={BookOpen}
           eyebrow="Test Your Knowledge"

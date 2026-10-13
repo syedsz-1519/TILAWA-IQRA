@@ -50,7 +50,7 @@ const etiquette = [
 export default function BattlesPage() {
   return (
     <>
-      <main className="pb-32">
+      <main className="page-bottom-safe">
         <PageHero
           icon={Swords}
           eyebrow="Battles — Community Challenges"

@@ -18,18 +18,16 @@ import {
 import { SURAHS } from '@/lib/quran'
 import { usePlayer } from '@/components/player/player-provider'
 import {
-  QURAN_LANGUAGES,
-  DEFAULT_LANGUAGE,
-  getLanguage,
+  ENABLED_EDITIONS,
+  DEFAULT_EDITION_ID,
+  getEdition,
   arabicUrl,
   translationUrl,
   fetchTranslation,
-  ayahAudioUrl,
   ayahAudioUrls,
   translationAudioUrl,
-  translationAudioCredit,
-  hasTranslationAudio,
   type ChapterResponse,
+  type TranslationEdition,
 } from '@/lib/quran-languages'
 import { KEYS, EVENTS } from '@/lib/prefs'
 
@@ -52,15 +50,15 @@ const BISMILLAH =
 export function QuranReader({ surahNumber }: { surahNumber: number }) {
   const surah = SURAHS.find((s) => s.number === surahNumber) ?? SURAHS[0]
   const { playSurah } = usePlayer()
-  const [langCode, setLangCode] = useState(DEFAULT_LANGUAGE)
+  const [langCode, setLangCode] = useState(DEFAULT_EDITION_ID)
   const [mode, setMode] = useState<ReadingMode>('translation')
-  const language = getLanguage(langCode)
+  const language: TranslationEdition = getEdition(langCode)
 
   // Load saved language + mode preferences & listen to global changes
   useEffect(() => {
     const loadPrefs = () => {
       const savedLang = window.localStorage.getItem(KEYS.LANG)
-      if (savedLang && QURAN_LANGUAGES.some((l) => l.code === savedLang)) setLangCode(savedLang)
+      if (savedLang && ENABLED_EDITIONS.some((l) => l.id === savedLang)) setLangCode(savedLang)
       const savedMode = window.localStorage.getItem(KEYS.READING_MODE)
       if (savedMode === 'translation' || savedMode === 'arabic') setMode(savedMode)
     }
@@ -111,11 +109,6 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
       audioRef.current.pause()
       audioRef.current.currentTime = 0
     }
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      try {
-        window.speechSynthesis.cancel()
-      } catch {}
-    }
     continueRef.current = false
     setIsPlaying(false)
     setActiveAyah(null)
@@ -144,95 +137,25 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
         }
       }
 
-      const speakOrAdvance = () => {
-        if (!continueRef.current) {
-          setIsPlaying(false)
-          setActiveAyah(null)
-          return
-        }
-
-        const activeLang = getLanguage(langRef.current)
-        const trList = translationsRef.current
-        const verseTr = trList.find((item) => item.verse === ayah)
-        const textToSpeak = verseTr?.text?.replace(/<[^>]+>/g, '')?.trim()
-
-        if (
-          typeof window !== 'undefined' &&
-          'speechSynthesis' in window &&
-          textToSpeak
-        ) {
-          try {
-            window.speechSynthesis.cancel()
-            const utterance = new SpeechSynthesisUtterance(textToSpeak)
-            if (activeLang.code.startsWith('hi')) {
-              utterance.lang = 'hi-IN'
-            } else if (activeLang.code.startsWith('ur')) {
-              utterance.lang = 'ur-PK'
-            } else if (activeLang.code.startsWith('en')) {
-              utterance.lang = 'en-US'
-            } else if (activeLang.code.startsWith('bn')) {
-              utterance.lang = 'bn-BD'
-            } else if (activeLang.code.startsWith('ta')) {
-              utterance.lang = 'ta-IN'
-            } else if (activeLang.code.startsWith('te')) {
-              utterance.lang = 'te-IN'
-            } else if (activeLang.code.startsWith('mr')) {
-              utterance.lang = 'mr-IN'
-            } else if (activeLang.code.startsWith('gu')) {
-              utterance.lang = 'gu-IN'
-            } else if (activeLang.code.startsWith('ml')) {
-              utterance.lang = 'ml-IN'
-            } else if (activeLang.code.startsWith('fr')) {
-              utterance.lang = 'fr-FR'
-            } else if (activeLang.code.startsWith('es')) {
-              utterance.lang = 'es-ES'
-            } else if (activeLang.code.startsWith('tr')) {
-              utterance.lang = 'tr-TR'
-            } else if (activeLang.code.startsWith('ru')) {
-              utterance.lang = 'ru-RU'
-            } else if (activeLang.code.startsWith('zh')) {
-              utterance.lang = 'zh-CN'
-            } else {
-              utterance.lang = activeLang.direction === 'rtl' ? 'ur-PK' : 'en-US'
-            }
-            utterance.rate = 0.95
-            utterance.onend = () => {
-              if (continueRef.current) advance()
-            }
-            utterance.onerror = () => {
-              if (continueRef.current) advance()
-            }
-            window.speechSynthesis.speak(utterance)
-            return
-          } catch {
-            advance()
-          }
-        } else {
-          advance()
-        }
-      }
-
       const playTranslationThenAdvance = () => {
-        // In Arabic-only mode or when translation audio is disabled, skip translation
+        // Skip translation audio in Arabic-only mode, or when toggle is off
         if (modeRef.current !== 'translation' || !translationAudioRef.current) {
           advance()
           return
         }
 
-        const activeLang = getLanguage(langRef.current)
-        const tAudioUrl = translationAudioUrl(activeLang, surah.number, ayah)
+        const activeEdition = getEdition(langRef.current)
+        const tAudioUrl = translationAudioUrl(activeEdition, surah.number, ayah)
 
         if (tAudioUrl) {
           audio.src = tAudioUrl
           audio.onended = advance
-          audio.onerror = () => {
-            // Audio recording failed, attempt speech synthesis or advance
-            speakOrAdvance()
-          }
-          audio.play().catch(() => speakOrAdvance())
+          // If the audio file is missing, silently move on — never fall back to TTS
+          audio.onerror = () => advance()
+          audio.play().catch(() => advance())
         } else {
-          // No pre-recorded MP3 exists; speak translation text via SpeechSynthesis (e.g. Hindi, regional languages)
-          speakOrAdvance()
+          // No human recording exists for this edition — advance without sound
+          advance()
         }
       }
 
@@ -392,9 +315,9 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
                 onChange={(e) => changeLanguage(e.target.value)}
                 className="rounded-md border border-border bg-card px-2 py-1.5 text-xs text-foreground"
               >
-                {QURAN_LANGUAGES.map((l) => (
-                  <option key={l.code} value={l.code}>
-                    {l.label === l.nativeLabel ? l.label : `${l.label} — ${l.nativeLabel}`}
+                {ENABLED_EDITIONS.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.langName} — {e.label}
                   </option>
                 ))}
               </select>
@@ -516,6 +439,7 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
                   <p
                     dir={language.direction}
                     className={`leading-relaxed text-muted-foreground ${language.direction === 'rtl' ? 'text-right font-serif text-lg' : 'text-pretty'}`}
+                    style={{ fontFamily: language.fontFamily }}
                   >
                     {tr?.text ?? '\u2026'}
                   </p>
@@ -528,8 +452,8 @@ export function QuranReader({ surahNumber }: { surahNumber: number }) {
           <p className="mt-8 text-center text-xs text-muted-foreground">
             {language.note ? `${language.note} \u2014 ` : 'Translation: '}
             {language.translator} &middot; Recitation: Sheikh Yasser Ad-Dussary
-            {mode === 'translation' && hasTranslationAudio(langCode) && translationAudio &&
-              ` \u00b7 Translation audio: ${translationAudioCredit(language)}`}
+            {mode === 'translation' && language.translationAudioFolder && translationAudio &&
+              ` \u00b7 Translation audio: ${language.audioCredit}`}
           </p>
         </>
       )}
