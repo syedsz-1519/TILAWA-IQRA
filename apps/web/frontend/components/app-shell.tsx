@@ -10,11 +10,11 @@ import {
   Headphones,
   Heart,
   Home,
-  Lightbulb,
   Menu,
   X,
 } from 'lucide-react'
 import { navGroups, settingsItem } from '@/lib/navigation'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 // ---------------------------------------------------------------------------
 // Mobile bottom-nav tabs — icon only with label underneath
@@ -106,8 +106,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      {/* Settings */}
-      <div className="border-t border-border p-3">
+      {/* Settings + Theme toggle */}
+      <div className="border-t border-border p-3 space-y-1.5">
         <Link
           href={settingsItem.href}
           onClick={onNavigate}
@@ -120,6 +120,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           <settingsItem.icon className="size-4" aria-hidden="true" />
           <span>Settings</span>
         </Link>
+        {/* Dark mode toggle */}
+        <ThemeToggle showLabel className="w-full justify-start px-3" />
       </div>
     </div>
   )
@@ -170,15 +172,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <span className="font-serif text-lg font-bold tracking-[0.2em] text-primary">TILAWA</span>
         </Link>
 
-        <button
-          type="button"
-          onClick={() => setDrawerOpen((v) => !v)}
-          aria-expanded={drawerOpen}
-          aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
-          className="tap-target rounded-md border border-border text-foreground transition-colors hover:bg-muted press-effect"
-        >
-          {drawerOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+        {/* Right side: theme toggle + hamburger */}
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button
+            type="button"
+            onClick={() => setDrawerOpen((v) => !v)}
+            aria-expanded={drawerOpen}
+            aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+            className="tap-target rounded-md border border-border text-foreground transition-colors hover:bg-muted press-effect"
+          >
+            {drawerOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile full drawer */}

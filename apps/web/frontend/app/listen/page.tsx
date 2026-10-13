@@ -368,8 +368,10 @@ export default function ListenPage() {
 
               {/* Translation picker */}
               <div className="relative flex items-center gap-2">
-                <span className="text-[11px] text-muted-foreground">Translation:</span>
-                <TranslationPicker mode="listen" />
+                <span className="shrink-0 text-[11px] text-muted-foreground">Translation:</span>
+                <div className="relative">
+                  <TranslationPicker mode="listen" />
+                </div>
               </div>
 
               {/* Read-along link */}

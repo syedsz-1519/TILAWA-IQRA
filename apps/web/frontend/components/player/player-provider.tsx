@@ -355,11 +355,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       audio.pause()
       audio.currentTime = 0
     }
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      try {
-        window.speechSynthesis.cancel()
-      } catch {}
-    }
     setCurrentTime(0)
     setIsPlaying(false)
     setIsLoading(false)
@@ -373,11 +368,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     if (audio) {
       audio.pause()
       audio.src = ''
-    }
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      try {
-        window.speechSynthesis.cancel()
-      } catch {}
     }
     currentSurahRef.current = null
     setCurrentSurah(null)
