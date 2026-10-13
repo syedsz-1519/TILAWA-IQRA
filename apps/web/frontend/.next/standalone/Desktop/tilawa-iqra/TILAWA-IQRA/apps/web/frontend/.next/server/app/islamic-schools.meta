@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/islamic-schools/layout,_N_T_/islamic-schools/page,_N_T_/islamic-schools"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/islamic-schools/__PAGE__",
+    "/islamic-schools",
+    "/_index",
+    "/_head"
+  ]
+}
