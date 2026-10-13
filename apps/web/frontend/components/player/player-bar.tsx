@@ -71,14 +71,15 @@ export function PlayerBar() {
     <div
       role="region"
       aria-label="Quran recitation audio player"
-      className="fixed inset-x-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85 shadow-lg lg:bottom-0"
+      className="fixed inset-x-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85 shadow-[var(--shadow-player)]"
       style={{
         /*
-         * On mobile sit above the bottom nav (--bottom-nav-h) + safe-area.
-         * lg:bottom-0 is not needed here since we handle it inline, but
-         * the Tailwind class below overrides on desktop.
+         * Mobile: sit above bottom nav + safe area.
+         * Desktop (lg+): sit flush at the very bottom (no bottom-nav present).
+         * We can't use a Tailwind responsive class here because inline style
+         * always wins — so we use a CSS custom property toggled by a media query.
          */
-        bottom: 'calc(var(--bottom-nav-h, 3.5rem) + env(safe-area-inset-bottom, 0px))',
+        bottom: 'var(--player-bottom-offset)',
       }}
     >
       {/* Error notification banner */}
