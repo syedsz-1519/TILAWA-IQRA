@@ -27,6 +27,7 @@
     "disableStaticImages": false,
     "minimumCacheTTL": 14400,
     "formats": [
+      "image/avif",
       "image/webp"
     ],
     "maximumRedirects": 3,
@@ -41,11 +42,27 @@
         "search": ""
       }
     ],
-    "remotePatterns": [],
+    "remotePatterns": [
+      {
+        "protocol": "https",
+        "hostname": "^(?:^(?:cdn\\.jsdelivr\\.net)$)$",
+        "pathname": "^(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$))(?:(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$)).)*?)\\/?)$"
+      },
+      {
+        "protocol": "https",
+        "hostname": "^(?:^(?:fonts\\.googleapis\\.com)$)$",
+        "pathname": "^(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$))(?:(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$)).)*?)\\/?)$"
+      },
+      {
+        "protocol": "https",
+        "hostname": "^(?:^(?:fonts\\.gstatic\\.com)$)$",
+        "pathname": "^(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$))(?:(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$)).)*?)\\/?)$"
+      }
+    ],
     "qualities": [
       75
     ],
-    "unoptimized": true,
+    "unoptimized": false,
     "customCacheHandler": false,
     "sizes": [
       640,

@@ -49,6 +49,7 @@ self.__SERVER_FILES_MANIFEST={
       "disableStaticImages": false,
       "minimumCacheTTL": 14400,
       "formats": [
+        "image/avif",
         "image/webp"
       ],
       "maximumRedirects": 3,
@@ -63,11 +64,24 @@ self.__SERVER_FILES_MANIFEST={
           "search": ""
         }
       ],
-      "remotePatterns": [],
+      "remotePatterns": [
+        {
+          "protocol": "https",
+          "hostname": "cdn.jsdelivr.net"
+        },
+        {
+          "protocol": "https",
+          "hostname": "fonts.googleapis.com"
+        },
+        {
+          "protocol": "https",
+          "hostname": "fonts.gstatic.com"
+        }
+      ],
       "qualities": [
         75
       ],
-      "unoptimized": true,
+      "unoptimized": false,
       "customCacheHandler": false
     },
     "devIndicators": {

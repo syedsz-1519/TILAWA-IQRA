@@ -1,9 +1,9 @@
 [
   {
     "route": "/sign-in",
-    "firstLoadUncompressedJsBytes": 692722,
+    "firstLoadUncompressedJsBytes": 692740,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -19,9 +19,9 @@
   },
   {
     "route": "/sign-up",
-    "firstLoadUncompressedJsBytes": 692722,
+    "firstLoadUncompressedJsBytes": 692740,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -37,9 +37,9 @@
   },
   {
     "route": "/read/[surah]",
-    "firstLoadUncompressedJsBytes": 676412,
+    "firstLoadUncompressedJsBytes": 676430,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -55,9 +55,9 @@
   },
   {
     "route": "/listen",
-    "firstLoadUncompressedJsBytes": 673007,
+    "firstLoadUncompressedJsBytes": 673025,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -72,9 +72,9 @@
   },
   {
     "route": "/settings",
-    "firstLoadUncompressedJsBytes": 660965,
+    "firstLoadUncompressedJsBytes": 660983,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -89,9 +89,9 @@
   },
   {
     "route": "/home",
-    "firstLoadUncompressedJsBytes": 658128,
+    "firstLoadUncompressedJsBytes": 658146,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -106,9 +106,9 @@
   },
   {
     "route": "/mood",
-    "firstLoadUncompressedJsBytes": 635278,
+    "firstLoadUncompressedJsBytes": 635296,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -123,9 +123,9 @@
   },
   {
     "route": "/tajweed",
-    "firstLoadUncompressedJsBytes": 629358,
+    "firstLoadUncompressedJsBytes": 629376,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -139,9 +139,9 @@
   },
   {
     "route": "/dua-library/[duaId]",
-    "firstLoadUncompressedJsBytes": 620773,
+    "firstLoadUncompressedJsBytes": 620791,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -155,9 +155,9 @@
   },
   {
     "route": "/iqra/tajweed/[category]/[ruleId]",
-    "firstLoadUncompressedJsBytes": 619551,
+    "firstLoadUncompressedJsBytes": 619569,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -171,9 +171,9 @@
   },
   {
     "route": "/dua-library",
-    "firstLoadUncompressedJsBytes": 619206,
+    "firstLoadUncompressedJsBytes": 619224,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -187,9 +187,9 @@
   },
   {
     "route": "/hifz-studio",
-    "firstLoadUncompressedJsBytes": 618190,
+    "firstLoadUncompressedJsBytes": 618208,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -203,9 +203,9 @@
   },
   {
     "route": "/hifz-studio/[deckId]",
-    "firstLoadUncompressedJsBytes": 617963,
+    "firstLoadUncompressedJsBytes": 617981,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -219,9 +219,9 @@
   },
   {
     "route": "/hadith-library/[collectionId]/[hadithId]",
-    "firstLoadUncompressedJsBytes": 617728,
+    "firstLoadUncompressedJsBytes": 617746,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -235,9 +235,9 @@
   },
   {
     "route": "/iqra/tajweed/[category]",
-    "firstLoadUncompressedJsBytes": 617435,
+    "firstLoadUncompressedJsBytes": 617453,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -251,9 +251,9 @@
   },
   {
     "route": "/hadith-library",
-    "firstLoadUncompressedJsBytes": 617222,
+    "firstLoadUncompressedJsBytes": 617240,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -267,9 +267,9 @@
   },
   {
     "route": "/iqra",
-    "firstLoadUncompressedJsBytes": 616925,
+    "firstLoadUncompressedJsBytes": 616943,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -283,9 +283,9 @@
   },
   {
     "route": "/zaid-ai",
-    "firstLoadUncompressedJsBytes": 616636,
+    "firstLoadUncompressedJsBytes": 616654,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -299,9 +299,9 @@
   },
   {
     "route": "/dua-library/category/[categoryId]",
-    "firstLoadUncompressedJsBytes": 616620,
+    "firstLoadUncompressedJsBytes": 616638,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -315,9 +315,9 @@
   },
   {
     "route": "/hadith-library/[collectionId]",
-    "firstLoadUncompressedJsBytes": 616336,
+    "firstLoadUncompressedJsBytes": 616354,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -331,9 +331,9 @@
   },
   {
     "route": "/dashboard",
-    "firstLoadUncompressedJsBytes": 615540,
+    "firstLoadUncompressedJsBytes": 615558,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -347,9 +347,9 @@
   },
   {
     "route": "/library/[surahNumber]",
-    "firstLoadUncompressedJsBytes": 613638,
+    "firstLoadUncompressedJsBytes": 613656,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -363,9 +363,9 @@
   },
   {
     "route": "/library",
-    "firstLoadUncompressedJsBytes": 613102,
+    "firstLoadUncompressedJsBytes": 613120,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -379,9 +379,9 @@
   },
   {
     "route": "/imams",
-    "firstLoadUncompressedJsBytes": 611422,
+    "firstLoadUncompressedJsBytes": 611440,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -395,9 +395,9 @@
   },
   {
     "route": "/islamic-schools",
-    "firstLoadUncompressedJsBytes": 610931,
+    "firstLoadUncompressedJsBytes": 610949,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -411,9 +411,9 @@
   },
   {
     "route": "/khaliphs",
-    "firstLoadUncompressedJsBytes": 610875,
+    "firstLoadUncompressedJsBytes": 610893,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -427,9 +427,9 @@
   },
   {
     "route": "/stories",
-    "firstLoadUncompressedJsBytes": 609597,
+    "firstLoadUncompressedJsBytes": 609615,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -443,9 +443,9 @@
   },
   {
     "route": "/counselor",
-    "firstLoadUncompressedJsBytes": 609402,
+    "firstLoadUncompressedJsBytes": 609420,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -459,9 +459,9 @@
   },
   {
     "route": "/nafs-tracker",
-    "firstLoadUncompressedJsBytes": 607986,
+    "firstLoadUncompressedJsBytes": 608004,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -475,9 +475,9 @@
   },
   {
     "route": "/",
-    "firstLoadUncompressedJsBytes": 603261,
+    "firstLoadUncompressedJsBytes": 603279,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -490,9 +490,9 @@
   },
   {
     "route": "/_not-found",
-    "firstLoadUncompressedJsBytes": 603261,
+    "firstLoadUncompressedJsBytes": 603279,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -505,9 +505,9 @@
   },
   {
     "route": "/battles",
-    "firstLoadUncompressedJsBytes": 603261,
+    "firstLoadUncompressedJsBytes": 603279,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -520,9 +520,9 @@
   },
   {
     "route": "/dua-adhkar",
-    "firstLoadUncompressedJsBytes": 603261,
+    "firstLoadUncompressedJsBytes": 603279,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -535,9 +535,9 @@
   },
   {
     "route": "/hadith-dua",
-    "firstLoadUncompressedJsBytes": 603261,
+    "firstLoadUncompressedJsBytes": 603279,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -550,9 +550,9 @@
   },
   {
     "route": "/hifz",
-    "firstLoadUncompressedJsBytes": 603261,
+    "firstLoadUncompressedJsBytes": 603279,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -565,9 +565,9 @@
   },
   {
     "route": "/history",
-    "firstLoadUncompressedJsBytes": 603261,
+    "firstLoadUncompressedJsBytes": 603279,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -580,9 +580,9 @@
   },
   {
     "route": "/mushaf",
-    "firstLoadUncompressedJsBytes": 603261,
+    "firstLoadUncompressedJsBytes": 603279,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -595,9 +595,9 @@
   },
   {
     "route": "/read",
-    "firstLoadUncompressedJsBytes": 603261,
+    "firstLoadUncompressedJsBytes": 603279,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -610,9 +610,9 @@
   },
   {
     "route": "/read-quran",
-    "firstLoadUncompressedJsBytes": 603261,
+    "firstLoadUncompressedJsBytes": 603279,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
@@ -625,9 +625,9 @@
   },
   {
     "route": "/tajweed-quiz",
-    "firstLoadUncompressedJsBytes": 603261,
+    "firstLoadUncompressedJsBytes": 603279,
     "firstLoadChunkPaths": [
-      ".next\\static\\chunks\\0-1_qtrhfy1cp.js",
+      ".next\\static\\chunks\\161-1qj1v2kfd.js",
       ".next\\static\\chunks\\0ez5pu7vq37u7.js",
       ".next\\static\\chunks\\13qz~8g_3s6kp.js",
       ".next\\static\\chunks\\0si~usqp5d1~r.js",
