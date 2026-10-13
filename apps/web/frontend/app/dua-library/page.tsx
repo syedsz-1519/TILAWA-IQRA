@@ -118,21 +118,21 @@ export default function DuaLibraryPage() {
                           </span>
                         )}
                       </div>
-                      <div className="flex gap-2">
-                        <button className="p-2 rounded hover:bg-muted transition-colors">
+                      <div className="flex gap-1">
+                        <button className="tap-target rounded-lg hover:bg-muted transition-colors" aria-label="Listen to dua">
                           <Volume2 className="h-4 w-4 text-muted-foreground" />
                         </button>
-                        <button className="p-2 rounded hover:bg-muted transition-colors">
+                        <button className="tap-target rounded-lg hover:bg-muted transition-colors" aria-label="Copy dua text">
                           <Copy className="h-4 w-4 text-muted-foreground" />
                         </button>
-                        <button className="p-2 rounded hover:bg-muted transition-colors">
+                        <button className="tap-target rounded-lg hover:bg-muted transition-colors" aria-label="Bookmark dua">
                           <Bookmark className="h-4 w-4 text-muted-foreground" />
                         </button>
                       </div>
                     </div>
 
                     {/* Arabic Text */}
-                    <p className="text-3xl font-arabic text-right leading-relaxed mb-3 text-foreground group-hover:text-primary transition-colors">
+                    <p className="quran-text text-right leading-relaxed mb-3 text-foreground group-hover:text-primary transition-colors" lang="ar" dir="rtl">
                       {dua.arabicText}
                     </p>
 
@@ -168,7 +168,7 @@ export default function DuaLibraryPage() {
         {activeTab === 'categories' && (
           <div>
             <h2 className="text-2xl font-bold mb-6">Browse by Category</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
               {categories.map((category) => (
                 <Link
                   key={category.id}
