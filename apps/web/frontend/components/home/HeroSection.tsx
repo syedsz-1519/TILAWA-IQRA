@@ -47,7 +47,7 @@ export function HeroSection({ hijriDate, loading }: HeroSectionProps) {
         <GeometricPattern />
       </div>
 
-      <div className="page-container relative z-10 py-8 md:py-10">
+      <div className="page-container relative z-10 py-8 md:py-10 animate-in-up">
         {/* Greeting */}
         <div className="mb-3">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary/70 mb-2">

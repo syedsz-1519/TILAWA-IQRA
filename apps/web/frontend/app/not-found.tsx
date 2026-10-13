@@ -1,19 +1,19 @@
-import Link from 'next/link'
-
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center bg-background">
-      <div className="mb-4 text-6xl">📖</div>
-      <h1 className="text-3xl font-bold mb-2">404 - Page Not Found</h1>
-      <p className="max-w-md text-sm text-muted-foreground mb-6">
-        The page or Surah resource you are looking for does not exist or has moved.
-      </p>
-      <Link
+    <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-6 text-center bg-background page-bottom-safe">
+      <div className="text-7xl" aria-hidden="true">📖</div>
+      <div>
+        <h1 className="text-fluid-2xl font-bold text-foreground">Page Not Found</h1>
+        <p className="mt-2 max-w-xs text-sm text-muted-foreground">
+          This page doesn&apos;t exist — but your journey through the Quran does.
+        </p>
+      </div>
+      <a
         href="/"
-        className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        className="tap-target rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 press-effect"
       >
-        Return to Home
-      </Link>
+        Return Home
+      </a>
     </div>
   )
 }

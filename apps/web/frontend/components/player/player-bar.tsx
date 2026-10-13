@@ -166,7 +166,7 @@ export function PlayerBar() {
       <div className="mx-auto flex max-w-6xl items-center gap-2 px-3 py-2 sm:gap-4 sm:px-4">
         {/* Surah info — hidden on very small screens to give controls more room */}
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold text-xs shadow-sm sm:size-10 sm:text-sm">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground font-semibold text-xs shadow-sm sm:size-10 sm:text-sm">
             {currentSurah.number}
           </div>
           <div className="min-w-0">
@@ -177,6 +177,21 @@ export function PlayerBar() {
               <span className="hidden text-foreground sm:inline">· {currentSurah.nameTransliterated}</span>
             </p>
             <div className="flex items-center gap-1 text-[11px] text-muted-foreground sm:gap-1.5 sm:text-xs">
+              {/* Mini audio wave when playing */}
+              {isPlaying && (
+                <span className="mr-1 hidden items-end gap-0.5 sm:flex" aria-hidden="true">
+                  {[1, 2, 3].map((i) => (
+                    <span
+                      key={i}
+                      className="audio-wave-bar inline-block w-0.5 rounded-full bg-primary"
+                      style={{
+                        height: `${8 + i * 3}px`,
+                        animationDelay: `${(i - 1) * 180}ms`,
+                      }}
+                    />
+                  ))}
+                </span>
+              )}
               <button
                 type="button"
                 onClick={() => setShowReciters((v) => !v)}

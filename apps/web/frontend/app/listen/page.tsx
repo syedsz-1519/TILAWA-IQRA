@@ -1,18 +1,20 @@
 'use client'
 
+/**
+ * Listen Quran — full-surah audio player with reciter selection,
+ * shared translation picker, and per-ayah translation audio option.
+ */
+
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
   BookOpen,
   Check,
-  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Headphones,
   Info,
-  Loader2,
   Mic,
-  Music2,
   Pause,
   Play,
   Radio,
@@ -21,7 +23,6 @@ import {
   RotateCcw,
   RotateCw,
   Search,
-  SlidersHorizontal,
   Sparkles,
   Square,
   Volume2,
@@ -29,15 +30,16 @@ import {
 } from 'lucide-react'
 import { usePlayer } from '@/components/player/player-provider'
 import { RECITERS, SURAHS, type Reciter, type Surah } from '@/lib/quran'
+import { TranslationPicker } from '@/components/quran/TranslationPicker'
 
 const POPULAR_SURAHS = [
-  { number: 1, tag: 'The Opening' },
-  { number: 2, tag: 'Ayat al-Kursi' },
-  { number: 18, tag: 'Friday Sunnah' },
-  { number: 36, tag: 'Heart of Quran' },
-  { number: 55, tag: 'The Beneficent' },
-  { number: 56, tag: 'The Inevitable' },
-  { number: 67, tag: 'Protection from Grave' },
+  { number: 1,   tag: 'The Opening' },
+  { number: 2,   tag: 'Ayat al-Kursi' },
+  { number: 18,  tag: 'Friday Sunnah' },
+  { number: 36,  tag: 'Heart of Quran' },
+  { number: 55,  tag: 'The Beneficent' },
+  { number: 56,  tag: 'The Inevitable' },
+  { number: 67,  tag: 'Protection from Grave' },
   { number: 112, tag: 'Tawhid' },
   { number: 113, tag: 'Seek Refuge' },
   { number: 114, tag: 'Mankind' },
@@ -77,16 +79,15 @@ export default function ListenPage() {
     retry,
   } = usePlayer()
 
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterPlace, setFilterPlace] = useState<'all' | 'Makkah' | 'Madinah'>('all')
+  const [searchQuery, setSearchQuery]     = useState('')
+  const [filterPlace, setFilterPlace]     = useState<'all' | 'Makkah' | 'Madinah'>('all')
 
   const activeSurah: Surah = currentSurah || SURAHS[0]
 
   const filteredSurahs = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
     return SURAHS.filter((s) => {
-      const matchesFilter = filterPlace === 'all' || s.revelationPlace === filterPlace
-      if (!matchesFilter) return false
+      if (filterPlace !== 'all' && s.revelationPlace !== filterPlace) return false
       if (!q) return true
       return (
         s.nameTransliterated.toLowerCase().includes(q) ||
@@ -97,75 +98,85 @@ export default function ListenPage() {
     })
   }, [searchQuery, filterPlace])
 
-  const progressPercent = duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0
+  const progressPercent =
+    duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0
 
   return (
-    <div className="page-container py-6 page-bottom-safe">
-      {/* Top Header */}
-      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 pb-36">
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Page header                                                         */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="mb-8 flex flex-col gap-3 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
             <Radio className="size-3.5 animate-pulse" />
-            <span>Tilawa Quran Audio Station</span>
+            Tilawa Quran Audio Station
           </div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-serif">
+          <h1 className="mt-2 font-serif text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Listen to the Holy Quran
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Complete high-definition 114 Surahs recitation with verified global CDNs.
+            Complete 114 Surahs · High-quality CDN streaming · Multiple reciters
           </p>
         </div>
 
-        {/* Quick reciter badge */}
-        <div className="flex items-center gap-2 self-start rounded-xl border border-border bg-card p-2 text-xs sm:self-auto">
-          <Mic className="size-4 text-primary shrink-0" />
+        {/* Current reciter badge */}
+        <div className="flex items-center gap-2 self-start rounded-xl border border-border bg-card p-2.5 text-xs sm:self-auto">
+          <Mic className="size-4 shrink-0 text-primary" />
           <div className="min-w-0">
-            <span className="text-[11px] text-muted-foreground block">Current Qari:</span>
-            <span className="font-semibold text-foreground truncate block">
+            <span className="block text-[11px] text-muted-foreground">Current Qari</span>
+            <span className="block truncate font-semibold text-foreground">
               {currentReciter.nameEnglish}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Main Now Playing Deck */}
-      <div className="mb-10 overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-b from-card via-card to-card/90 shadow-md">
-        {/* Reciter selector bar */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Now Playing deck                                                    */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="mb-10 overflow-hidden rounded-2xl border border-primary/20 bg-card shadow-md">
+
+        {/* Reciter selector — horizontally scrollable on mobile */}
         <div className="border-b border-border/70 bg-muted/40 px-4 py-3 sm:px-6">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-              <Mic className="size-3.5" />
-              Choose Reciter (قراء القرآن):
-            </span>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {RECITERS.map((r) => {
-                const active = r.id === currentReciter.id
-                return (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => setReciter(r)}
-                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
-                      active
-                        ? 'border border-primary bg-primary text-primary-foreground shadow-xs'
-                        : 'border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
-                    }`}
-                  >
-                    <span>{r.nameEnglish}</span>
-                    {active && <Check className="size-3" />}
-                  </button>
-                )
-              })}
-            </div>
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <Mic className="size-3.5" aria-hidden="true" />
+            Choose Reciter
+          </p>
+          <div
+            className="flex gap-1.5 overflow-x-auto pb-0.5"
+            role="group"
+            aria-label="Select reciter"
+          >
+            {RECITERS.map((r: Reciter) => {
+              const active = r.id === currentReciter.id
+              return (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => setReciter(r)}
+                  aria-pressed={active}
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+                    active
+                      ? 'border border-primary bg-primary text-primary-foreground shadow-xs'
+                      : 'border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  {r.nameEnglish}
+                  {active && <Check className="size-3" aria-hidden="true" />}
+                </button>
+              )
+            })}
           </div>
         </div>
 
-        {/* Error notification */}
+        {/* Error banner */}
         {errorMessage && (
-          <div className="flex items-center justify-between gap-3 bg-destructive/15 px-4 py-2.5 text-xs text-destructive border-b border-destructive/20 sm:px-6">
+          <div className="flex items-center justify-between gap-3 border-b border-destructive/20 bg-destructive/15 px-4 py-2.5 text-xs text-destructive sm:px-6">
             <div className="flex items-center gap-2">
               <Info className="size-4 shrink-0" />
-              <span>{errorMessage}</span>
+              {errorMessage}
             </div>
             <button
               type="button"
@@ -173,26 +184,24 @@ export default function ListenPage() {
               className="inline-flex items-center gap-1 rounded bg-destructive px-2.5 py-1 font-medium text-destructive-foreground hover:opacity-90 active:scale-95"
             >
               <RefreshCw className="size-3" />
-              Retry Stream
+              Retry
             </button>
           </div>
         )}
 
-        {/* Deck Content */}
+        {/* Player body */}
         <div className="p-6 sm:p-8">
           <div className="flex flex-col items-center text-center">
-            {/* Arabic Surah Title */}
-            <div className="relative mb-2">
-              <span
-                lang="ar"
-                dir="rtl"
-                className="surah-arabic-title block text-primary drop-shadow-xs"
-              >
-                {activeSurah.nameArabic}
-              </span>
-            </div>
 
-            {/* Transliteration and English Meaning */}
+            {/* Arabic surah name */}
+            <span
+              lang="ar"
+              dir="rtl"
+              className="mb-1 block font-serif text-5xl font-bold text-primary drop-shadow-xs sm:text-6xl"
+            >
+              {activeSurah.nameArabic}
+            </span>
+
             <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
               Surah {activeSurah.nameTransliterated}
             </h2>
@@ -200,58 +209,51 @@ export default function ListenPage() {
               {activeSurah.nameTranslated} · {activeSurah.ayahCount} Verses · {activeSurah.revelationPlace}
             </p>
 
-            {/* Animated Sound Equalizer Waves */}
-            <div className="my-6 flex items-end justify-center gap-1 h-8" aria-label="Audio wave">
-              {[4, 8, 12, 16, 20, 24, 20, 16, 12, 8, 4, 10, 18, 14, 6].map((height, i) => (
+            {/* Animated equaliser */}
+            <div className="my-6 flex h-8 items-end justify-center gap-1" aria-label="Audio visualiser" aria-hidden="true">
+              {[4, 8, 12, 16, 20, 24, 20, 16, 12, 8, 4, 10, 18, 14, 6].map((h, i) => (
                 <span
                   key={i}
                   className={`w-1 rounded-full transition-all duration-300 ${
-                    isPlaying
-                      ? 'bg-primary animate-pulse'
-                      : 'bg-muted-foreground/30'
+                    isPlaying ? 'bg-primary animate-pulse' : 'bg-muted-foreground/30'
                   }`}
                   style={{
-                    height: isPlaying ? `${Math.max(6, (height * 1.3) % 28)}px` : '4px',
+                    height: isPlaying ? `${Math.max(6, (h * 1.3) % 28)}px` : '4px',
                     animationDelay: `${(i % 5) * 120}ms`,
                   }}
                 />
               ))}
             </div>
 
-            {/* Scrubber Timeline */}
+            {/* Scrubber */}
             <div className="w-full max-w-xl">
-              <div className="relative flex items-center">
-                <input
-                  type="range"
-                  min={0}
-                  max={duration || 100}
-                  step={1}
-                  value={currentTime}
-                  onChange={(e) => seek(Number(e.target.value))}
-                  aria-label="Seek within Surah"
-                  className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-muted outline-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-md"
-                  style={{
-                    backgroundImage: `linear-gradient(to right, var(--primary) ${progressPercent}%, transparent 0%)`,
-                    backgroundSize: '100% 100%',
-                    backgroundRepeat: 'no-repeat',
-                  }}
-                />
-              </div>
-              <div className="mt-1.5 flex justify-between text-xs font-mono text-muted-foreground">
+              <input
+                type="range"
+                min={0}
+                max={duration || 100}
+                step={1}
+                value={currentTime}
+                onChange={(e) => seek(Number(e.target.value))}
+                aria-label="Seek within Surah"
+                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-muted outline-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-md"
+                style={{
+                  backgroundImage: `linear-gradient(to right, var(--primary) ${progressPercent}%, transparent 0%)`,
+                }}
+              />
+              <div className="mt-1.5 flex justify-between font-mono text-xs text-muted-foreground">
                 <span>{formatTime(currentTime)}</span>
                 <span>{duration > 0 ? formatTime(duration) : '--:--'}</span>
               </div>
             </div>
 
-            {/* Primary Audio Player Controls — flex-wrap to handle 360px */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-              {/* Loop button */}
+            {/* Playback controls */}
+            <div className="mt-6 flex items-center justify-center gap-3 sm:gap-5">
               <button
                 type="button"
                 onClick={toggleRepeat}
-                title={repeat ? 'Surah repeat: ON' : 'Surah repeat: OFF'}
+                title={repeat ? 'Repeat: ON' : 'Repeat: OFF'}
                 aria-pressed={repeat}
-                className={`tap-target rounded-full border transition-colors ${
+                className={`flex size-10 items-center justify-center rounded-full border transition-colors ${
                   repeat
                     ? 'border-primary bg-primary/15 text-primary'
                     : 'border-border text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -260,35 +262,33 @@ export default function ListenPage() {
                 <Repeat className="size-4" />
               </button>
 
-              {/* Previous Surah */}
               <button
                 type="button"
                 onClick={previous}
-                title="Previous Surah"
-                className="tap-target rounded-full border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95"
+                aria-label="Previous Surah"
+                className="flex size-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95"
               >
                 <ChevronLeft className="size-5" />
               </button>
 
-              {/* Seek -10s */}
               <button
                 type="button"
                 onClick={() => seek(Math.max(0, currentTime - 10))}
-                title="Rewind 10 seconds"
-                className="tap-target rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                aria-label="Rewind 10 seconds"
+                className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
                 <RotateCcw className="size-4" />
               </button>
 
-              {/* Central Large Play / Pause Button */}
+              {/* Central play/pause */}
               <button
                 type="button"
                 onClick={togglePlay}
-                aria-label={isPlaying ? 'Pause recitation' : 'Play recitation'}
-                className="flex size-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95 press-effect"
+                aria-label={isPlaying ? 'Pause' : 'Play'}
+                className="flex size-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95"
               >
                 {isLoading ? (
-                  <Loader2 className="size-7 animate-spin" />
+                  <span className="size-7 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" aria-hidden="true" />
                 ) : isPlaying ? (
                   <Pause className="size-7" />
                 ) : (
@@ -296,54 +296,51 @@ export default function ListenPage() {
                 )}
               </button>
 
-              {/* Full Stop Button */}
               <button
                 type="button"
                 onClick={stop}
-                title="Stop audio completely"
-                className="tap-target rounded-full border border-destructive/40 bg-destructive/10 text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground active:scale-95"
+                aria-label="Stop"
+                className="flex size-10 items-center justify-center rounded-full border border-destructive/40 bg-destructive/10 text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground active:scale-95"
               >
                 <Square className="size-4 fill-current" />
               </button>
 
-              {/* Seek +10s */}
               <button
                 type="button"
                 onClick={() => seek(Math.min(duration || Infinity, currentTime + 10))}
-                title="Fast forward 10 seconds"
-                className="tap-target rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                aria-label="Fast-forward 10 seconds"
+                className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
                 <RotateCw className="size-4" />
               </button>
 
-              {/* Next Surah */}
               <button
                 type="button"
                 onClick={next}
-                title="Next Surah"
-                className="tap-target rounded-full border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95"
+                aria-label="Next Surah"
+                className="flex size-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95"
               >
                 <ChevronRight className="size-5" />
               </button>
 
-              {/* Playback speed switcher */}
+              {/* Speed */}
               <button
                 type="button"
                 onClick={() => {
                   const rates = [0.75, 1, 1.25, 1.5]
-                  const nextRate = rates[(rates.indexOf(playbackRate) + 1) % rates.length]
-                  setPlaybackRate(nextRate)
+                  setPlaybackRate(rates[(rates.indexOf(playbackRate) + 1) % rates.length])
                 }}
-                title="Playback speed"
-                className="tap-target min-w-[3rem] rounded-full border border-border text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                aria-label={`Playback speed: ${playbackRate}x`}
+                className="flex size-10 items-center justify-center rounded-full border border-border text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
                 {playbackRate}x
               </button>
             </div>
 
-            {/* Volume & Read Along Action Row */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs text-muted-foreground">
-              {/* Volume Slider */}
+            {/* Volume + translation controls row */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground sm:gap-6">
+
+              {/* Volume */}
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -364,43 +361,49 @@ export default function ListenPage() {
                   step={0.05}
                   value={isMuted ? 0 : volume}
                   onChange={(e) => setVolume(Number(e.target.value))}
-                  aria-label="Recitation volume"
+                  aria-label="Volume"
                   className="h-1.5 w-20 cursor-pointer appearance-none rounded-lg bg-muted accent-primary"
                 />
               </div>
 
-              {/* Read Along Button */}
+              {/* Translation picker */}
+              <div className="relative flex items-center gap-2">
+                <span className="text-[11px] text-muted-foreground">Translation:</span>
+                <TranslationPicker mode="listen" />
+              </div>
+
+              {/* Read-along link */}
               <Link
                 href={`/read/${activeSurah.number}`}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-medium text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
               >
                 <BookOpen className="size-3.5" />
-                <span>Read & Follow Surah {activeSurah.nameTransliterated}</span>
+                Read Surah {activeSurah.nameTransliterated}
               </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Most Listened Surahs Quick-Picks */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Frequently Listened Surahs                                         */}
+      {/* ------------------------------------------------------------------ */}
       <section className="mb-10">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-              <Sparkles className="size-4 text-primary" />
-              Frequently Listened Surahs
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Tap any surah to start streaming immediately in the voice of {currentReciter.nameEnglish}.
-            </p>
-          </div>
+        <div className="mb-4">
+          <h3 className="flex items-center gap-2 text-lg font-semibold text-foreground">
+            <Sparkles className="size-4 text-primary" />
+            Frequently Listened Surahs
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            Tap any surah to stream in the voice of {currentReciter.nameEnglish}.
+          </p>
         </div>
 
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-5">
           {POPULAR_SURAHS.map((item) => {
             const s = SURAHS[item.number - 1]
             if (!s) return null
-            const isCurrent = activeSurah.number === s.number
+            const isCurrent    = activeSurah.number === s.number
             const isPlayingThis = isCurrent && isPlaying
             return (
               <button
@@ -431,13 +434,13 @@ export default function ListenPage() {
                     )}
                   </span>
                 </div>
-                <p className="mt-2 font-medium text-foreground text-sm truncate w-full">
+                <p className="mt-2 w-full truncate text-sm font-medium text-foreground">
                   {s.nameTransliterated}
                 </p>
                 <span lang="ar" dir="rtl" className="font-serif text-sm text-primary">
                   {s.nameArabic}
                 </span>
-                <span className="mt-1 text-[11px] text-muted-foreground truncate w-full">
+                <span className="mt-1 w-full truncate text-[11px] text-muted-foreground">
                   {item.tag}
                 </span>
               </button>
@@ -446,27 +449,30 @@ export default function ListenPage() {
         </div>
       </section>
 
-      {/* All 114 Surahs Directory */}
+      {/* ------------------------------------------------------------------ */}
+      {/* All 114 Surahs directory                                           */}
+      {/* ------------------------------------------------------------------ */}
       <section>
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-foreground">
               <Headphones className="size-4 text-primary" />
               All 114 Surahs ({filteredSurahs.length})
             </h3>
             <p className="text-xs text-muted-foreground">
-              Select any Surah to play or read along with translation.
+              Select any Surah to play, or open it in Read for text and translation.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {/* Filter pills */}
+            {/* Revelation filter */}
             <div className="inline-flex rounded-lg border border-border bg-card p-0.5 text-xs">
               {(['all', 'Makkah', 'Madinah'] as const).map((p) => (
                 <button
                   key={p}
                   type="button"
                   onClick={() => setFilterPlace(p)}
+                  aria-pressed={filterPlace === p}
                   className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
                     filterPlace === p
                       ? 'bg-primary text-primary-foreground'
@@ -478,24 +484,24 @@ export default function ListenPage() {
               ))}
             </div>
 
-            {/* Search Input */}
+            {/* Search */}
             <div className="relative w-full sm:w-64">
               <Search className="pointer-events-none absolute start-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by surah name or #..."
+                placeholder="Search surah name or number…"
                 className="h-9 w-full rounded-lg border border-border bg-card ps-8 pe-3 text-xs outline-none focus:border-primary focus:ring-1 focus:ring-primary"
               />
             </div>
           </div>
         </div>
 
-        {/* Surah List */}
+        {/* Surah list */}
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {filteredSurahs.map((surah) => {
-            const isCurrent = activeSurah.number === surah.number
+            const isCurrent    = activeSurah.number === surah.number
             const isPlayingThis = isCurrent && isPlaying
             return (
               <div
@@ -506,8 +512,7 @@ export default function ListenPage() {
                     : 'border-border bg-card hover:border-border/80 hover:bg-muted/40'
                 }`}
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  {/* Play Button */}
+                <div className="flex min-w-0 items-center gap-3">
                   <button
                     type="button"
                     onClick={() => playSurah(surah)}
@@ -525,29 +530,27 @@ export default function ListenPage() {
                     )}
                   </button>
 
-                  {/* Title & Info */}
                   <div className="min-w-0">
                     <p className="flex items-center gap-1.5 truncate text-sm font-semibold text-foreground">
                       <span className="text-xs text-muted-foreground">#{surah.number}</span>
                       <span className="truncate">{surah.nameTransliterated}</span>
                     </p>
-                    <p className="text-xs text-muted-foreground truncate">
+                    <p className="truncate text-xs text-muted-foreground">
                       {surah.nameTranslated} · {surah.ayahCount} ayat
                     </p>
                   </div>
                 </div>
 
-                {/* Arabic Name & Read link */}
-                <div className="flex flex-col items-end gap-1 ps-2 shrink-0">
+                <div className="flex shrink-0 flex-col items-end gap-1 ps-2">
                   <span lang="ar" dir="rtl" className="font-serif text-lg text-primary">
                     {surah.nameArabic}
                   </span>
                   <Link
                     href={`/read/${surah.number}`}
-                    className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-primary transition-colors"
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors hover:text-primary"
                   >
                     <BookOpen className="size-3" />
-                    <span>Read</span>
+                    Read
                   </Link>
                 </div>
               </div>

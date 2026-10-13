@@ -71,10 +71,10 @@ export default function HomePage() {
       {/* ── A: Hero — greeting + geometric pattern + date ── */}
       <HeroSection hijriDate={hijriDate} loading={loading} />
 
-      <div className="page-container space-y-5 py-6 md:space-y-6 md:py-8">
+      <div className="page-container space-y-5 py-6 md:space-y-6 md:py-8" data-page-enter>
 
         {/* ── B: Daily Ayah — spiritual focal point ── */}
-        <section aria-labelledby="ayah-heading">
+        <section aria-labelledby="ayah-heading" className="animate-in-up delay-75">
           <h2 id="ayah-heading" className="sr-only">Daily Ayah</h2>
           <DailyAyahCard
             ayah={dailyAyah}
@@ -87,30 +87,30 @@ export default function HomePage() {
         </section>
 
         {/* ── C: Continue Reading ── */}
-        <section aria-labelledby="continue-heading">
+        <section aria-labelledby="continue-heading" className="animate-in-up delay-150">
           <h2 id="continue-heading" className="sr-only">Continue Reading</h2>
           <ContinueReadingCard progress={readingProgress} loading={loading} />
         </section>
 
         {/* ── D: Quick Access Grid ── */}
-        <section aria-labelledby="quick-access-heading">
+        <section aria-labelledby="quick-access-heading" className="animate-in-up delay-225">
           <QuickAccessGrid />
         </section>
 
         {/* ── E: Next Salah ── */}
-        <section aria-labelledby="salah-heading">
+        <section aria-labelledby="salah-heading" className="animate-in-up delay-300">
           <h2 id="salah-heading" className="sr-only">Next Prayer</h2>
           <NextSalahCard prayerTimes={prayerTimes} loading={loading} />
         </section>
 
         {/* ── F: Morning / Evening Adhkar ── */}
-        <section aria-labelledby="adhkar-heading">
+        <section aria-labelledby="adhkar-heading" className="animate-in-up delay-375">
           <h2 id="adhkar-heading" className="sr-only">Daily Adhkar</h2>
           <AdhkarStrip prayerTimes={prayerTimes} loading={loading} />
         </section>
 
         {/* ── G: Reading Goals ── */}
-        <section aria-labelledby="goals-heading">
+        <section aria-labelledby="goals-heading" className="animate-in-up delay-450">
           <h2 id="goals-heading" className="sr-only">Reading Goals</h2>
           <ReadingGoals />
         </section>
