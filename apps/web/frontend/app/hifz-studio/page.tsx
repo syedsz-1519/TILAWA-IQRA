@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { getHifzDecks, getDifficultyColor } from '@/lib/hifz-data'
-import { getHifzStatsApi } from '@/lib/api-client'
 import { Flame, BookOpen, Target, Trophy, Play, Plus } from 'lucide-react'
 
 export default function HifzStudioPage() {
@@ -17,16 +16,6 @@ export default function HifzStudioPage() {
     streak: 0,
   })
 
-  useEffect(() => {
-    getHifzStatsApi().then(({ data }) => {
-      if (data?.stats) {
-        setUserStats((prev) => ({
-          ...prev,
-          ...data.stats,
-        }))
-      }
-    }).catch(() => {})
-  }, [])
 
   const decks = getHifzDecks()
 

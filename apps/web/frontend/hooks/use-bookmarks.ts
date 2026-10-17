@@ -1,52 +1,55 @@
 'use client'
 
-import { useCallback } from 'react'
-import useSWR, { mutate } from 'swr'
-import { getBookmarks, addBookmark, removeBookmark, type Bookmark } from '@/lib/db-client'
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
+import { useCallback, useState } from 'react'
+import {
+  getBookmarks as getBookmarksLocal,
+  addBookmark as addBookmarkLocal,
+  removeBookmark as removeBookmarkLocal,
+  type Bookmark,
+} from '@/lib/db-client'
 
 /**
- * Hook to manage mushaf bookmarks
+ * Hook to manage Quran bookmarks — fully offline via localStorage.
  */
 export function useBookmarks(userId: string | null) {
-  const url = userId ? `/api/bookmarks?userId=${userId}` : null
+  const effectiveId = userId ?? 'guest'
 
-  const { data, error, isLoading } = useSWR<Bookmark[]>(url, fetcher)
-
-  const bookmarks = data ?? []
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>(() => {
+    if (typeof window === 'undefined') return []
+    return getBookmarksLocal(effectiveId)
+  })
 
   const isBookmarked = useCallback(
     (surahNumber: number, ayahNumber: number) => {
-      return bookmarks.some((b) => b.surahNumber === surahNumber && b.ayahNumber === ayahNumber)
+      return bookmarks.some(
+        (b) => b.surahNumber === surahNumber && b.ayahNumber === ayahNumber
+      )
     },
     [bookmarks]
   )
 
   const toggleBookmark = useCallback(
     async (surahNumber: number, ayahNumber: number) => {
-      if (!userId) return
-
       try {
+        let updated: Bookmark[]
         if (isBookmarked(surahNumber, ayahNumber)) {
-          await removeBookmark(userId, surahNumber, ayahNumber)
+          updated = removeBookmarkLocal(effectiveId, surahNumber, ayahNumber)
         } else {
-          await addBookmark(userId, surahNumber, ayahNumber)
+          updated = addBookmarkLocal(effectiveId, surahNumber, ayahNumber)
         }
-        // Revalidate cache
-        mutate(url)
+        setBookmarks(updated)
       } catch (err) {
         console.error('Failed to toggle bookmark:', err)
         throw err
       }
     },
-    [userId, url, isBookmarked]
+    [effectiveId, isBookmarked]
   )
 
   return {
     bookmarks,
-    isLoading,
-    isError: !!error,
+    isLoading: false,
+    isError: false,
     isBookmarked,
     toggleBookmark,
   }

@@ -353,7 +353,7 @@ export function getErrorLogs(): any[] {
  */
 export function clearErrorLogs() {
   if (typeof window === 'undefined') return false
-  return setSafeStorageItem('tilawa_error_logs', '[]', true)
+  return setSafeStorageItem('tilawa_error_logs', [], true)
 }
 
 /**

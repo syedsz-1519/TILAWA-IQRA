@@ -1,56 +1,61 @@
 'use client'
 
-import { useCallback, useState, useEffect } from 'react'
-import useSWR, { mutate } from 'swr'
-import { getReadingProgress, updateReadingProgress, type ReadingProgressData } from '@/lib/db-client'
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
+import { useCallback, useState } from 'react'
+import {
+  getReadingProgress as getProgressLocal,
+  updateReadingProgress as updateProgressLocal,
+  type ReadingProgressData,
+} from '@/lib/db-client'
 
 /**
- * Hook to manage reading progress for a specific surah
+ * Hook to manage reading progress for a specific surah — fully offline via localStorage.
  */
 export function useReadingProgress(userId: string | null, surahNumber: number) {
-  const url = userId ? `/api/reading-progress?userId=${userId}&surahNumber=${surahNumber}` : null
+  const effectiveId = userId ?? 'guest'
 
-  const { data, error, isLoading } = useSWR<ReadingProgressData | null>(url, fetcher)
+  const [progress, setProgress] = useState<ReadingProgressData | null>(() => {
+    if (typeof window === 'undefined') return null
+    const results = getProgressLocal(effectiveId, surahNumber)
+    return results[0] ?? null
+  })
 
   const updateProgress = useCallback(
     async (lastAyahRead: number) => {
-      if (!userId) return
-
       try {
-        const updated = await updateReadingProgress(userId, surahNumber, lastAyahRead)
-        // Revalidate cache
-        mutate(url)
+        const updated = updateProgressLocal(effectiveId, surahNumber, lastAyahRead)
+        setProgress(updated)
         return updated
       } catch (err) {
         console.error('Failed to update reading progress:', err)
         throw err
       }
     },
-    [userId, surahNumber, url]
+    [effectiveId, surahNumber]
   )
 
   return {
-    progress: data,
-    lastAyahRead: data?.lastAyahRead ?? 0,
-    isLoading,
-    isError: !!error,
+    progress,
+    lastAyahRead: progress?.lastAyahRead ?? 0,
+    isLoading: false,
+    isError: false,
     updateProgress,
   }
 }
 
 /**
- * Hook to get all reading progress for a user
+ * Hook to get all reading progress — fully offline via localStorage.
  */
 export function useAllReadingProgress(userId: string | null) {
-  const url = userId ? `/api/reading-progress?userId=${userId}` : null
+  const effectiveId = userId ?? 'guest'
 
-  const { data, error, isLoading } = useSWR<ReadingProgressData[]>(url, fetcher)
+  const [allProgress] = useState<ReadingProgressData[]>(() => {
+    if (typeof window === 'undefined') return []
+    return getProgressLocal(effectiveId)
+  })
 
   return {
-    allProgress: data ?? [],
-    isLoading,
-    isError: !!error,
+    allProgress,
+    isLoading: false,
+    isError: false,
   }
 }

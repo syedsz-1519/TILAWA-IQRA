@@ -6,7 +6,6 @@ import { ChevronLeft, Volume2, RotateCw, ChevronRight, X } from 'lucide-react'
 import { getHifzDeck, getCardsByDeck, calculateNextReview } from '@/lib/hifz-data'
 import { useLanguage } from '@/lib/language-context'
 import { LANGUAGES } from '@/lib/languages'
-import { updateHifzProgressApi } from '@/lib/api-client'
 
 interface DeckPageProps {
   params: {

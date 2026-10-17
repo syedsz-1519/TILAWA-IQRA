@@ -3,26 +3,17 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthForm } from '@/components/auth-form'
-import { getSession } from '@/lib/auth'
+import { useSession } from '@/lib/auth-client'
 
 export default function SignUpPage() {
   const router = useRouter()
+  const { data: session, isPending } = useSession()
 
   useEffect(() => {
-    // Check if user is already logged in
-    const checkSession = async () => {
-      try {
-        const session = await getSession()
-        if (session?.user) {
-          router.replace('/')
-        }
-      } catch {
-        // Continue to render the sign-up form
-      }
+    if (!isPending && session?.user) {
+      router.replace('/')
     }
-
-    checkSession()
-  }, [router])
+  }, [session, isPending, router])
 
   return <AuthForm mode="sign-up" />
 }

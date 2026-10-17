@@ -24,14 +24,14 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
     setError(null)
     setLoading(true)
 
-    const { error } = isSignUp
+    const result = isSignUp
       ? await authClient.signUp.email({ email, password, name })
       : await authClient.signIn.email({ email, password })
 
     setLoading(false)
 
-    if (error) {
-      setError(error.message ?? 'Something went wrong')
+    if (result.error) {
+      setError(result.error.message ?? 'Something went wrong')
       return
     }
 
